@@ -17,8 +17,8 @@ Ter o **Docker** e o **Docker Compose** instalados na máquina.
 Instale o [Docker Desktop](https://www.docker.com/products/docker-desktop) — o Compose já vem incluído.
 
 ### Linux (Ubuntu/Debian)
+Instale o [Docker Engine](https://docs.docker.com/engine/install/ubuntu/)
 ```bash
-curl -fsSL https://get.docker.com | sh
 sudo usermod -aG docker $USER
 newgrp docker
 ```
@@ -30,7 +30,7 @@ newgrp docker
 ### 1. Clone o repositório
 ```bash
 git clone <url-do-repositorio>
-cd meu-projeto
+cd tech-chalange
 ```
 
 ### 2. Configure o ambiente
@@ -69,7 +69,7 @@ Na primeira execução o Docker irá:
 ## 🗂️ Estrutura do projeto
 
 ```
-meu-projeto/
+tech-chalange/
 ├── Dockerfile                  # Imagem PHP 8.4 FPM customizada
 ├── docker-compose.yml          # Orquestração dos containers
 ├── composer.json               # Dependências PHP (Slim 4)
