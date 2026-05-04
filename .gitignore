@@ -1,2 +1,4 @@
 .env
 vendor/
+.env.swp
+.env.swp
