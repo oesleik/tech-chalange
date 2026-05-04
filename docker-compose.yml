@@ -1,0 +1,111 @@
+# =====================================================
+# docker-compose.yml
+# Stack: Nginx + PHP 8.4 FPM + MySQL 9 + phpMyAdmin
+# =====================================================
+services:
+
+  # --------------------------------------------------
+  # Nginx — Servidor Web
+  # --------------------------------------------------
+  nginx:
+    image: nginx:latest
+    container_name: app_nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"       # HTTP  → http://localhost
+    volumes:
+      - .:/var/www/html                          # código da aplicação
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf  # config do Nginx
+    depends_on:
+      - php
+    networks:
+      - app_network
+
+  # --------------------------------------------------
+  # PHP-FPM 8.4 — Processador PHP
+  # --------------------------------------------------
+  php:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: app_php
+    restart: unless-stopped
+    volumes:
+      - .:/var/www/html                          # mesmo volume do Nginx
+      - vendor_data:/var/www/html/vendor         # vendor isolado (não sobrescrito pelo bind mount)
+      - ./docker/php/php.ini:/usr/local/etc/php/conf.d/custom.ini  # configurações extras
+    command: >
+      sh -c "composer install --no-dev --optimize-autoloader && php-fpm"
+    environment:
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_DATABASE=${DB_DATABASE:-app_db}
+      - DB_USERNAME=${DB_USERNAME:-app_user}
+      - DB_PASSWORD=${DB_PASSWORD:-secret}
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - app_network
+
+  # --------------------------------------------------
+  # MySQL 9 — Banco de Dados
+  # --------------------------------------------------
+  mysql:
+    image: mysql:9
+    container_name: app_mysql
+    restart: unless-stopped
+    ports:
+      - "3307:3306"   # expõe para conexão externa (ex: DBeaver, TablePlus)
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-rootsecret}
+      MYSQL_DATABASE: ${DB_DATABASE:-app_db}
+      MYSQL_USER: ${DB_USERNAME:-app_user}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-secret}
+    volumes:
+      - mysql_data:/var/lib/mysql                # persiste os dados
+      - ./docker/mysql/init:/docker-entrypoint-initdb.d  # scripts SQL de inicialização (opcional)
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD:-rootsecret}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app_network
+
+  # --------------------------------------------------
+  # phpMyAdmin — Interface Web para o MySQL
+  # Acesse: http://localhost:8080
+  # --------------------------------------------------
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: app_phpmyadmin
+    restart: unless-stopped
+    ports:
+      - "8080:80"     # http://localhost:8080
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      PMA_USER: ${DB_USERNAME:-app_user}
+      PMA_PASSWORD: ${DB_PASSWORD:-secret}
+      UPLOAD_LIMIT: 64M
+    depends_on:
+      - mysql
+    networks:
+      - app_network
+
+# ------------------------------------------------------
+# Volumes persistentes
+# ------------------------------------------------------
+volumes:
+  mysql_data:
+    driver: local
+  vendor_data:
+    driver: local
+
+# ------------------------------------------------------
+# Rede interna
+# ------------------------------------------------------
+networks:
+  app_network:
+    driver: bridge
