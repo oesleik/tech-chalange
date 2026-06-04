@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Core;
+namespace App\Core\ServiceContainer;
 
 class ContainerBuilder {
 
@@ -12,6 +12,7 @@ class ContainerBuilder {
 		$this->builder = new \DI\ContainerBuilder();
 		$this->builder->useAutowiring(true);
 		$this->builder->useAttributes(false);
+		$this->builder->addDefinitions(__DIR__ . "/definitions.core.php");
 	}
 
 	public function build(): \DI\Container {
