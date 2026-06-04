@@ -3,17 +3,19 @@
 declare(strict_types=1);
 
 use App\Core\BaseController;
+use App\Core\Config\AppConfig;
 use App\Core\ContainerBuilder;
 
 $containerBuilder = new ContainerBuilder();
 $container = $containerBuilder->build();
 
+$appConfig = new AppConfig();
 $app = \DI\Bridge\Slim\Bridge::create($container);
 
 $app->addRoutingMiddleware();
 
 $app->addErrorMiddleware(
-    displayErrorDetails: true,   // false em produção
+    displayErrorDetails: !$appConfig->getAmbiente()->isProd(),
     logErrors: true,
     logErrorDetails: true
 );

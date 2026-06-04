@@ -12,7 +12,7 @@ class BaseController {
 	public function index(ResponseInterface $response): ResponseInterface {
 		$response->getBody()->write(json_encode([
 			'status'  => 'ok',
-			'message' => 'Slim 4 + PHP 8.4 + MySQL 9 rodando!',
+			'message' => 'API disponível',
 		]));
 
 		return $response->withHeader('Content-Type', 'application/json');
