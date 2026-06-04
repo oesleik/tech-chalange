@@ -2,5 +2,5 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/../src/bootstrap.php';
-require_once __DIR__ . '/../src/api-router.php';
+require __DIR__ . '/../src/bootstrap.php';
+require __DIR__ . '/../src/router.php';
