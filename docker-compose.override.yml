@@ -1,0 +1,6 @@
+services:
+  php:
+    volumes:
+      - ./docker/php/php-dev.ini:/usr/local/etc/php/conf.d/custom.ini
+    command: >
+      sh -c "composer install && php-fpm"
