@@ -35,7 +35,7 @@ services:
       - ./vendor:/var/www/html/vendor
       - ./docker/php/php.ini:/usr/local/etc/php/conf.d/custom.ini  # configurações extras
     command: >
-      sh -c "composer install --no-dev --optimize-autoloader && php-fpm"
+      sh -c "composer install --optimize-autoloader && php-fpm"
     environment:
       - DB_HOST=mysql
       - DB_PORT=3306
