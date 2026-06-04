@@ -42,6 +42,8 @@ services:
       - DB_DATABASE=${DB_DATABASE:-app_db}
       - DB_USERNAME=${DB_USERNAME:-app_user}
       - DB_PASSWORD=${DB_PASSWORD:-secret}
+      - APP_ENV=${APP_ENV:-production}
+      - APP_URL=${APP_URL:-https://example.tech-challange.com}
     depends_on:
       mysql:
         condition: service_healthy
