@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Core\Contract;
 
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ContractResolver {
@@ -12,6 +14,8 @@ class ContractResolver {
 	public function __construct(
 		private ValidatorInterface $validator,
 		private DenormalizerInterface $denormalizer,
+		private NormalizerInterface $normalizer,
+		private SerializerInterface $serializer,
 	) {
 	}
 
@@ -37,6 +41,14 @@ class ContractResolver {
 		}
 
 		return $this->denormalizer->denormalize($payload, $contractClass);
+	}
+
+	public function toArray(object $data): array {
+		return $this->normalizer->normalize($data, "json");
+	}
+
+	public function toJson(object $data): string {
+		return $this->serializer->serialize($data, "json");
 	}
 
 }
