@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 use App\Core\BaseController;
 use App\Core\Config\AppConfig;
-use App\Core\ContainerBuilder;
+use App\Core\ServiceContainerBuilder;
 
-$containerBuilder = new ContainerBuilder();
+$containerBuilder = new ServiceContainerBuilder();
 $container = $containerBuilder->build();
 
 $appConfig = new AppConfig();

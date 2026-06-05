@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Core\Config;
 
-use App\Core\AmbienteEnum;
-
 class AppConfig extends AbstractConfig {
 
 	public function getAmbiente(): AmbienteEnum {
