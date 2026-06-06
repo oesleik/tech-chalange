@@ -35,7 +35,7 @@ class CpfValidator extends ConstraintValidator {
     }
 
 	private function ehCpfValido(string $cpf): bool {
-		$cpf = preg_replace('/\D/', '', $cpf);
+		$cpf = str_replace(['-', '.'], '', $cpf);
 
 		if (strlen($cpf) !== 11) {
 			return false;

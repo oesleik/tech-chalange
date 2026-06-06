@@ -35,7 +35,7 @@ class CnpjValidator extends ConstraintValidator {
     }
 
 	private function ehCnpjValido(string $cnpj): bool {
-		$cnpj = preg_replace('/[^A-Z0-9]/', '', strtoupper($cnpj));
+		$cnpj = strtoupper(str_replace(['-', '.', '/'], '', $cnpj));
 
 		if (strlen($cnpj) !== 14) {
 			return false;
