@@ -111,6 +111,16 @@ docker compose logs -f nginx
 docker compose exec php bash
 ```
 
+### Rodar testes unitários
+```bash
+docker compose exec php vendor/bin/phpunit src
+```
+
+### Rodar fixer
+```bash
+docker compose exec php vendor/bin/php-cs-fixer fix
+```
+
 ### Instalar uma nova dependência
 ```bash
 docker compose exec php composer require nome/pacote

@@ -1,3 +1,4 @@
 .env
 vendor/
 .env.swp
+.php-cs-fixer.cache
