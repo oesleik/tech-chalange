@@ -12,7 +12,6 @@ use Symfony\Component\Validator\Exception\UnexpectedValueException;
 use Symfony\Component\Validator\Test\ConstraintValidatorTestCase;
 
 class PlacaValidatorTest extends ConstraintValidatorTestCase {
-
     protected function createValidator(): ConstraintValidatorInterface {
         return new PlacaValidator();
     }
@@ -34,15 +33,15 @@ class PlacaValidatorTest extends ConstraintValidatorTestCase {
     }
 
     public static function provideValidPlacas(): \Generator {
-		yield ['ABC1234'];
-		yield ['ABC1D34'];
-		yield ['ABC-1234'];
-		yield ['ABC 1D34'];
+        yield ['ABC1234'];
+        yield ['ABC1D34'];
+        yield ['ABC-1234'];
+        yield ['ABC 1D34'];
     }
 
     #[DataProvider('provideInvalidPlacas')]
     public function testInvalidPlacaIsInvalid(string $placa): void {
-		$constraint = new Placa();
+        $constraint = new Placa();
         $this->validate($placa, $constraint);
 
         $this->buildViolation($constraint->message)
@@ -66,5 +65,4 @@ class PlacaValidatorTest extends ConstraintValidatorTestCase {
         $this->expectException(UnexpectedTypeException::class);
         $this->validator->validate("ABC1234", new NotNull());
     }
-
 }

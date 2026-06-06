@@ -10,7 +10,6 @@ use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 use Symfony\Component\Validator\Exception\UnexpectedValueException;
 
 class PlacaValidator extends ConstraintValidator {
-
     public function validate(mixed $value, Constraint $constraint): void {
         if (!$constraint instanceof Placa) {
             throw new UnexpectedTypeException($constraint, Placa::class);
@@ -34,18 +33,17 @@ class PlacaValidator extends ConstraintValidator {
             ->addViolation();
     }
 
-	private function ehPlacaValida(string $placa): bool {
-		$placa = strtoupper(str_replace(['-', ' '], '', $placa));
+    private function ehPlacaValida(string $placa): bool {
+        $placa = strtoupper(str_replace(['-', ' '], '', $placa));
 
-		if (strlen($placa) !== 7) {
-			return false;
-		}
+        if (strlen($placa) !== 7) {
+            return false;
+        }
 
-		if (preg_match("/[A-Z]{3}[0-9][A-Z0-9][0-9]{2}/", $placa)) {
-			return true;
-		}
+        if (preg_match("/[A-Z]{3}[0-9][A-Z0-9][0-9]{2}/", $placa)) {
+            return true;
+        }
 
-		return false;
-	}
-
+        return false;
+    }
 }

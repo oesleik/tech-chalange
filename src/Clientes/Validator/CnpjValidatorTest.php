@@ -12,7 +12,6 @@ use Symfony\Component\Validator\Exception\UnexpectedValueException;
 use Symfony\Component\Validator\Test\ConstraintValidatorTestCase;
 
 class CnpjValidatorTest extends ConstraintValidatorTestCase {
-
     protected function createValidator(): ConstraintValidatorInterface {
         return new CnpjValidator();
     }
@@ -34,13 +33,13 @@ class CnpjValidatorTest extends ConstraintValidatorTestCase {
     }
 
     public static function provideValidCnpjs(): \Generator {
-		yield ['04.252.011/0001-10'];
+        yield ['04.252.011/0001-10'];
         yield ['AB345678000A91'];
     }
 
     #[DataProvider('provideInvalidCnpjs')]
     public function testInvalidCnpjIsInvalid(string $cnpj): void {
-		$constraint = new Cnpj();
+        $constraint = new Cnpj();
         $this->validate($cnpj, $constraint);
 
         $this->buildViolation($constraint->message)
@@ -63,5 +62,4 @@ class CnpjValidatorTest extends ConstraintValidatorTestCase {
         $this->expectException(UnexpectedTypeException::class);
         $this->validator->validate('04252011000110', new NotNull());
     }
-
 }

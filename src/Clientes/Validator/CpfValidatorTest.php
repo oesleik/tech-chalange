@@ -12,7 +12,6 @@ use Symfony\Component\Validator\Exception\UnexpectedValueException;
 use Symfony\Component\Validator\Test\ConstraintValidatorTestCase;
 
 class CpfValidatorTest extends ConstraintValidatorTestCase {
-
     protected function createValidator(): ConstraintValidatorInterface {
         return new CpfValidator();
     }
@@ -40,7 +39,7 @@ class CpfValidatorTest extends ConstraintValidatorTestCase {
 
     #[DataProvider('provideInvalidCpfs')]
     public function testInvalidCpfIsInvalid(string $cpf): void {
-		$constraint = new Cpf();
+        $constraint = new Cpf();
         $this->validate($cpf, $constraint);
 
         $this->buildViolation($constraint->message)
@@ -64,5 +63,4 @@ class CpfValidatorTest extends ConstraintValidatorTestCase {
         $this->expectException(UnexpectedTypeException::class);
         $this->validator->validate('52998224725', new NotNull());
     }
-
 }

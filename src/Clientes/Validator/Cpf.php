@@ -8,12 +8,10 @@ use Symfony\Component\Validator\Constraint;
 
 #[\Attribute]
 class Cpf extends Constraint {
-
     public string $message = 'The string "{{ string }}" is not a valid CPF.';
 
     public function __construct(?string $message = null, ?array $groups = null, $payload = null) {
         $this->message = $message ?? $this->message;
         parent::__construct(null, $groups, $payload);
     }
-
 }
