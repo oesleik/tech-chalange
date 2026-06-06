@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use App\Clientes\Validator\Cpf;
-use App\Clientes\Validator\CpfValidator;
+use App\Clientes\Validator\Cnpj;
+use App\Clientes\Validator\CnpjValidator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Component\Validator\Constraints\NotNull;
 use Symfony\Component\Validator\ConstraintValidatorInterface;
@@ -11,58 +11,57 @@ use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 use Symfony\Component\Validator\Exception\UnexpectedValueException;
 use Symfony\Component\Validator\Test\ConstraintValidatorTestCase;
 
-class CpfValidatorTest extends ConstraintValidatorTestCase {
+class CnpjValidatorTest extends ConstraintValidatorTestCase {
 
     protected function createValidator(): ConstraintValidatorInterface {
-        return new CpfValidator();
+        return new CnpjValidator();
     }
 
     public function testNullIsValid(): void {
-        $this->validate(null, new Cpf());
+        $this->validate(null, new Cnpj());
         $this->assertNoViolation();
     }
 
     public function testEmptyStringIsValid(): void {
-        $this->validate('', new Cpf());
+        $this->validate('', new Cnpj());
         $this->assertNoViolation();
     }
 
-    #[DataProvider('provideValidCpfs')]
-    public function testValidCpfIsValid(string $cpf): void {
-        $this->validate($cpf, new Cpf());
+    #[DataProvider('provideValidCnpjs')]
+    public function testValidCnpjIsValid(string $cnpj): void {
+        $this->validate($cnpj, new Cnpj());
         $this->assertNoViolation();
     }
 
-    public static function provideValidCpfs(): \Generator {
-        yield ['52998224725'];
-        yield ['529.982.247-25'];
+    public static function provideValidCnpjs(): \Generator {
+		yield ['04.252.011/0001-10'];
+        yield ['AB345678000A91'];
     }
 
-    #[DataProvider('provideInvalidCpfs')]
-    public function testInvalidCpfIsInvalid(string $cpf): void {
-		$constraint = new Cpf();
-        $this->validate($cpf, $constraint);
+    #[DataProvider('provideInvalidCnpjs')]
+    public function testInvalidCnpjIsInvalid(string $cnpj): void {
+		$constraint = new Cnpj();
+        $this->validate($cnpj, $constraint);
 
         $this->buildViolation($constraint->message)
-            ->setParameter('{{ string }}', $cpf)
+            ->setParameter('{{ string }}', $cnpj)
             ->assertRaised();
     }
 
-    public static function provideInvalidCpfs(): \Generator {
-        yield ['12345678900'];
-        yield ['52998224724'];
-        yield ['529.982.247-24'];
+    public static function provideInvalidCnpjs(): \Generator {
+        yield ['04252011000111'];
+        yield ['AB345678000A92'];
         yield ['123'];
     }
 
     public function testNonStringValueThrowsUnexpectedValueException(): void {
         $this->expectException(UnexpectedValueException::class);
-        $this->validator->validate(123, new Cpf());
+        $this->validator->validate(123, new Cnpj());
     }
 
     public function testUnexpectedConstraintTypeThrowsUnexpectedTypeException(): void {
         $this->expectException(UnexpectedTypeException::class);
-        $this->validator->validate('52998224725', new NotNull());
+        $this->validator->validate('04252011000110', new NotNull());
     }
 
 }
