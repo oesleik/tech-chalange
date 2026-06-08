@@ -121,6 +121,11 @@ docker compose exec php vendor/bin/phpunit src
 docker compose exec php vendor/bin/php-cs-fixer fix
 ```
 
+### Rodar linter
+```bash
+docker compose exec php vendor/bin/phpstan analyse src
+```
+
 ### Instalar uma nova dependência
 ```bash
 docker compose exec php composer require nome/pacote
