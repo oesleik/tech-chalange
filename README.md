@@ -49,7 +49,7 @@ Na primeira execução o Docker irá:
 - Buildar a imagem PHP com todas as extensões
 - Instalar as dependências via Composer automaticamente
 
-### 3. Execute as migrations
+### 4. Execute as migrations
 ```bash
 make migrate
 ```
