@@ -9,4 +9,8 @@ class AppConfig extends AbstractConfig {
         $appEnv = $this->getStringEnv("APP_ENV") ?: throw MissingConfigException::make("APP_ENV");
         return AmbienteEnum::tryFrom($appEnv) ?? throw InvalidConfigValueException::make("APP_ENV", "AmbienteEnum", "string");
     }
+
+    public function getProjectRootFolder(): string {
+        return realpath(__DIR__ . "/../../../") . "/";
+    }
 }
