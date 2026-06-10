@@ -1,0 +1,7 @@
+CREATE TABLE `clientes` (
+  `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `nome` VARCHAR(255) NOT NULL,
+  `cpf_cnpj` VARCHAR(14) UNIQUE NOT NULL,
+  `email` VARCHAR(255) NOT NULL,
+  `telefone` VARCHAR(50)
+);
