@@ -41,13 +41,18 @@ cp .env.example .env
 
 ### 3. Suba os containers
 ```bash
-docker compose up -d --build
+make up
 ```
 
 Na primeira execução o Docker irá:
 - Baixar as imagens (Nginx, MySQL, phpMyAdmin)
 - Buildar a imagem PHP com todas as extensões
 - Instalar as dependências via Composer automaticamente
+
+### 4. Execute as migrations
+```bash
+make migrate
+```
 
 ---
 
@@ -92,56 +97,10 @@ tech-chalange/
 
 ## 🛠️ Comandos úteis
 
-### Ver status dos containers
+Vários comandos estão embutidos no Makefile. Para visualizar todos os disponíveis, basta rodar:
+
 ```bash
-docker compose ps
-```
-
-### Ver logs em tempo real
-```bash
-docker compose logs -f
-
-# Apenas de um serviço específico
-docker compose logs -f php
-docker compose logs -f nginx
-```
-
-### Entrar no container PHP
-```bash
-docker compose exec php bash
-```
-
-### Rodar testes unitários
-```bash
-docker compose exec php vendor/bin/phpunit src
-```
-
-### Rodar fixer
-```bash
-docker compose exec php vendor/bin/php-cs-fixer fix
-```
-
-### Rodar linter
-```bash
-docker compose exec php vendor/bin/phpstan analyse src
-```
-
-### Instalar uma nova dependência
-```bash
-docker compose exec php composer require nome/pacote
-```
-
-### Derrubar o ambiente
-```bash
-docker compose down
-
-# Derrubar e apagar volumes (reseta o banco de dados)
-docker compose down -v
-```
-
-### Rebuildar após mudanças no Dockerfile
-```bash
-docker compose up -d --build
+make help
 ```
 
 ---
