@@ -24,6 +24,4 @@ use OpenApi\Attributes as OA;
 #[OA\OpenApi(
     security: [['bearerAuth' => []]]
 )]
-final class openapi
-{
-}
+final class openapi {}

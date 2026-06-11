@@ -31,6 +31,55 @@
                         }
                     }
                 }
+            },
+            "post": {
+                "tags": [
+                    "Clientes"
+                ],
+                "summary": "Cadastrar um novo cliente",
+                "operationId": "criarCliente",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CriarClienteRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Cliente encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ClienteResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
             }
         },
         "/clientes/{id}": {
@@ -38,7 +87,7 @@
                 "tags": [
                     "Clientes"
                 ],
-                "summary": "Obtém um cliente pelo id",
+                "summary": "Obter detalhes de um cliente",
                 "operationId": "obterCliente",
                 "parameters": [
                     {
@@ -52,7 +101,79 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Cliente encontrado"
+                        "description": "Cliente encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ClienteResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Cliente não encontrado"
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "Clientes"
+                ],
+                "summary": "Editar dados de um cliente",
+                "operationId": "editarCliente",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/EditarClienteRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Cliente encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ClienteResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Cliente não encontrado"
+                    },
+                    "409": {
+                        "description": "Conflict error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationErrorResponse"
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -95,6 +216,52 @@
                     "telefone": {
                         "type": "string",
                         "example": "*********78"
+                    }
+                },
+                "type": "object"
+            },
+            "CriarClienteRequest": {
+                "properties": {
+                    "nome": {
+                        "type": "string",
+                        "example": "Fulano de Tal"
+                    },
+                    "cpf_cnpj": {
+                        "type": "string",
+                        "example": "123.456.789-89"
+                    },
+                    "email": {
+                        "type": "string",
+                        "example": "fulanodetal@example.com"
+                    },
+                    "telefone": {
+                        "type": "string",
+                        "example": "5412345678"
+                    }
+                },
+                "type": "object"
+            },
+            "EditarClienteRequest": {
+                "properties": {
+                    "nome": {
+                        "type": "string",
+                        "example": "Fulano de Tal",
+                        "nullable": true
+                    },
+                    "cpf_cnpj": {
+                        "type": "string",
+                        "example": "123.456.789-89",
+                        "nullable": true
+                    },
+                    "email": {
+                        "type": "string",
+                        "example": "fulanodetal@example.com",
+                        "nullable": true
+                    },
+                    "telefone": {
+                        "type": "string",
+                        "example": "5412345678",
+                        "nullable": true
                     }
                 },
                 "type": "object"

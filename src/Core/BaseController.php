@@ -18,15 +18,15 @@ class BaseController {
         return $response->withHeader('Content-Type', 'application/json');
     }
 
-	#[OA\Get(
-		path: '/health',
-		tags: ["Health"],
-		security: []
-	)]
-	#[OA\Response(
-		response: 200,
-		description: 'Servidor está funcionando',
-	)]
+    #[OA\Get(
+        path: '/health',
+        tags: ["Health"],
+        security: []
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Servidor está funcionando',
+    )]
     public function health(ResponseInterface $response, AppDatabase $db): ResponseInterface {
         $db->query('SELECT 1');
 
