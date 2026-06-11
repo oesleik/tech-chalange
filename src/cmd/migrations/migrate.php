@@ -60,8 +60,8 @@ foreach ($migrations as $migration) {
         $pdo->exec($sql);
         $pdo->prepare('INSERT INTO migrations (version) VALUES (?)')->execute([$version]);
 
-		$versionsExecuted[] = $version;
-		$countExecuted++;
+        $versionsExecuted[] = $version;
+        $countExecuted++;
 
         // Some statements auto-commit and finishes the transaction
         if ($pdo->inTransaction()) {

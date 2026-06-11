@@ -1,0 +1,316 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "API Tech Chalange",
+        "description": "API documentation",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost",
+            "description": "Development"
+        }
+    ],
+    "paths": {
+        "/clientes/": {
+            "get": {
+                "tags": [
+                    "Clientes"
+                ],
+                "summary": "Listar clientes cadastrados",
+                "operationId": "listarClientes",
+                "responses": {
+                    "200": {
+                        "description": "Lista de clientes encontrados",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ListarClientesResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Clientes"
+                ],
+                "summary": "Cadastrar um novo cliente",
+                "operationId": "criarCliente",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CriarClienteRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Cliente encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ClienteResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/clientes/{id}": {
+            "get": {
+                "tags": [
+                    "Clientes"
+                ],
+                "summary": "Obter detalhes de um cliente",
+                "operationId": "obterCliente",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Cliente encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ClienteResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Cliente não encontrado"
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "Clientes"
+                ],
+                "summary": "Editar dados de um cliente",
+                "operationId": "editarCliente",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/EditarClienteRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Cliente encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ClienteResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Cliente não encontrado"
+                    },
+                    "409": {
+                        "description": "Conflict error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/health": {
+            "get": {
+                "tags": [
+                    "Health"
+                ],
+                "operationId": "201854cbe75f77b848d6231b2dc72dc3",
+                "responses": {
+                    "200": {
+                        "description": "Servidor está funcionando"
+                    }
+                },
+                "security": []
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "ClienteResponse": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 123
+                    },
+                    "nome": {
+                        "type": "string",
+                        "example": "Fulano de Tal"
+                    },
+                    "cpf_cnpj": {
+                        "type": "string",
+                        "example": "12*.***.***-89"
+                    },
+                    "email": {
+                        "type": "string",
+                        "example": "fu********@example.com"
+                    },
+                    "telefone": {
+                        "type": "string",
+                        "example": "*********78"
+                    }
+                },
+                "type": "object"
+            },
+            "CriarClienteRequest": {
+                "properties": {
+                    "nome": {
+                        "type": "string",
+                        "example": "Fulano de Tal"
+                    },
+                    "cpf_cnpj": {
+                        "type": "string",
+                        "example": "123.456.789-89"
+                    },
+                    "email": {
+                        "type": "string",
+                        "example": "fulanodetal@example.com"
+                    },
+                    "telefone": {
+                        "type": "string",
+                        "example": "5412345678"
+                    }
+                },
+                "type": "object"
+            },
+            "EditarClienteRequest": {
+                "properties": {
+                    "nome": {
+                        "type": "string",
+                        "example": "Fulano de Tal",
+                        "nullable": true
+                    },
+                    "cpf_cnpj": {
+                        "type": "string",
+                        "example": "123.456.789-89",
+                        "nullable": true
+                    },
+                    "email": {
+                        "type": "string",
+                        "example": "fulanodetal@example.com",
+                        "nullable": true
+                    },
+                    "telefone": {
+                        "type": "string",
+                        "example": "5412345678",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "ListarClientesResponse": {
+                "properties": {
+                    "clientes": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ClienteResponse"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "ValidationError": {},
+            "ValidationErrorResponse": {
+                "properties": {
+                    "errors": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ValidationError"
+                        }
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "security": [
+        {
+            "bearerAuth": []
+        }
+    ],
+    "tags": [
+        {
+            "name": "Clientes",
+            "description": "Clientes"
+        },
+        {
+            "name": "Health",
+            "description": "Health"
+        }
+    ]
+}

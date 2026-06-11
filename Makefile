@@ -25,10 +25,13 @@ test: ## Rodar testes unitários
 	docker compose exec php vendor/bin/phpunit src
 
 format: ## Rodar o formatter (php-cs-fixer)
-	docker compose exec php vendor/bin/php-cs-fixer fix
+	docker compose exec --user "$(shell id -u):$(shell id -g)" php vendor/bin/php-cs-fixer fix
 
 lint: ## Rodar o linter (phpstan)
 	docker compose exec php vendor/bin/phpstan analyse src
+
+api-docs: ## Gerar documentação swagger da API
+	docker compose exec --user "$(shell id -u):$(shell id -g)" php vendor/bin/openapi src -o public/openapi.json
 
 logs: ## Visualizar todos os logs do container
 	docker compose logs -f
