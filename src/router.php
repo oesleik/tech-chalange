@@ -31,4 +31,11 @@ $app->group("/clientes", function (RouteCollectorProxy $group): void {
     $group->patch("/{id:[0-9]+}", App\Clientes\Controller\EditarClienteController::class);
 });
 
+$app->group("/veiculos", function (RouteCollectorProxy $group): void {
+    $group->get("/", App\Veiculos\Controller\ListarVeiculosController::class);
+    $group->post("/", App\Veiculos\Controller\CriarVeiculoController::class);
+    $group->get("/{id:[0-9]+}", App\Veiculos\Controller\ObterVeiculoController::class);
+    $group->patch("/{id:[0-9]+}", App\Veiculos\Controller\EditarVeiculoController::class);
+});
+
 $app->run();
