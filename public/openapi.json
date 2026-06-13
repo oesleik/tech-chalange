@@ -192,6 +192,57 @@
                 "security": []
             }
         },
+        "/api/estoque/entrada": {
+            "post": {
+                "tags": [
+                    "Estoque"
+                ],
+                "summary": "Registrar entrada de peças no estoque",
+                "operationId": "890a747856565438e48614ac9db810bd",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/EntradaEstoqueRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Entrada registrada com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/EntradaEstoqueResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Peça não encontrada",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Dados inválidos",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/veiculos/{id}": {
             "get": {
                 "tags": [
@@ -406,6 +457,44 @@
                 },
                 "type": "object"
             },
+            "EntradaEstoqueRequest": {
+                "properties": {
+                    "id_peca": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "quantidade": {
+                        "type": "integer",
+                        "example": 10
+                    }
+                },
+                "type": "object"
+            },
+            "EntradaEstoqueResponse": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "id_peca": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "peca": {
+                        "type": "string",
+                        "example": "Filtro de óleo"
+                    },
+                    "quantidade": {
+                        "type": "integer",
+                        "example": 10
+                    },
+                    "tipo_lancamento": {
+                        "type": "string",
+                        "example": "entrada"
+                    }
+                },
+                "type": "object"
+            },
             "CriarVeiculoRequest": {
                 "properties": {
                     "placa": {
@@ -497,6 +586,10 @@
         {
             "name": "Health",
             "description": "Health"
+        },
+        {
+            "name": "Estoque",
+            "description": "Estoque"
         },
         {
             "name": "Veiculos",
