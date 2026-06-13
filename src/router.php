@@ -6,6 +6,7 @@ use App\Core\BaseController;
 use App\Core\Config\AppConfig;
 use App\Core\ServiceContainerBuilder;
 use Slim\Routing\RouteCollectorProxy;
+use App\Estoque\Controller\EstoqueController;
 
 $containerBuilder = new ServiceContainerBuilder();
 $container = $containerBuilder->build();
@@ -14,6 +15,8 @@ $appConfig = new AppConfig();
 $app = \DI\Bridge\Slim\Bridge::create($container);
 
 $app->addRoutingMiddleware();
+
+$app->addBodyParsingMiddleware();
 
 $app->addErrorMiddleware(
     displayErrorDetails: !$appConfig->getAmbiente()->isProd(),
@@ -30,5 +33,7 @@ $app->group("/clientes", function (RouteCollectorProxy $group): void {
     $group->get("/{id:[0-9]+}", App\Clientes\Controller\ObterClienteController::class);
     $group->patch("/{id:[0-9]+}", App\Clientes\Controller\EditarClienteController::class);
 });
+
+$app->post('/api/estoque/entrada', [EstoqueController::class, 'registrarEntrada']);
 
 $app->run();
