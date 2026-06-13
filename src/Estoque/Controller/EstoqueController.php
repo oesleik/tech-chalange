@@ -8,15 +8,43 @@ use App\Core\Contract\ContractResolver;
 use App\Core\Contract\InvalidContractException;
 use App\Estoque\Contract\EntradaEstoqueContract;
 use App\Estoque\Repository\EstoqueRepository;
+use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-class EstoqueController {
+class EstoqueController
+{
     public function __construct(
         private readonly EstoqueRepository $repository,
         private readonly ContractResolver  $contractResolver,
     ) {}
 
+    #[OA\Post(
+        path: '/api/estoque/entrada',
+        summary: 'Registrar entrada de peças no estoque',
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(ref: '#/components/schemas/EntradaEstoqueRequest')
+        ),
+        tags: ['Estoque'],
+        responses: [
+            new OA\Response(
+                response: 201,
+                description: 'Entrada registrada com sucesso',
+                content: new OA\JsonContent(ref: '#/components/schemas/EntradaEstoqueResponse')
+            ),
+            new OA\Response(
+                response: 404,
+                description: 'Peça não encontrada',
+                content: new OA\JsonContent(ref: '#/components/schemas/ValidationErrorResponse')
+            ),
+            new OA\Response(
+                response: 422,
+                description: 'Dados inválidos',
+                content: new OA\JsonContent(ref: '#/components/schemas/ValidationErrorResponse')
+            ),
+        ]
+    )]
     public function registrarEntrada(
         ServerRequestInterface $request,
         ResponseInterface $response,
