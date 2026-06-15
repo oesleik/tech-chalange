@@ -6,6 +6,7 @@ namespace App\Veiculos\Contract;
 
 use App\Veiculos\Model\VeiculoModel;
 use App\Core\Contract\AbstractContract;
+use App\Veiculos\Validator\Placa;
 use Symfony\Component\Validator\Constraints as Assert;
 use OpenApi\Attributes as OA;
 
@@ -24,10 +25,7 @@ readonly class CriarVeiculoRequest extends AbstractContract {
         return new Assert\Collection([
             'placa' => [
                 new Assert\NotBlank(),
-                new Assert\Regex(
-                    pattern: '/^[A-Z]{3}-?\d{4}$|^[A-Z]{3}\d[A-Z]\d{2}$/',
-                    message: 'A placa deve estar no formato ABC-1234 ou ABC1D23 (Mercosul)'
-                ),
+                new Placa(),
             ],
             'marca' => [
                 new Assert\NotBlank(),
