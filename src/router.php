@@ -50,4 +50,10 @@ $app->group("/pecas", function (RouteCollectorProxy $group): void {
 
 $app->post('/api/estoque/entrada', [EstoqueController::class, 'registrarEntrada']);
 
+$app->group("/ordens-servico", function (RouteCollectorProxy $group): void {
+    $group->get("/", App\OrdemServico\Controller\ListarOrdensServicoController::class);
+    $group->post("/", App\OrdemServico\Controller\CriarOrdemServicoController::class);
+    $group->get("/{id:[0-9]+}", App\OrdemServico\Controller\ObterOrdemServicoController::class);
+    $group->patch("/{id:[0-9]+}/situacao", App\OrdemServico\Controller\AtualizarSituacaoController::class);
+});
 $app->run();
