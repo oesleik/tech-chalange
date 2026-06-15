@@ -388,6 +388,123 @@
                     }
                 }
             }
+        },
+        "/veiculos/{id}": {
+            "get": {
+                "tags": [
+                    "Veiculos"
+                ],
+                "summary": "Obter detalhes de um veículo",
+                "operationId": "obterVeiculo",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Veículo encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/VeiculoResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Veículo não encontrado"
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "Veiculos"
+                ],
+                "summary": "Editar dados de um veículo",
+                "operationId": "editarVeiculo",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/EditarVeiculoRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Veículo atualizado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/VeiculoResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Veículo não encontrado"
+                    },
+                    "409": {
+                        "description": "Conflict error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/veiculos/": {
+            "get": {
+                "tags": [
+                    "Veículos"
+                ],
+                "summary": "Listar veículos cadastrados",
+                "operationId": "listarVeiculos",
+                "responses": {
+                    "200": {
+                        "description": "Lista de veículos encontrados",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ListarVeiculosResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -581,6 +698,75 @@
                     }
                 },
                 "type": "object"
+            },
+            "CriarVeiculoRequest": {
+                "properties": {
+                    "placa": {
+                        "type": "string",
+                        "example": "ABC-1234"
+                    },
+                    "marca": {
+                        "type": "string",
+                        "example": "Toyota"
+                    },
+                    "modelo": {
+                        "type": "string",
+                        "example": "Corolla"
+                    }
+                },
+                "type": "object"
+            },
+            "EditarVeiculoRequest": {
+                "properties": {
+                    "placa": {
+                        "type": "string",
+                        "example": "ABC-1234",
+                        "nullable": true
+                    },
+                    "marca": {
+                        "type": "string",
+                        "example": "Toyota",
+                        "nullable": true
+                    },
+                    "modelo": {
+                        "type": "string",
+                        "example": "Corolla",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "ListarVeiculosResponse": {
+                "properties": {
+                    "veiculos": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/VeiculoResponse"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "VeiculoResponse": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "placa": {
+                        "type": "string",
+                        "example": "ABC-1234"
+                    },
+                    "marca": {
+                        "type": "string",
+                        "example": "Toyota"
+                    },
+                    "modelo": {
+                        "type": "string",
+                        "example": "Corolla"
+                    }
+                },
+                "type": "object"
             }
         },
         "securitySchemes": {
@@ -612,6 +798,14 @@
         {
             "name": "Peças",
             "description": "Peças"
+        },
+        {
+            "name": "Veiculos",
+            "description": "Veiculos"
+        },
+        {
+            "name": "Veículos",
+            "description": "Veículos"
         }
     ]
 }
