@@ -243,13 +243,73 @@
                 }
             }
         },
-        "/veiculos/{id}": {
+        "/pecas/": {
             "get": {
                 "tags": [
-                    "Veiculos"
+                    "Peças"
                 ],
-                "summary": "Obter detalhes de um veículo",
-                "operationId": "obterVeiculo",
+                "summary": "Listar peças cadastradas",
+                "operationId": "listarPecas",
+                "responses": {
+                    "200": {
+                        "description": "Lista de peças encontradas",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ListarPecasResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Peças"
+                ],
+                "summary": "Cadastrar uma nova peça",
+                "operationId": "criarPeca",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CriarPecaRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Peça criada",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PecaResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/pecas/{id}": {
+            "get": {
+                "tags": [
+                    "Peças"
+                ],
+                "summary": "Obter detalhes de uma peça",
+                "operationId": "obterPeca",
                 "parameters": [
                     {
                         "name": "id",
@@ -262,26 +322,26 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Veículo encontrado",
+                        "description": "Peça encontrada",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/VeiculoResponse"
+                                    "$ref": "#/components/schemas/PecaResponse"
                                 }
                             }
                         }
                     },
                     "404": {
-                        "description": "Veículo não encontrado"
+                        "description": "Peça não encontrada"
                     }
                 }
             },
             "patch": {
                 "tags": [
-                    "Veiculos"
+                    "Peças"
                 ],
-                "summary": "Editar dados de um veículo",
-                "operationId": "editarVeiculo",
+                "summary": "Editar dados de uma peça",
+                "operationId": "editarPeca",
                 "parameters": [
                     {
                         "name": "id",
@@ -297,18 +357,18 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/EditarVeiculoRequest"
+                                "$ref": "#/components/schemas/EditarPecaRequest"
                             }
                         }
                     }
                 },
                 "responses": {
                     "200": {
-                        "description": "Veículo atualizado",
+                        "description": "Peça atualizada",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/VeiculoResponse"
+                                    "$ref": "#/components/schemas/PecaResponse"
                                 }
                             }
                         }
@@ -324,38 +384,7 @@
                         }
                     },
                     "404": {
-                        "description": "Veículo não encontrado"
-                    },
-                    "409": {
-                        "description": "Conflict error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ValidationErrorResponse"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/veiculos/": {
-            "get": {
-                "tags": [
-                    "Veículos"
-                ],
-                "summary": "Listar veículos cadastrados",
-                "operationId": "listarVeiculos",
-                "responses": {
-                    "200": {
-                        "description": "Lista de veículos encontrados",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ListarVeiculosResponse"
-                                }
-                            }
-                        }
+                        "description": "Peça não encontrada"
                     }
                 }
             }
@@ -495,71 +524,60 @@
                 },
                 "type": "object"
             },
-            "CriarVeiculoRequest": {
+            "CriarPecaRequest": {
                 "properties": {
-                    "placa": {
+                    "descricao": {
                         "type": "string",
-                        "example": "ABC-1234"
+                        "example": "Filtro de óleo"
                     },
-                    "marca": {
-                        "type": "string",
-                        "example": "Toyota"
-                    },
-                    "modelo": {
-                        "type": "string",
-                        "example": "Corolla"
+                    "valor_unitario": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 49.9
                     }
                 },
                 "type": "object"
             },
-            "EditarVeiculoRequest": {
+            "EditarPecaRequest": {
                 "properties": {
-                    "placa": {
+                    "descricao": {
                         "type": "string",
-                        "example": "ABC-1234",
+                        "example": "Filtro de óleo",
                         "nullable": true
                     },
-                    "marca": {
-                        "type": "string",
-                        "example": "Toyota",
-                        "nullable": true
-                    },
-                    "modelo": {
-                        "type": "string",
-                        "example": "Corolla",
+                    "valor_unitario": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 49.9,
                         "nullable": true
                     }
                 },
                 "type": "object"
             },
-            "ListarVeiculosResponse": {
+            "ListarPecasResponse": {
                 "properties": {
-                    "veiculos": {
+                    "pecas": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/VeiculoResponse"
+                            "$ref": "#/components/schemas/PecaResponse"
                         }
                     }
                 },
                 "type": "object"
             },
-            "VeiculoResponse": {
+            "PecaResponse": {
                 "properties": {
                     "id": {
                         "type": "integer",
                         "example": 1
                     },
-                    "placa": {
+                    "descricao": {
                         "type": "string",
-                        "example": "ABC-1234"
+                        "example": "Filtro de óleo"
                     },
-                    "marca": {
+                    "valor_unitario": {
                         "type": "string",
-                        "example": "Toyota"
-                    },
-                    "modelo": {
-                        "type": "string",
-                        "example": "Corolla"
+                        "example": "49,90"
                     }
                 },
                 "type": "object"
@@ -592,12 +610,8 @@
             "description": "Estoque"
         },
         {
-            "name": "Veiculos",
-            "description": "Veiculos"
-        },
-        {
-            "name": "Veículos",
-            "description": "Veículos"
+            "name": "Peças",
+            "description": "Peças"
         }
     ]
 }
