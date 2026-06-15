@@ -529,6 +529,152 @@
                     }
                 }
             }
+        },
+        "/servicos/": {
+            "get": {
+                "tags": [
+                    "Serviços"
+                ],
+                "summary": "Listar serviços cadastrados",
+                "operationId": "listarServicos",
+                "responses": {
+                    "200": {
+                        "description": "Lista de serviços encontradas",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ListarServicosResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Serviços"
+                ],
+                "summary": "Cadastrar um novo serviço",
+                "operationId": "criarServico",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CriarServicoRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Serviço criado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ServicoResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/servicos/{id}": {
+            "get": {
+                "tags": [
+                    "Serviços"
+                ],
+                "summary": "Obter detalhes de um serviço",
+                "operationId": "obterServico",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Serviço encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ServicoResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Serviço não encontrado"
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "Serviços"
+                ],
+                "summary": "Editar dados de um serviço",
+                "operationId": "editarServico",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/EditarServicoRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Serviço atualizado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ServicoResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Serviço não encontrado"
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -665,6 +811,17 @@
                 },
                 "type": "object"
             },
+            "ListarOrdensServicoResponse": {
+                "properties": {
+                    "ordensServico": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/OrdemServicoResponse"
+                        }
+                    }
+                },
+                "type": "object"
+            },
             "CriarOrdemServicoRequest": {
                 "properties": {
                     "id_cliente": {
@@ -790,6 +947,65 @@
                     }
                 },
                 "type": "object"
+            },
+            "CriarServicoRequest": {
+                "properties": {
+                    "descricao": {
+                        "type": "string",
+                        "example": "Troca de óleo"
+                    },
+                    "valor_unitario": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 49.9
+                    }
+                },
+                "type": "object"
+            },
+            "EditarServicoRequest": {
+                "properties": {
+                    "descricao": {
+                        "type": "string",
+                        "example": "Troca de óleo",
+                        "nullable": true
+                    },
+                    "valor_unitario": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 49.9,
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "ListarServicosResponse": {
+                "properties": {
+                    "servicos": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ServicoResponse"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "ServicoResponse": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "descricao": {
+                        "type": "string",
+                        "example": "Troca de óleo"
+                    },
+                    "valor_unitario": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 49.9
+                    }
+                },
+                "type": "object"
             }
         },
         "securitySchemes": {
@@ -825,6 +1041,10 @@
         {
             "name": "Peças",
             "description": "Peças"
+        },
+        {
+            "name": "Serviços",
+            "description": "Serviços"
         }
     ]
 }

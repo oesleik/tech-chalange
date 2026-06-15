@@ -41,6 +41,13 @@ $app->group("/pecas", function (RouteCollectorProxy $group): void {
     $group->patch("/{id:[0-9]+}", App\Peca\Controller\EditarPecaController::class);
 });
 
+$app->group("/servicos", function (RouteCollectorProxy $group): void {
+    $group->get("/", App\Servicos\Controller\ListarServicosController::class);
+    $group->post("/", App\Servicos\Controller\CriarServicoController::class);
+    $group->get("/{id:[0-9]+}", App\Servicos\Controller\ObterServicoController::class);
+    $group->patch("/{id:[0-9]+}", App\Servicos\Controller\EditarServicoController::class);
+});
+
 $app->post('/api/estoque/entrada', [EstoqueController::class, 'registrarEntrada']);
 
 $app->group("/ordens-servico", function (RouteCollectorProxy $group): void {
