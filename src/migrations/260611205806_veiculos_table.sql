@@ -1,0 +1,6 @@
+CREATE TABLE veiculos (
+    `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    `placa` VARCHAR(8) NOT NULL UNIQUE,
+    `marca` VARCHAR(100) NOT NULL,
+    `modelo` VARCHAR(100) NOT NULL
+);
