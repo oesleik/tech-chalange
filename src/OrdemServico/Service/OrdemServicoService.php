@@ -120,12 +120,6 @@ class OrdemServicoService
         return $stmt->execute([$valorTotal->getValue(), $id]);
     }
 
-    public function deletarOrdemServico(int $id): bool
-    {
-        $stmt = $this->pdo->prepare("DELETE FROM ordens_servico WHERE id = ?");
-        return $stmt->execute([$id]);
-    }
-
     private function gerarModelPorRow(object $row): OrdemServicoModel
     {
         return new OrdemServicoModel(

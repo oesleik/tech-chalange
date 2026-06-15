@@ -382,31 +382,6 @@
                         "description": "Ordem de Serviço não encontrada"
                     }
                 }
-            },
-            "delete": {
-                "tags": [
-                    "Ordens de Serviço"
-                ],
-                "summary": "Deletar uma Ordem de Serviço",
-                "operationId": "deletarOrdemServico",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "Ordem de Serviço deletada com sucesso"
-                    },
-                    "404": {
-                        "description": "Ordem de Serviço não encontrada"
-                    }
-                }
             }
         },
         "/pecas/": {
