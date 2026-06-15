@@ -3,10 +3,12 @@
 declare(strict_types=1);
 
 namespace App\OrdemServico\Contract;
+use App\Core\Contract\AbstractContract;
+
 
 use App\OrdemServico\Model\OrdemServicoModel;
 
-readonly class OrdemServicoResponse
+readonly class OrdemServicoResponse extends AbstractContract
 {
     public function __construct(
         public int $id,

@@ -7,20 +7,17 @@ namespace App\OrdemServico\Contract;
 use App\Core\Contract\AbstractContract;
 use App\OrdemServico\Model\OrdemServicoModel;
 use App\OrdemServico\ValueObject\SituacaoOrdemValue;
+use App\OrdemServico\ValueObject\ValorTotalValue;
 use Symfony\Component\Validator\Constraints as Assert;
 use DateTime;
 
 readonly class CriarOrdemServicoRequest extends AbstractContract
 {
     public function __construct(
-        #[Assert\NotBlank]
-        #[Assert\Positive]
         public int $id_cliente,
-
-        #[Assert\NotBlank]
-        #[Assert\Positive]
         public int $id_veiculo,
     ) {}
+
 
     public static function getConstraints(): Assert\Collection
     {
@@ -43,7 +40,7 @@ readonly class CriarOrdemServicoRequest extends AbstractContract
             idCliente: $this->id_cliente,
             idVeiculo: $this->id_veiculo,
             situacao: new SituacaoOrdemValue('Recebida'),
-            valorTotal: null,
+            valorTotal: new ValorTotalValue(0),
             dataSolicitacao: new DateTime(),
         );
     }
