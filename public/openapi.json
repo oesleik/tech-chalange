@@ -243,6 +243,172 @@
                 }
             }
         },
+        "/ordens-servico/{id}/situacao": {
+            "patch": {
+                "tags": [
+                    "Ordens de Serviço"
+                ],
+                "summary": "Atualizar situação de uma Ordem de Serviço",
+                "operationId": "atualizarSituacao",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AtualizarSituacaoRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Situação atualizada com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OrdemServicoResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Ordem de Serviço não encontrada"
+                    }
+                }
+            }
+        },
+        "/ordens-servico": {
+            "get": {
+                "tags": [
+                    "Ordens de Serviço"
+                ],
+                "summary": "Listar todas as Ordens de Serviço",
+                "operationId": "listarOrdensServico",
+                "responses": {
+                    "200": {
+                        "description": "Lista de Ordens de Serviço",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/OrdemServicoResponse"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Ordens de Serviço"
+                ],
+                "summary": "Criar uma nova Ordem de Serviço",
+                "operationId": "criarOrdemServico",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CriarOrdemServicoRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Ordem de Serviço criada com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OrdemServicoResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Erro de validação",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/ordens-servico/{id}": {
+            "get": {
+                "tags": [
+                    "Ordens de Serviço"
+                ],
+                "summary": "Obter detalhes de uma Ordem de Serviço",
+                "operationId": "obterOrdemServico",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Detalhes da Ordem de Serviço",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OrdemServicoResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Ordem de Serviço não encontrada"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Ordens de Serviço"
+                ],
+                "summary": "Deletar uma Ordem de Serviço",
+                "operationId": "deletarOrdemServico",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Ordem de Serviço deletada com sucesso"
+                    },
+                    "404": {
+                        "description": "Ordem de Serviço não encontrada"
+                    }
+                }
+            }
+        },
         "/pecas/": {
             "get": {
                 "tags": [
@@ -524,6 +690,74 @@
                 },
                 "type": "object"
             },
+            "CriarOrdemServicoRequest": {
+                "properties": {
+                    "id_cliente": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "id_veiculo": {
+                        "type": "integer",
+                        "example": 1
+                    }
+                },
+                "type": "object"
+            },
+            "OrdemServicoResponse": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "id_cliente": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "id_veiculo": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "situacao": {
+                        "type": "string",
+                        "example": "Recebida"
+                    },
+                    "valor_total": {
+                        "type": "number",
+                        "example": 500
+                    },
+                    "data_solicitacao": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2026-06-14 10:30:00"
+                    },
+                    "data_aprovacao": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2026-06-14 11:00:00",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "AtualizarSituacaoRequest": {
+                "properties": {
+                    "situacao": {
+                        "type": "string",
+                        "example": "EmDiagnostico",
+                        "enum": [
+                            "Recebida",
+                            "EmDiagnostico",
+                            "AguardandoAprovacao",
+                            "Aprovada",
+                            "Rejeitada",
+                            "EmExecucao",
+                            "Finalizada",
+                            "Entregue"
+                        ]
+                    }
+                },
+                "type": "object"
+            },
             "CriarPecaRequest": {
                 "properties": {
                     "descricao": {
@@ -608,6 +842,10 @@
         {
             "name": "Estoque",
             "description": "Estoque"
+        },
+        {
+            "name": "Ordens de Serviço",
+            "description": "Ordens de Serviço"
         },
         {
             "name": "Peças",
