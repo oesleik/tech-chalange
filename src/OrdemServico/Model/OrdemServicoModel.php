@@ -15,7 +15,7 @@ class OrdemServicoModel
         private int $idCliente,
         private int $idVeiculo,
         private SituacaoOrdemValue $situacao,
-        private ?ValorTotalValue $valorTotal,
+        private ValorTotalValue $valorTotal,
         private DateTime $dataSolicitacao,
         private ?DateTime $dataAprovacao = null,
     ) {}
@@ -40,7 +40,7 @@ class OrdemServicoModel
         return $this->situacao;
     }
 
-    public function getValorTotal(): ?ValorTotalValue
+    public function getValorTotal(): ValorTotalValue
     {
         return $this->valorTotal;
     }
@@ -69,7 +69,7 @@ class OrdemServicoModel
         return $new;
     }
 
-    public function withValorTotal(?ValorTotalValue $valorTotal): self
+    public function withValorTotal(ValorTotalValue $valorTotal): self
     {
         $new = clone $this;
         $new->valorTotal = $valorTotal;
