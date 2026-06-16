@@ -15,7 +15,7 @@ class ObterVeiculoController {
         path: '/veiculos/{id}',
         operationId: 'obterVeiculo',
         summary: 'Obter detalhes de um veículo',
-        tags: ['Veiculos']
+        tags: ['Veículos']
     )]
     #[OA\Parameter(
         name: 'id',

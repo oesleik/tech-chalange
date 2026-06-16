@@ -676,10 +676,80 @@
                 }
             }
         },
+        "/veiculos/": {
+            "get": {
+                "tags": [
+                    "Veículos"
+                ],
+                "summary": "Listar veículos cadastrados",
+                "operationId": "listarVeiculos",
+                "responses": {
+                    "200": {
+                        "description": "Lista de veículos encontrados",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ListarVeiculosResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Veículos"
+                ],
+                "summary": "Cadastrar um novo veículo",
+                "operationId": "criarVeiculo",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CriarVeiculoRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Veículo criado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/VeiculoResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/veiculos/{id}": {
             "get": {
                 "tags": [
-                    "Veiculos"
+                    "Veículos"
                 ],
                 "summary": "Obter detalhes de um veículo",
                 "operationId": "obterVeiculo",
@@ -711,7 +781,7 @@
             },
             "patch": {
                 "tags": [
-                    "Veiculos"
+                    "Veículos"
                 ],
                 "summary": "Editar dados de um veículo",
                 "operationId": "editarVeiculo",
@@ -765,27 +835,6 @@
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ValidationErrorResponse"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/veiculos/": {
-            "get": {
-                "tags": [
-                    "Veículos"
-                ],
-                "summary": "Listar veículos cadastrados",
-                "operationId": "listarVeiculos",
-                "responses": {
-                    "200": {
-                        "description": "Lista de veículos encontrados",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ListarVeiculosResponse"
                                 }
                             }
                         }
@@ -1209,36 +1258,25 @@
     ],
     "tags": [
         {
-            "name": "Clientes",
-            "description": "Clientes"
+            "name": "Health"
         },
         {
-            "name": "Health",
-            "description": "Health"
+            "name": "Clientes"
         },
         {
-            "name": "Estoque",
-            "description": "Estoque"
+            "name": "Veículos"
         },
         {
-            "name": "Ordens de Serviço",
-            "description": "Ordens de Serviço"
+            "name": "Peças"
         },
         {
-            "name": "Peças",
-            "description": "Peças"
+            "name": "Serviços"
         },
         {
-            "name": "Serviços",
-            "description": "Serviços"
+            "name": "Estoque"
         },
         {
-            "name": "Veiculos",
-            "description": "Veiculos"
-        },
-        {
-            "name": "Veículos",
-            "description": "Veículos"
+            "name": "Ordens de Serviço"
         }
     ]
 }

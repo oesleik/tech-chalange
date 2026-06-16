@@ -24,4 +24,12 @@ use OpenApi\Attributes as OA;
 #[OA\OpenApi(
     security: [['bearerAuth' => []]]
 )]
+// Declarando na mão para setar a ordem
+#[OA\Tag(name: "Health")]
+#[OA\Tag(name: "Clientes")]
+#[OA\Tag(name: "Veículos")]
+#[OA\Tag(name: "Peças")]
+#[OA\Tag(name: "Serviços")]
+#[OA\Tag(name: "Estoque")]
+#[OA\Tag(name: "Ordens de Serviço")]
 final class openapi {}
