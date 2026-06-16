@@ -5,21 +5,19 @@ declare(strict_types=1);
 namespace App\OrdemServico\Service;
 
 use App\OrdemServico\Model\OrdemServicoModel;
-use App\OrdemServico\ValueObject\SituacaoOrdemValue;
 use App\OrdemServico\ValueObject\ValorTotalValue;
 use App\Core\AppDatabase;
+use App\OrdemServico\Model\SituacaoOrdemServicoEnum;
 use DateTime;
 use PDO;
 
-class OrdemServicoService
-{
+class OrdemServicoService {
     public function __construct(
         private AppDatabase $pdo
     ) {}
 
     /** @return OrdemServicoModel[] */
-    public function listarOrdensServico(): array
-    {
+    public function listarOrdensServico(): array {
         $result = $this->pdo->query(
             "SELECT * FROM ordens_servico ORDER BY data_solicitacao DESC",
             PDO::FETCH_OBJ
@@ -33,17 +31,29 @@ class OrdemServicoService
         return $ordensServico;
     }
 
-    public function obterOrdemServicoPorId(int $id): ?OrdemServicoModel
-    {
+    public function obterOrdemServicoPorId(int $id): ?OrdemServicoModel {
         $stmt = $this->pdo->prepare("SELECT * FROM ordens_servico WHERE id = ?");
         $stmt->execute([$id]);
         $result = $stmt->fetchObject();
         return $result ? $this->gerarModelPorRow($result) : null;
     }
 
+    public function obterProximaOrdemServicoNaFila(): ?OrdemServicoModel {
+        $stmt = $this->pdo->prepare("SELECT * FROM ordens_servico WHERE situacao = ? ORDER BY data_aprovacao ASC LIMIT 1");
+        $stmt->execute([SituacaoOrdemServicoEnum::APROVADA->value]);
+        $result = $stmt->fetchObject();
+
+        if (!$result) {
+            $stmt = $this->pdo->prepare("SELECT * FROM ordens_servico WHERE situacao = ? ORDER BY data_solicitacao ASC LIMIT 1");
+            $stmt->execute([SituacaoOrdemServicoEnum::RECEBIDA->value]);
+            $result = $stmt->fetchObject();
+        }
+
+        return $result ? $this->gerarModelPorRow($result) : null;
+    }
+
     /** @return OrdemServicoModel[] */
-    public function listarOrdensServicoPorStatus(string $status): array
-    {
+    public function listarOrdensServicoPorStatus(string $status): array {
         $stmt = $this->pdo->prepare(
             "SELECT * FROM ordens_servico WHERE situacao = ? ORDER BY data_solicitacao DESC"
         );
@@ -58,8 +68,7 @@ class OrdemServicoService
     }
 
     /** @return OrdemServicoModel[] */
-    public function listarOrdensServicoPorCliente(int $idCliente): array
-    {
+    public function listarOrdensServicoPorCliente(int $idCliente): array {
         $stmt = $this->pdo->prepare(
             "SELECT * FROM ordens_servico WHERE id_cliente = ? ORDER BY data_solicitacao DESC"
         );
@@ -73,17 +82,16 @@ class OrdemServicoService
         return $ordensServico;
     }
 
-    public function criarOrdemServico(OrdemServicoModel $ordemServico): OrdemServicoModel
-    {
+    public function criarOrdemServico(OrdemServicoModel $ordemServico): OrdemServicoModel {
         $stmt = $this->pdo->prepare(
-            "INSERT INTO ordens_servico (id_cliente, id_veiculo, situacao, valor_total, data_solicitacao) 
+            "INSERT INTO ordens_servico (id_cliente, id_veiculo, situacao, valor_total, data_solicitacao)
              VALUES (?, ?, ?, ?, ?)"
         );
 
         $stmt->execute([
             $ordemServico->getIdCliente(),
             $ordemServico->getIdVeiculo(),
-            $ordemServico->getSituacao()->getValue(),
+            $ordemServico->getSituacao()->value,
             $ordemServico->getValorTotal()?->getValue(),
             $ordemServico->getDataSolicitacao()->format('Y-m-d H:i:s'),
         ]);
@@ -92,15 +100,14 @@ class OrdemServicoService
         return $ordemServico->withId($id);
     }
 
-    public function atualizarSituacao(int $id, SituacaoOrdemValue $situacao): bool
-    {
+    public function atualizarSituacao(int $id, SituacaoOrdemServicoEnum $situacao): bool {
         $dataAprovacao = null;
-        if (in_array($situacao->getValue(), ['Aprovada', 'Rejeitada'])) {
-            $dataAprovacao = (new DateTime())->format('Y-m-d H:i:s');
+        if ($situacao == SituacaoOrdemServicoEnum::APROVADA || $situacao == SituacaoOrdemServicoEnum::REJEITADA) {
+            $dataAprovacao = new DateTime()->format('Y-m-d H:i:s');
         }
 
         $sql = "UPDATE ordens_servico SET situacao = ?";
-        $params = [$situacao->getValue()];
+        $params = [$situacao->value];
 
         if ($dataAprovacao) {
             $sql .= ", data_aprovacao = ?";
@@ -114,19 +121,17 @@ class OrdemServicoService
         return $stmt->execute($params);
     }
 
-    public function atualizarValorTotal(int $id, ValorTotalValue $valorTotal): bool
-    {
+    public function atualizarValorTotal(int $id, ValorTotalValue $valorTotal): bool {
         $stmt = $this->pdo->prepare("UPDATE ordens_servico SET valor_total = ? WHERE id = ?");
         return $stmt->execute([$valorTotal->getValue(), $id]);
     }
 
-    private function gerarModelPorRow(object $row): OrdemServicoModel
-    {
+    private function gerarModelPorRow(object $row): OrdemServicoModel {
         return new OrdemServicoModel(
             id: intval($row->id),
             idCliente: intval($row->id_cliente),
             idVeiculo: intval($row->id_veiculo),
-            situacao: new SituacaoOrdemValue($row->situacao),
+            situacao: SituacaoOrdemServicoEnum::from($row->situacao),
             valorTotal: $row->valor_total !== null ? new ValorTotalValue(floatval($row->valor_total)) : null,
             dataSolicitacao: new DateTime($row->data_solicitacao),
             dataAprovacao: $row->data_aprovacao !== null ? new DateTime($row->data_aprovacao) : null,

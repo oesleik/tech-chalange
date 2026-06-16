@@ -11,8 +11,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use OpenApi\Attributes as OA;
 
-class ObterOrdemServicoController
-{
+class ObterOrdemServicoController {
     #[OA\Get(
         path: '/ordens-servico/{id}',
         operationId: 'obterOrdemServico',

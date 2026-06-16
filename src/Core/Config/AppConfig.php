@@ -13,4 +13,9 @@ class AppConfig extends AbstractConfig {
     public function getProjectRootFolder(): string {
         return realpath(__DIR__ . "/../../../") . "/";
     }
+
+    public function getBaseUrl(): string {
+        $appUrl = $this->getStringEnv("APP_URL") ?: throw MissingConfigException::make("APP_URL");
+        return rtrim($appUrl, "/") . "/";
+    }
 }

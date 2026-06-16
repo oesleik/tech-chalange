@@ -7,19 +7,16 @@ use App\Estoque\Repository\EstoqueRepository;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
-class EstoqueRepositoryTest extends TestCase
-{
+class EstoqueRepositoryTest extends TestCase {
     private AppDatabase&MockObject $db;
     private EstoqueRepository $repository;
 
-    protected function setUp(): void
-    {
+    protected function setUp(): void {
         $this->db         = $this->createMock(AppDatabase::class);
         $this->repository = new EstoqueRepository($this->db);
     }
 
-    public function testRegistrarEntradaComSucesso(): void
-    {
+    public function testRegistrarEntradaComSucesso(): void {
         $stmtSelect = $this->createMock(PDOStatement::class);
         $stmtSelect->method('execute')->willReturn(true);
         $stmtSelect->method('fetch')->willReturn(['id' => 1, 'descricao' => 'Filtro de óleo']);
@@ -32,15 +29,14 @@ class EstoqueRepositoryTest extends TestCase
 
         $result = $this->repository->registrarEntrada(1, 10);
 
-        $this->assertSame(1,              $result['id']);
-        $this->assertSame(1,              $result['id_peca']);
+        $this->assertSame(1, $result['id']);
+        $this->assertSame(1, $result['id_peca']);
         $this->assertSame('Filtro de óleo', $result['peca']);
-        $this->assertSame(10,             $result['quantidade']);
-        $this->assertSame('entrada',      $result['tipo_lancamento']);
+        $this->assertSame(10, $result['quantidade']);
+        $this->assertSame('entrada', $result['tipo_lancamento']);
     }
 
-    public function testRegistrarEntradaLancaExcecaoQuandoPecaNaoEncontrada(): void
-    {
+    public function testRegistrarEntradaLancaExcecaoQuandoPecaNaoEncontrada(): void {
         $stmt = $this->createMock(PDOStatement::class);
         $stmt->method('execute')->willReturn(true);
         $stmt->method('fetch')->willReturn(false);

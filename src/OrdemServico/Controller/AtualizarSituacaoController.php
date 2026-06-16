@@ -7,14 +7,13 @@ namespace App\OrdemServico\Controller;
 use App\OrdemServico\Contract\AtualizarSituacaoRequest;
 use App\OrdemServico\Contract\OrdemServicoResponse;
 use App\OrdemServico\Service\OrdemServicoService;
-use App\OrdemServico\ValueObject\SituacaoOrdemValue;
 use App\Core\Contract\ContractResolver;
+use App\OrdemServico\Model\SituacaoOrdemServicoEnum;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use OpenApi\Attributes as OA;
 
-class AtualizarSituacaoController
-{
+class AtualizarSituacaoController {
     #[OA\Patch(
         path: '/ordens-servico/{id}/situacao',
         operationId: 'atualizarSituacao',
@@ -61,7 +60,7 @@ class AtualizarSituacaoController
                     ->withStatus(404);
             }
 
-            $novaSituacao = new SituacaoOrdemValue($req->situacao);
+            $novaSituacao = SituacaoOrdemServicoEnum::from($req->situacao);
             $service->atualizarSituacao($id, $novaSituacao);
 
             $ordemServicoAtualizada = $service->obterOrdemServicoPorId($id);
