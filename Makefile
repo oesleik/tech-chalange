@@ -50,3 +50,6 @@ down: ## Interrompe os containers
 
 destroy: ## Interrompe os containers e remove os volumes (inclusive o banco de dados)
 	docker compose down -v
+
+generate-jwt-secret: ## Gerar chave JWT
+	docker compose exec php php src/cmd/generate-token.php
