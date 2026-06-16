@@ -4,6 +4,7 @@
     "type": "project",
     "require": {
         "php": "^8.4",
+        "lcobucci/jwt": "^5.6",
         "php-di/php-di": "^7.0",
         "php-di/slim-bridge": "^3.4",
         "slim/psr7": "^1.7",
