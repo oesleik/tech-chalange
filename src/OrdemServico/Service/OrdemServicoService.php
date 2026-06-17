@@ -11,15 +11,13 @@ use App\Core\AppDatabase;
 use DateTime;
 use PDO;
 
-class OrdemServicoService
-{
+class OrdemServicoService {
     public function __construct(
         private AppDatabase $pdo
     ) {}
 
     /** @return OrdemServicoModel[] */
-    public function listarOrdensServico(): array
-    {
+    public function listarOrdensServico(): array {
         $result = $this->pdo->query(
             "SELECT * FROM ordens_servico ORDER BY data_solicitacao DESC",
             PDO::FETCH_OBJ
@@ -33,8 +31,7 @@ class OrdemServicoService
         return $ordensServico;
     }
 
-    public function obterOrdemServicoPorId(int $id): ?OrdemServicoModel
-    {
+    public function obterOrdemServicoPorId(int $id): ?OrdemServicoModel {
         $stmt = $this->pdo->prepare("SELECT * FROM ordens_servico WHERE id = ?");
         $stmt->execute([$id]);
         $result = $stmt->fetchObject();
@@ -42,8 +39,7 @@ class OrdemServicoService
     }
 
     /** @return OrdemServicoModel[] */
-    public function listarOrdensServicoPorStatus(string $status): array
-    {
+    public function listarOrdensServicoPorStatus(string $status): array {
         $stmt = $this->pdo->prepare(
             "SELECT * FROM ordens_servico WHERE situacao = ? ORDER BY data_solicitacao DESC"
         );
@@ -58,8 +54,7 @@ class OrdemServicoService
     }
 
     /** @return OrdemServicoModel[] */
-    public function listarOrdensServicoPorCliente(int $idCliente): array
-    {
+    public function listarOrdensServicoPorCliente(int $idCliente): array {
         $stmt = $this->pdo->prepare(
             "SELECT * FROM ordens_servico WHERE id_cliente = ? ORDER BY data_solicitacao DESC"
         );
@@ -73,10 +68,9 @@ class OrdemServicoService
         return $ordensServico;
     }
 
-    public function criarOrdemServico(OrdemServicoModel $ordemServico): OrdemServicoModel
-    {
+    public function criarOrdemServico(OrdemServicoModel $ordemServico): OrdemServicoModel {
         $stmt = $this->pdo->prepare(
-            "INSERT INTO ordens_servico (id_cliente, id_veiculo, situacao, valor_total, data_solicitacao) 
+            "INSERT INTO ordens_servico (id_cliente, id_veiculo, situacao, valor_total, data_solicitacao)
              VALUES (?, ?, ?, ?, ?)"
         );
 
@@ -92,11 +86,10 @@ class OrdemServicoService
         return $ordemServico->withId($id);
     }
 
-    public function atualizarSituacao(int $id, SituacaoOrdemValue $situacao): bool
-    {
+    public function atualizarSituacao(int $id, SituacaoOrdemValue $situacao): bool {
         $dataAprovacao = null;
         if (in_array($situacao->getValue(), ['Aprovada', 'Rejeitada'])) {
-            $dataAprovacao = (new DateTime())->format('Y-m-d H:i:s');
+            $dataAprovacao = new DateTime()->format('Y-m-d H:i:s');
         }
 
         $sql = "UPDATE ordens_servico SET situacao = ?";
@@ -114,14 +107,12 @@ class OrdemServicoService
         return $stmt->execute($params);
     }
 
-    public function atualizarValorTotal(int $id, ValorTotalValue $valorTotal): bool
-    {
+    public function atualizarValorTotal(int $id, ValorTotalValue $valorTotal): bool {
         $stmt = $this->pdo->prepare("UPDATE ordens_servico SET valor_total = ? WHERE id = ?");
         return $stmt->execute([$valorTotal->getValue(), $id]);
     }
 
-    private function gerarModelPorRow(object $row): OrdemServicoModel
-    {
+    private function gerarModelPorRow(object $row): OrdemServicoModel {
         return new OrdemServicoModel(
             id: intval($row->id),
             idCliente: intval($row->id_cliente),

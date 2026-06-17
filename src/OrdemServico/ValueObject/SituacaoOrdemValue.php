@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace App\OrdemServico\ValueObject;
 
-class SituacaoOrdemValue
-{
+class SituacaoOrdemValue {
     private const SITUACOES_VALIDAS = [
         'Recebida',
         'EmDiagnostico',
@@ -25,18 +24,15 @@ class SituacaoOrdemValue
         }
     }
 
-    public function getValue(): string
-    {
+    public function getValue(): string {
         return $this->situacao;
     }
 
-    public function __toString(): string
-    {
+    public function __toString(): string {
         return $this->getValue();
     }
 
-    public static function validaSituacoes(): array
-    {
+    public static function validaSituacoes(): array {
         return self::SITUACOES_VALIDAS;
     }
 }

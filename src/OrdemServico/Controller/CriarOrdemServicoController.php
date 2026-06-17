@@ -12,8 +12,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use OpenApi\Attributes as OA;
 
-class CriarOrdemServicoController
-{
+class CriarOrdemServicoController {
     #[OA\Post(
         path: '/ordens-servico',
         operationId: 'criarOrdemServico',

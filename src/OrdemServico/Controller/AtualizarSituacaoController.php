@@ -13,8 +13,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use OpenApi\Attributes as OA;
 
-class AtualizarSituacaoController
-{
+class AtualizarSituacaoController {
     #[OA\Patch(
         path: '/ordens-servico/{id}/situacao',
         operationId: 'atualizarSituacao',

@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace App\OrdemServico\ValueObject;
 
-class ValorTotalValue
-{
+class ValorTotalValue {
     public function __construct(
         private float $valor
     ) {
@@ -14,13 +13,11 @@ class ValorTotalValue
         }
     }
 
-    public function getValue(): float
-    {
+    public function getValue(): float {
         return $this->valor;
     }
 
-    public function __toString(): string
-    {
+    public function __toString(): string {
         return (string) $this->valor;
     }
 }

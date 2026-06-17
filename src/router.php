@@ -51,13 +51,13 @@ $app->group('', function (RouteCollectorProxy $group): void {
         $g->patch('/{id:[0-9]+}', App\Peca\Controller\EditarPecaController::class);
     });
 
-	$group->group("/servicos", function (RouteCollectorProxy $group): void {
-		$group->get("/", App\Servicos\Controller\ListarServicosController::class);
-		$group->post("/", App\Servicos\Controller\CriarServicoController::class);
-		$group->get("/{id:[0-9]+}", App\Servicos\Controller\ObterServicoController::class);
-		$group->patch("/{id:[0-9]+}", App\Servicos\Controller\EditarServicoController::class);
-	});
-   
+    $group->group("/servicos", function (RouteCollectorProxy $group): void {
+        $group->get("/", App\Servicos\Controller\ListarServicosController::class);
+        $group->post("/", App\Servicos\Controller\CriarServicoController::class);
+        $group->get("/{id:[0-9]+}", App\Servicos\Controller\ObterServicoController::class);
+        $group->patch("/{id:[0-9]+}", App\Servicos\Controller\EditarServicoController::class);
+    });
+
     $group->group("/ordens-servico", function (RouteCollectorProxy $group): void {
         $group->get("/", App\OrdemServico\Controller\ListarOrdensServicoController::class);
         $group->post("/", App\OrdemServico\Controller\CriarOrdemServicoController::class);
@@ -65,7 +65,10 @@ $app->group('', function (RouteCollectorProxy $group): void {
         $group->patch("/{id:[0-9]+}/situacao", App\OrdemServico\Controller\AtualizarSituacaoController::class);
     });
 
-    $group->post('/api/estoque/entrada', [EstoqueController::class, 'registrarEntrada']);
+    $group->group('/estoque', function (RouteCollectorProxy $g): void {
+        $g->post('/entrada', [EstoqueController::class, 'registrarEntrada']);
+        $g->get('/pecas/{id:[0-9]+}', [EstoqueController::class, 'consultarEstoque']);
+    });
 
 })->add(JwtMiddleware::class);
 

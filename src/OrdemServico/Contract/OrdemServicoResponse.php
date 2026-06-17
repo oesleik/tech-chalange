@@ -3,13 +3,11 @@
 declare(strict_types=1);
 
 namespace App\OrdemServico\Contract;
+
 use App\Core\Contract\AbstractContract;
-
-
 use App\OrdemServico\Model\OrdemServicoModel;
 
-readonly class OrdemServicoResponse extends AbstractContract
-{
+readonly class OrdemServicoResponse extends AbstractContract {
     public function __construct(
         public int $id,
         public int $id_cliente,
@@ -20,8 +18,7 @@ readonly class OrdemServicoResponse extends AbstractContract
         public ?string $data_aprovacao,
     ) {}
 
-    public static function fromModel(OrdemServicoModel $model): self
-    {
+    public static function fromModel(OrdemServicoModel $model): self {
         return new self(
             id: $model->getId(),
             id_cliente: $model->getIdCliente(),

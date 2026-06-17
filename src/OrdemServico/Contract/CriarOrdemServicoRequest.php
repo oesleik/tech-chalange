@@ -11,16 +11,14 @@ use App\OrdemServico\ValueObject\ValorTotalValue;
 use Symfony\Component\Validator\Constraints as Assert;
 use DateTime;
 
-readonly class CriarOrdemServicoRequest extends AbstractContract
-{
+readonly class CriarOrdemServicoRequest extends AbstractContract {
     public function __construct(
         public int $id_cliente,
         public int $id_veiculo,
     ) {}
 
 
-    public static function getConstraints(): Assert\Collection
-    {
+    public static function getConstraints(): Assert\Collection {
         return new Assert\Collection([
             'id_cliente' => [
                 new Assert\NotBlank(),
@@ -33,8 +31,7 @@ readonly class CriarOrdemServicoRequest extends AbstractContract
         ]);
     }
 
-    public function toOrdemServicoModel(): OrdemServicoModel
-    {
+    public function toOrdemServicoModel(): OrdemServicoModel {
         return new OrdemServicoModel(
             id: 0,
             idCliente: $this->id_cliente,

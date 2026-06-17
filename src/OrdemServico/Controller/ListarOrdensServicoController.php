@@ -12,8 +12,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use OpenApi\Attributes as OA;
 
-class ListarOrdensServicoController
-{
+class ListarOrdensServicoController {
     #[OA\Get(
         path: '/ordens-servico',
         operationId: 'listarOrdensServico',
