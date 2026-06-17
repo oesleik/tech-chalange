@@ -28,4 +28,9 @@ return [
         $c->get(JwtService::class),
         new ResponseFactory(),
     ),
+
+    EmailConfig::class => fn() => new EmailConfig(),
+    EmailService::class => fn(\DI\Container $c) => new EmailService(
+        $c->get(EmailConfig::class),
+    ),
 ];

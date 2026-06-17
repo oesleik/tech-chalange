@@ -46,6 +46,13 @@ services:
       - JWT_SECRET=${JWT_SECRET}
       - JWT_TTL=${JWT_TTL:-3600}
       - JWT_ISSUER=${JWT_ISSUER:-tech-challenge-api}
+      - MAIL_HOST=${MAIL_HOST:-smtp.mailtrap.io}
+      - MAIL_PORT=${MAIL_PORT:-587}
+      - MAIL_USERNAME=${MAIL_USERNAME}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
+      - MAIL_ENCRYPTION=${MAIL_ENCRYPTION:-tls}
+      - MAIL_FROM_ADDRESS=${MAIL_FROM_ADDRESS:-no-reply@tech-challenge.com}
+      - MAIL_FROM_NAME=${MAIL_FROM_NAME:-Tech Challenge}
     depends_on:
       mysql:
         condition: service_healthy
