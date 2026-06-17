@@ -9,11 +9,15 @@ use App\OrdemServico\Model\OrdemServicoModel;
 use App\OrdemServico\Model\SituacaoOrdemServicoEnum;
 use App\OrdemServico\ValueObject\ValorTotalValue;
 use Symfony\Component\Validator\Constraints as Assert;
+use OpenApi\Attributes as OA;
 use DateTime;
 
+#[OA\Schema]
 readonly class CriarOrdemServicoRequest extends AbstractContract {
     public function __construct(
+        #[OA\Property(example: 456)]
         public int $id_cliente,
+        #[OA\Property(example: 789)]
         public int $id_veiculo,
     ) {}
 
