@@ -15,13 +15,14 @@ use App\Veiculos\Service\VeiculoService;
 use PDOException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use OpenApi\Attributes as OA;
 
 class CriarVeiculoController {
     #[OA\Post(
         path: '/veiculos/',
         operationId: 'criarVeiculo',
         summary: 'Cadastrar um novo veículo',
-        tags: ['Veiculos']
+        tags: ['Veículos']
     )]
     #[OA\RequestBody(
         required: true,

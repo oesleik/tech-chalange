@@ -23,7 +23,7 @@ class EditarVeiculoController {
         path: '/veiculos/{id}',
         operationId: 'editarVeiculo',
         summary: 'Editar dados de um veículo',
-        tags: ['Veiculos']
+        tags: ['Veículos']
     )]
     #[OA\Parameter(
         name: 'id',
