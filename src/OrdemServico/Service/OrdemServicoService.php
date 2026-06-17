@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace App\OrdemServico\Service;
 
 use App\OrdemServico\Model\OrdemServicoModel;
-use App\OrdemServico\ValueObject\SituacaoOrdemValue;
 use App\OrdemServico\ValueObject\ValorTotalValue;
 use App\Core\AppDatabase;
+use App\OrdemServico\Model\SituacaoOrdemServicoEnum;
 use DateTime;
+use InvalidArgumentException;
 use PDO;
 
 class OrdemServicoService {
@@ -35,6 +36,20 @@ class OrdemServicoService {
         $stmt = $this->pdo->prepare("SELECT * FROM ordens_servico WHERE id = ?");
         $stmt->execute([$id]);
         $result = $stmt->fetchObject();
+        return $result ? $this->gerarModelPorRow($result) : null;
+    }
+
+    public function obterProximaOrdemServicoNaFila(): ?OrdemServicoModel {
+        $stmt = $this->pdo->prepare("SELECT * FROM ordens_servico WHERE situacao = ? ORDER BY data_aprovacao ASC LIMIT 1");
+        $stmt->execute([SituacaoOrdemServicoEnum::APROVADA->value]);
+        $result = $stmt->fetchObject();
+
+        if (!$result) {
+            $stmt = $this->pdo->prepare("SELECT * FROM ordens_servico WHERE situacao = ? ORDER BY data_solicitacao ASC LIMIT 1");
+            $stmt->execute([SituacaoOrdemServicoEnum::RECEBIDA->value]);
+            $result = $stmt->fetchObject();
+        }
+
         return $result ? $this->gerarModelPorRow($result) : null;
     }
 
@@ -77,8 +92,8 @@ class OrdemServicoService {
         $stmt->execute([
             $ordemServico->getIdCliente(),
             $ordemServico->getIdVeiculo(),
-            $ordemServico->getSituacao()->getValue(),
-            $ordemServico->getValorTotal()?->getValue(),
+            $ordemServico->getSituacao()->value,
+            $ordemServico->getValorTotal()->getValue(),
             $ordemServico->getDataSolicitacao()->format('Y-m-d H:i:s'),
         ]);
 
@@ -86,25 +101,38 @@ class OrdemServicoService {
         return $ordemServico->withId($id);
     }
 
-    public function atualizarSituacao(int $id, SituacaoOrdemValue $situacao): bool {
-        $dataAprovacao = null;
-        if (in_array($situacao->getValue(), ['Aprovada', 'Rejeitada'])) {
-            $dataAprovacao = new DateTime()->format('Y-m-d H:i:s');
+    public function atualizarSituacao(OrdemServicoModel $ordemServico, SituacaoOrdemServicoEnum $novaSituacao): OrdemServicoModel {
+        if (empty($ordemServico->getId())) {
+            throw new InvalidArgumentException("Id da ordem de serviço não informada");
+        }
+
+        if ($ordemServico->getSituacao() == $novaSituacao) {
+            return $ordemServico;
+        }
+
+        if (!$ordemServico->getSituacao()->podeAlterarSituacao($novaSituacao)) {
+            throw new SituacaoBloqueadaException(sprintf(
+                "Não é possível alterar uma ordem de serviço de %s para %s.",
+                $ordemServico->getSituacao()->getFormattedValue(),
+                $novaSituacao->getFormattedValue()
+            ));
         }
 
         $sql = "UPDATE ordens_servico SET situacao = ?";
-        $params = [$situacao->getValue()];
+        $params = [$novaSituacao->value];
 
-        if ($dataAprovacao) {
+        if ($novaSituacao->deveModificarDataAprovacao()) {
             $sql .= ", data_aprovacao = ?";
-            $params[] = $dataAprovacao;
+            $params[] = new DateTime()->format('Y-m-d H:i:s');
         }
 
         $sql .= " WHERE id = ?";
-        $params[] = $id;
+        $params[] = $ordemServico->getId();
 
         $stmt = $this->pdo->prepare($sql);
-        return $stmt->execute($params);
+        $stmt->execute($params);
+
+        return $ordemServico->withSituacao($novaSituacao);
     }
 
     public function atualizarValorTotal(int $id, ValorTotalValue $valorTotal): bool {
@@ -117,7 +145,7 @@ class OrdemServicoService {
             id: intval($row->id),
             idCliente: intval($row->id_cliente),
             idVeiculo: intval($row->id_veiculo),
-            situacao: new SituacaoOrdemValue($row->situacao),
+            situacao: SituacaoOrdemServicoEnum::from($row->situacao),
             valorTotal: $row->valor_total !== null ? new ValorTotalValue(floatval($row->valor_total)) : null,
             dataSolicitacao: new DateTime($row->data_solicitacao),
             dataAprovacao: $row->data_aprovacao !== null ? new DateTime($row->data_aprovacao) : null,

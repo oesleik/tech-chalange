@@ -14,7 +14,7 @@ use OpenApi\Attributes as OA;
 
 class CriarOrdemServicoController {
     #[OA\Post(
-        path: '/ordens-servico',
+        path: '/ordens-servico/',
         operationId: 'criarOrdemServico',
         summary: 'Criar uma nova Ordem de Serviço',
         tags: ['Ordens de Serviço']

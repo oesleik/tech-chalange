@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\OrdemServico\Model;
 
-use App\OrdemServico\ValueObject\SituacaoOrdemValue;
 use App\OrdemServico\ValueObject\ValorTotalValue;
 use DateTime;
 
@@ -13,7 +12,7 @@ class OrdemServicoModel {
         private int $id,
         private int $idCliente,
         private int $idVeiculo,
-        private SituacaoOrdemValue $situacao,
+        private SituacaoOrdemServicoEnum $situacao,
         private ValorTotalValue $valorTotal,
         private DateTime $dataSolicitacao,
         private ?DateTime $dataAprovacao = null,
@@ -31,7 +30,7 @@ class OrdemServicoModel {
         return $this->idVeiculo;
     }
 
-    public function getSituacao(): SituacaoOrdemValue {
+    public function getSituacao(): SituacaoOrdemServicoEnum {
         return $this->situacao;
     }
 
@@ -53,7 +52,7 @@ class OrdemServicoModel {
         return $new;
     }
 
-    public function withSituacao(SituacaoOrdemValue $situacao): self {
+    public function withSituacao(SituacaoOrdemServicoEnum $situacao): self {
         $new = clone $this;
         $new->situacao = $situacao;
         return $new;

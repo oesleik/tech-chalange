@@ -4,75 +4,108 @@ declare(strict_types=1);
 
 namespace App\OrdemServico\Controller;
 
-use App\OrdemServico\Contract\AtualizarSituacaoRequest;
 use App\OrdemServico\Contract\OrdemServicoResponse;
 use App\OrdemServico\Service\OrdemServicoService;
-use App\OrdemServico\ValueObject\SituacaoOrdemValue;
 use App\Core\Contract\ContractResolver;
+use App\OrdemServico\Model\SituacaoOrdemServicoEnum;
+use App\OrdemServico\Service\SituacaoBloqueadaException;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
 use OpenApi\Attributes as OA;
 
+#[OA\Put(
+    path: '/ordens-servico/{id}/em-diagnostico',
+    operationId: 'atualizarParaEmDiagnostico',
+    summary: 'Atualizar ordem de serviço para em diagnóstico',
+    tags: ['Ordens de Serviço - Situação']
+)]
+#[OA\Put(
+    path: '/ordens-servico/{id}/aguardando-aprovacao',
+    operationId: 'atualizarParaAguardandoAprovacao',
+    summary: 'Atualizar ordem de serviço para aguardando aprovação',
+    tags: ['Ordens de Serviço - Situação']
+)]
+#[OA\Put(
+    path: '/ordens-servico/{id}/em-execucao',
+    operationId: 'atualizarParaEmExecucao',
+    summary: 'Atualizar ordem de serviço para em execução',
+    tags: ['Ordens de Serviço - Situação']
+)]
+#[OA\Put(
+    path: '/ordens-servico/{id}/finalizada',
+    operationId: 'atualizarParaFinalizada',
+    summary: 'Atualizar ordem de serviço para finalizada',
+    tags: ['Ordens de Serviço - Situação']
+)]
+#[OA\Put(
+    path: '/ordens-servico/{id}/entregue',
+    operationId: 'atualizarParaEntregue',
+    summary: 'Atualizar ordem de serviço para entregue',
+    tags: ['Ordens de Serviço - Situação']
+)]
+#[OA\Parameter(
+    name: 'id',
+    in: 'path',
+    required: true,
+    schema: new OA\Schema(type: 'integer')
+)]
+#[OA\Response(
+    response: 200,
+    description: 'Situação atualizada com sucesso',
+    content: new OA\JsonContent(ref: '#/components/schemas/OrdemServicoResponse')
+)]
+#[OA\Response(
+    response: 404,
+    description: 'Ordem de Serviço não encontrada'
+)]
+#[OA\Response(
+    response: 409,
+    description: 'Ordem de Serviço não atualizada'
+)]
 class AtualizarSituacaoController {
-    #[OA\Patch(
-        path: '/ordens-servico/{id}/situacao',
-        operationId: 'atualizarSituacao',
-        summary: 'Atualizar situação de uma Ordem de Serviço',
-        tags: ['Ordens de Serviço']
-    )]
-    #[OA\Parameter(
-        name: 'id',
-        in: 'path',
-        required: true,
-        schema: new OA\Schema(type: 'integer')
-    )]
-    #[OA\RequestBody(
-        required: true,
-        content: new OA\JsonContent(
-            ref: '#/components/schemas/AtualizarSituacaoRequest'
-        )
-    )]
-    #[OA\Response(
-        response: 200,
-        description: 'Situação atualizada com sucesso',
-        content: new OA\JsonContent(ref: '#/components/schemas/OrdemServicoResponse')
-    )]
-    #[OA\Response(
-        response: 404,
-        description: 'Ordem de Serviço não encontrada'
-    )]
-    public function __invoke(
-        ServerRequestInterface $request,
-        ResponseInterface $response,
-        ContractResolver $contractResolver,
-        OrdemServicoService $service,
+    public function __construct(
+        private ContractResolver $contractResolver,
+        private OrdemServicoService $service,
+    ) {}
+
+    public function atualizarParaEmDiagnostico(int $id, ResponseInterface $response): ResponseInterface {
+        return $this->alterarSituacao($id, SituacaoOrdemServicoEnum::EM_DIAGNOSTICO, $response);
+    }
+
+    public function atualizarParaAguardandoAprovacao(int $id, ResponseInterface $response): ResponseInterface {
+        return $this->alterarSituacao($id, SituacaoOrdemServicoEnum::AGUARDANDO_APROVACAO, $response);
+    }
+
+    public function atualizarParaEmExecucao(int $id, ResponseInterface $response): ResponseInterface {
+        return $this->alterarSituacao($id, SituacaoOrdemServicoEnum::EM_EXECUCAO, $response);
+    }
+
+    public function atualizarParaFinalizada(int $id, ResponseInterface $response): ResponseInterface {
+        return $this->alterarSituacao($id, SituacaoOrdemServicoEnum::FINALIZADA, $response);
+    }
+
+    public function atualizarParaEntregue(int $id, ResponseInterface $response): ResponseInterface {
+        return $this->alterarSituacao($id, SituacaoOrdemServicoEnum::ENTREGUE, $response);
+    }
+
+    private function alterarSituacao(
+        int $id,
+        SituacaoOrdemServicoEnum $novaSituacao,
+        ResponseInterface $response
     ): ResponseInterface {
-        try {
-            $id = (int) $request->getAttribute('id');
-            $payload = json_decode($request->getBody()->getContents(), true);
-            $req = $contractResolver->fromArray($payload, AtualizarSituacaoRequest::class);
+        $ordemServico = $this->service->obterOrdemServicoPorId($id);
 
-            $ordemServico = $service->obterOrdemServicoPorId($id);
-            if (!$ordemServico) {
-                $response->getBody()->write(json_encode(['erro' => 'Ordem de Serviço não encontrada']));
-                return $response
-                    ->withHeader('Content-Type', 'application/json')
-                    ->withStatus(404);
-            }
-
-            $novaSituacao = new SituacaoOrdemValue($req->situacao);
-            $service->atualizarSituacao($id, $novaSituacao);
-
-            $ordemServicoAtualizada = $service->obterOrdemServicoPorId($id);
-            $output = OrdemServicoResponse::fromModel($ordemServicoAtualizada);
-
-            $response->getBody()->write($contractResolver->toJson($output));
-            return $response->withHeader('Content-Type', 'application/json');
-        } catch (\Throwable $e) {
-            $response->getBody()->write(json_encode(['erro' => $e->getMessage()]));
-            return $response
-                ->withHeader('Content-Type', 'application/json')
-                ->withStatus(400);
+        if (!$ordemServico) {
+            return $response->withStatus(404, "Ordem de serviço não encontrada");
         }
+
+        try {
+            $ordemServico = $this->service->atualizarSituacao($ordemServico, $novaSituacao);
+        } catch (SituacaoBloqueadaException $e) {
+            return $response->withStatus(409, $e->getMessage());
+        }
+
+        $output = OrdemServicoResponse::fromModel($ordemServico);
+        $response->getBody()->write($this->contractResolver->toJson($output));
+        return $response->withHeader('Content-Type', 'application/json');
     }
 }

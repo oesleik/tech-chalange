@@ -62,7 +62,13 @@ $app->group('', function (RouteCollectorProxy $group): void {
         $group->get("/", App\OrdemServico\Controller\ListarOrdensServicoController::class);
         $group->post("/", App\OrdemServico\Controller\CriarOrdemServicoController::class);
         $group->get("/{id:[0-9]+}", App\OrdemServico\Controller\ObterOrdemServicoController::class);
-        $group->patch("/{id:[0-9]+}/situacao", App\OrdemServico\Controller\AtualizarSituacaoController::class);
+
+        $group->get("/proxima", App\OrdemServico\Controller\ObterProximaOrdemServicoController::class);
+        $group->put("/{id:[0-9]+}/em-diagnostico", [App\OrdemServico\Controller\AtualizarSituacaoController::class, "atualizarParaEmDiagnostico"]);
+        $group->put("/{id:[0-9]+}/aguardando-aprovacao", [App\OrdemServico\Controller\AtualizarSituacaoController::class, "atualizarParaAguardandoAprovacao"]);
+        $group->put("/{id:[0-9]+}/em-execucao", [App\OrdemServico\Controller\AtualizarSituacaoController::class, "atualizarParaEmExecucao"]);
+        $group->put("/{id:[0-9]+}/finalizada", [App\OrdemServico\Controller\AtualizarSituacaoController::class, "atualizarParaFinalizada"]);
+        $group->put("/{id:[0-9]+}/entregue", [App\OrdemServico\Controller\AtualizarSituacaoController::class, "atualizarParaEntregue"]);
     });
 
     $group->group('/estoque', function (RouteCollectorProxy $g): void {

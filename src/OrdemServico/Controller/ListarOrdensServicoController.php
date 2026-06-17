@@ -14,7 +14,7 @@ use OpenApi\Attributes as OA;
 
 class ListarOrdensServicoController {
     #[OA\Get(
-        path: '/ordens-servico',
+        path: '/ordens-servico/',
         operationId: 'listarOrdensServico',
         summary: 'Listar todas as Ordens de Serviço',
         tags: ['Ordens de Serviço']
