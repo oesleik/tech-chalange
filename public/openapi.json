@@ -192,13 +192,13 @@
                 "security": []
             }
         },
-        "/api/estoque/entrada": {
+        "/estoque/entrada": {
             "post": {
                 "tags": [
                     "Estoque"
                 ],
                 "summary": "Registrar entrada de peças no estoque",
-                "operationId": "890a747856565438e48614ac9db810bd",
+                "operationId": "67ce5d7325f8511aee348ac5628a3e00",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -239,6 +239,41 @@
                                 }
                             }
                         }
+                    }
+                }
+            }
+        },
+        "/estoque/pecas/{id}": {
+            "get": {
+                "tags": [
+                    "Estoque"
+                ],
+                "summary": "Consultar estoque atual de uma peça",
+                "operationId": "907db9633d48b356e9508f67b864eaa6",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Estoque atual da peça",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ConsultaEstoqueResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Peça não encontrada"
                     }
                 }
             }
@@ -1155,6 +1190,27 @@
                     "tipo_lancamento": {
                         "type": "string",
                         "example": "entrada"
+                    }
+                },
+                "type": "object"
+            },
+            "ConsultaEstoqueResponse": {
+                "properties": {
+                    "id_peca": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "descricao": {
+                        "type": "string",
+                        "example": "Filtro de óleo"
+                    },
+                    "valor_unitario": {
+                        "type": "number",
+                        "example": 29.9
+                    },
+                    "estoque_atual": {
+                        "type": "integer",
+                        "example": 10
                     }
                 },
                 "type": "object"

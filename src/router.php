@@ -71,7 +71,10 @@ $app->group('', function (RouteCollectorProxy $group): void {
         $group->put("/{id:[0-9]+}/entregue", [App\OrdemServico\Controller\AtualizarSituacaoController::class, "atualizarParaEntregue"]);
     });
 
-    $group->post('/api/estoque/entrada', [EstoqueController::class, 'registrarEntrada']);
+    $group->group('/estoque', function (RouteCollectorProxy $g): void {
+        $g->post('/entrada', [EstoqueController::class, 'registrarEntrada']);
+        $g->get('/pecas/{id:[0-9]+}', [EstoqueController::class, 'consultarEstoque']);
+    });
 
 })->add(JwtMiddleware::class);
 

@@ -49,4 +49,37 @@ class EstoqueRepositoryTest extends TestCase {
 
         $this->repository->registrarEntrada(999, 10);
     }
+
+    public function testConsultarEstoquePorPecaComSucesso(): void {
+        $stmtPeca = $this->createMock(\PDOStatement::class);
+        $stmtPeca->method('fetch')->willReturn([
+            'id'             => 1,
+            'descricao'      => 'Filtro de óleo',
+            'valor_unitario' => '29.90',
+        ]);
+
+        $stmtEstoque = $this->createMock(\PDOStatement::class);
+        $stmtEstoque->method('fetch')->willReturn(['estoque_atual' => '10']);
+
+        $this->db->method('prepare')
+            ->willReturnOnConsecutiveCalls($stmtPeca, $stmtEstoque);
+
+        $result = $this->repository->consultarEstoquePorPeca(1);
+
+        $this->assertSame(1, $result['id_peca']);
+        $this->assertSame('Filtro de óleo', $result['descricao']);
+        $this->assertSame(29.90, $result['valor_unitario']);
+        $this->assertSame(10, $result['estoque_atual']);
+    }
+
+    public function testConsultarEstoqueLancaExcecaoQuandoPecaNaoEncontrada(): void {
+        $stmt = $this->createMock(\PDOStatement::class);
+        $stmt->method('fetch')->willReturn(false);
+        $this->db->method('prepare')->willReturn($stmt);
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionCode(404);
+
+        $this->repository->consultarEstoquePorPeca(999);
+    }
 }

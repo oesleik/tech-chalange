@@ -25,4 +25,15 @@ use OpenApi\Attributes as OA;
     ],
     type: 'object'
 )]
+
+#[OA\Schema(
+    schema: 'ConsultaEstoqueResponse',
+    properties: [
+        new OA\Property(property: 'id_peca', type: 'integer', example: 1),
+        new OA\Property(property: 'descricao', type: 'string', example: 'Filtro de óleo'),
+        new OA\Property(property: 'valor_unitario', type: 'number', example: 29.90),
+        new OA\Property(property: 'estoque_atual', type: 'integer', example: 10),
+    ],
+    type: 'object'
+)]
 final class EstoqueSchema {}
