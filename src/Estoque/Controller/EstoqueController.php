@@ -12,8 +12,7 @@ use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-class EstoqueController
-{
+class EstoqueController {
     public function __construct(
         private readonly EstoqueRepository $repository,
         private readonly ContractResolver  $contractResolver,

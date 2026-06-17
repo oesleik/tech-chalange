@@ -7,8 +7,7 @@ namespace App\OrdemServico\Contract;
 use App\Core\Contract\AbstractContract;
 use Symfony\Component\Validator\Constraints as Assert;
 
-readonly class AtualizarSituacaoRequest extends AbstractContract
-{
+readonly class AtualizarSituacaoRequest extends AbstractContract {
     public function __construct(
         #[Assert\NotBlank]
         #[Assert\Choice(choices: [
