@@ -9,6 +9,7 @@ use App\OrdemServico\ValueObject\ValorTotalValue;
 use App\Core\AppDatabase;
 use App\OrdemServico\Model\SituacaoOrdemServicoEnum;
 use DateTime;
+use InvalidArgumentException;
 use PDO;
 
 class OrdemServicoService {
@@ -92,7 +93,7 @@ class OrdemServicoService {
             $ordemServico->getIdCliente(),
             $ordemServico->getIdVeiculo(),
             $ordemServico->getSituacao()->value,
-            $ordemServico->getValorTotal()?->getValue(),
+            $ordemServico->getValorTotal()->getValue(),
             $ordemServico->getDataSolicitacao()->format('Y-m-d H:i:s'),
         ]);
 
@@ -100,25 +101,38 @@ class OrdemServicoService {
         return $ordemServico->withId($id);
     }
 
-    public function atualizarSituacao(int $id, SituacaoOrdemServicoEnum $situacao): bool {
-        $dataAprovacao = null;
-        if ($situacao == SituacaoOrdemServicoEnum::APROVADA || $situacao == SituacaoOrdemServicoEnum::REJEITADA) {
-            $dataAprovacao = new DateTime()->format('Y-m-d H:i:s');
+    public function atualizarSituacao(OrdemServicoModel $ordemServico, SituacaoOrdemServicoEnum $novaSituacao): OrdemServicoModel {
+        if (empty($ordemServico->getId())) {
+            throw new InvalidArgumentException("Id da ordem de serviço não informada");
+        }
+
+        if ($ordemServico->getSituacao() == $novaSituacao) {
+            return $ordemServico;
+        }
+
+        if (!$ordemServico->getSituacao()->podeAlterarSituacao($novaSituacao)) {
+            throw new SituacaoBloqueadaException(sprintf(
+                "Não é possível alterar uma ordem de serviço de %s para %s.",
+                $ordemServico->getSituacao()->getFormattedValue(),
+                $novaSituacao->getFormattedValue()
+            ));
         }
 
         $sql = "UPDATE ordens_servico SET situacao = ?";
-        $params = [$situacao->value];
+        $params = [$novaSituacao->value];
 
-        if ($dataAprovacao) {
+        if ($novaSituacao->deveModificarDataAprovacao()) {
             $sql .= ", data_aprovacao = ?";
-            $params[] = $dataAprovacao;
+            $params[] = new DateTime()->format('Y-m-d H:i:s');
         }
 
         $sql .= " WHERE id = ?";
-        $params[] = $id;
+        $params[] = $ordemServico->getId();
 
         $stmt = $this->pdo->prepare($sql);
-        return $stmt->execute($params);
+        $stmt->execute($params);
+
+        return $ordemServico->withSituacao($novaSituacao);
     }
 
     public function atualizarValorTotal(int $id, ValorTotalValue $valorTotal): bool {

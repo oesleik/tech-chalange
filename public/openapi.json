@@ -243,13 +243,13 @@
                 }
             }
         },
-        "/ordens-servico/{id}/situacao": {
-            "patch": {
+        "/ordens-servico/{id}/em-diagnostico": {
+            "put": {
                 "tags": [
-                    "Ordens de Serviço"
+                    "Ordens de Serviço - Situação"
                 ],
-                "summary": "Atualizar situação de uma Ordem de Serviço",
-                "operationId": "atualizarSituacao",
+                "summary": "Atualizar ordem de serviço para em diagnóstico",
+                "operationId": "atualizarParaEmDiagnostico",
                 "parameters": [
                     {
                         "name": "id",
@@ -260,16 +260,6 @@
                         }
                     }
                 ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/AtualizarSituacaoRequest"
-                            }
-                        }
-                    }
-                },
                 "responses": {
                     "200": {
                         "description": "Situação atualizada com sucesso",
@@ -283,6 +273,157 @@
                     },
                     "404": {
                         "description": "Ordem de Serviço não encontrada"
+                    },
+                    "409": {
+                        "description": "Ordem de Serviço não atualizada"
+                    }
+                }
+            }
+        },
+        "/ordens-servico/{id}/aguardando-aprovacao": {
+            "put": {
+                "tags": [
+                    "Ordens de Serviço - Situação"
+                ],
+                "summary": "Atualizar ordem de serviço para aguardando aprovação",
+                "operationId": "atualizarParaAguardandoAprovacao",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Situação atualizada com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OrdemServicoResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Ordem de Serviço não encontrada"
+                    },
+                    "409": {
+                        "description": "Ordem de Serviço não atualizada"
+                    }
+                }
+            }
+        },
+        "/ordens-servico/{id}/em-execucao": {
+            "put": {
+                "tags": [
+                    "Ordens de Serviço - Situação"
+                ],
+                "summary": "Atualizar ordem de serviço para em execução",
+                "operationId": "atualizarParaEmExecucao",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Situação atualizada com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OrdemServicoResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Ordem de Serviço não encontrada"
+                    },
+                    "409": {
+                        "description": "Ordem de Serviço não atualizada"
+                    }
+                }
+            }
+        },
+        "/ordens-servico/{id}/finalizada": {
+            "put": {
+                "tags": [
+                    "Ordens de Serviço - Situação"
+                ],
+                "summary": "Atualizar ordem de serviço para finalizada",
+                "operationId": "atualizarParaFinalizada",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Situação atualizada com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OrdemServicoResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Ordem de Serviço não encontrada"
+                    },
+                    "409": {
+                        "description": "Ordem de Serviço não atualizada"
+                    }
+                }
+            }
+        },
+        "/ordens-servico/{id}/entregue": {
+            "put": {
+                "tags": [
+                    "Ordens de Serviço - Situação"
+                ],
+                "summary": "Atualizar ordem de serviço para entregue",
+                "operationId": "atualizarParaEntregue",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Situação atualizada com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OrdemServicoResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Ordem de Serviço não encontrada"
+                    },
+                    "409": {
+                        "description": "Ordem de Serviço não atualizada"
                     }
                 }
             }
@@ -1018,6 +1159,19 @@
                 },
                 "type": "object"
             },
+            "CriarOrdemServicoRequest": {
+                "properties": {
+                    "id_cliente": {
+                        "type": "integer",
+                        "example": 456
+                    },
+                    "id_veiculo": {
+                        "type": "integer",
+                        "example": 789
+                    }
+                },
+                "type": "object"
+            },
             "ListarOrdensServicoResponse": {
                 "properties": {
                     "ordensServico": {
@@ -1029,58 +1183,36 @@
                 },
                 "type": "object"
             },
-            "ProximaOrdemServicoResponse": {
-                "properties": {
-                    "tipo_servico": {
-                        "type": "string",
-                        "enum": [
-                            "realizar_diagnostico",
-                            "executar_servicos"
-                        ]
-                    },
-                    "ordem_servico": {},
-                    "links": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/ApiLinkSchema"
-                        }
-                    }
-                },
-                "type": "object"
-            },
-            "CriarOrdemServicoRequest": {
-                "properties": {
-                    "id_cliente": {
-                        "type": "integer",
-                        "example": 1
-                    },
-                    "id_veiculo": {
-                        "type": "integer",
-                        "example": 1
-                    }
-                },
-                "type": "object"
-            },
             "OrdemServicoResponse": {
                 "properties": {
                     "id": {
                         "type": "integer",
-                        "example": 1
+                        "example": 123
                     },
                     "id_cliente": {
                         "type": "integer",
-                        "example": 1
+                        "example": 456
                     },
                     "id_veiculo": {
                         "type": "integer",
-                        "example": 1
+                        "example": 789
                     },
                     "situacao": {
                         "type": "string",
-                        "example": "Recebida"
+                        "enum": [
+                            "Recebida",
+                            "EmDiagnostico",
+                            "AguardandoAprovacao",
+                            "Aprovada",
+                            "Rejeitada",
+                            "EmExecucao",
+                            "Finalizada",
+                            "Entregue"
+                        ]
                     },
                     "valor_total": {
                         "type": "number",
+                        "format": "float",
                         "example": 500
                     },
                     "data_solicitacao": {
@@ -1097,21 +1229,23 @@
                 },
                 "type": "object"
             },
-            "AtualizarSituacaoRequest": {
+            "ProximaOrdemServicoResponse": {
                 "properties": {
-                    "situacao": {
+                    "tipo_servico": {
                         "type": "string",
-                        "example": "EmDiagnostico",
                         "enum": [
-                            "Recebida",
-                            "EmDiagnostico",
-                            "AguardandoAprovacao",
-                            "Aprovada",
-                            "Rejeitada",
-                            "EmExecucao",
-                            "Finalizada",
-                            "Entregue"
+                            "realizar_diagnostico",
+                            "executar_servicos"
                         ]
+                    },
+                    "ordem_servico": {
+                        "$ref": "#/components/schemas/OrdemServicoResponse"
+                    },
+                    "links": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ApiLinkSchema"
+                        }
                     }
                 },
                 "type": "object"
@@ -1337,6 +1471,9 @@
         },
         {
             "name": "Ordens de Serviço"
+        },
+        {
+            "name": "Ordens de Serviço - Situação"
         }
     ]
 }

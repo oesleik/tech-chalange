@@ -32,4 +32,5 @@ use OpenApi\Attributes as OA;
 #[OA\Tag(name: "Serviços")]
 #[OA\Tag(name: "Estoque")]
 #[OA\Tag(name: "Ordens de Serviço")]
+#[OA\Tag(name: "Ordens de Serviço - Situação")]
 final class openapi {}
