@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 use App\Core\Auth\JwtMiddleware;
 use App\Core\Auth\JwtService;
+use App\Core\Config\EmailConfig;
 use App\Core\Config\JwtConfig;
+use App\Core\Email\EmailService;
 use Slim\Psr7\Factory\ResponseFactory;
 
 return [
