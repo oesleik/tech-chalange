@@ -32,8 +32,7 @@ use OpenApi\Attributes as OA;
 #[OA\Response(response: 400, description: 'Token inválido, expirado ou sem o id da Ordem de Serviço')]
 #[OA\Response(response: 404, description: 'Ordem de Serviço não encontrada')]
 #[OA\Response(response: 409, description: 'Situação atual da Ordem de Serviço não permite aprovação')]
-class AtualizarSituacaoEmailController
-{
+class AtualizarSituacaoEmailController {
     public function __construct(
         private ContractResolver $contractResolver,
         private OrdemServicoService $service,
@@ -47,8 +46,7 @@ class AtualizarSituacaoEmailController
         return $this->alterarSituacaoEmail($request, $response, SituacaoOrdemServicoEnum::REJEITADA);
     }
 
-    private function alterarSituacaoEmail(ServerRequestInterface $request, ResponseInterface $response, SituacaoOrdemServicoEnum $novaSituacao)
-    {
+    private function alterarSituacaoEmail(ServerRequestInterface $request, ResponseInterface $response, SituacaoOrdemServicoEnum $novaSituacao) {
         try {
             $claims = $request->getAttribute('jwt_claims', []);
             $idOrdemServico = $claims['id_ordem_servico'] ?? null;
@@ -89,8 +87,7 @@ class AtualizarSituacaoEmailController
         }
     }
 
-    private function erro(ResponseInterface $response, string $mensagem, int $status): ResponseInterface
-    {
+    private function erro(ResponseInterface $response, string $mensagem, int $status): ResponseInterface {
         $response->getBody()->write(json_encode(['erro' => $mensagem]));
         return $response
             ->withHeader('Content-Type', 'application/json')

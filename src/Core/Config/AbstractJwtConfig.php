@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace App\Core\Config;
 
 abstract class AbstractJwtConfig extends AbstractConfig {
-
-    protected abstract function getSecretKey(): string;
-    protected abstract function getTtlKey(): string;
-    protected abstract function getIssuerKey(): string;
+    abstract protected function getSecretKey(): string;
+    abstract protected function getTtlKey(): string;
+    abstract protected function getIssuerKey(): string;
 
     public function getSecret(): string {
         return $this->getStringEnv($this->getSecretKey())
