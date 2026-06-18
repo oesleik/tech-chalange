@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Core\Auth\JwtMiddleware;
+use App\Core\Auth\OrdemServico\JwtOrdemServicoMiddleware;
 use App\Core\BaseController;
 use App\Core\Config\AppConfig;
 use App\Core\ServiceContainerBuilder;
@@ -26,6 +27,12 @@ $app->addErrorMiddleware(
 // Rotas públicas
 $app->get('/', [BaseController::class, 'index']);
 $app->get('/health', [BaseController::class, 'health']);
+
+// Rota pública validada por token, um JWT específico da Ordem de Serviço
+$app->group('/email', function (RouteCollectorProxy $group): void {
+    $group->get('/ordens-servico/aprovada', [App\OrdemServico\Controller\AtualizarSituacaoEmailController::class, "atualizarParaAprovada"]);
+    $group->get('/ordens-servico/rejeitada', [App\OrdemServico\Controller\AtualizarSituacaoEmailController::class, "atualizarParaRejeitada"]);
+})->add(JwtOrdemServicoMiddleware::class);
 
 // Rotas protegidas
 $app->group('', function (RouteCollectorProxy $group): void {

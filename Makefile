@@ -53,3 +53,6 @@ destroy: ## Interrompe os containers e remove os volumes (inclusive o banco de d
 
 generate-jwt-secret: ## Gerar chave JWT
 	docker compose exec php php src/cmd/generate-token.php
+
+generate-jwt-secret-ordem-servico: ## Gerar chave JWT para Ordem de Serviço
+	docker compose exec php php src/cmd/generate-token-ordem-servico.php

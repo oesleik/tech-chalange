@@ -7,6 +7,7 @@ use App\Core\Auth\JwtService;
 use App\Core\Config\EmailConfig;
 use App\Core\Config\JwtConfig;
 use App\Core\Email\EmailService;
+use Psr\Http\Message\ResponseFactoryInterface;
 use Slim\Psr7\Factory\ResponseFactory;
 
 return [
@@ -22,14 +23,7 @@ return [
     Symfony\Component\Serializer\Normalizer\NormalizerInterface::class => DI\get(Symfony\Component\Serializer\SerializerInterface::class),
     Symfony\Component\Serializer\Normalizer\DenormalizerInterface::class => DI\get(Symfony\Component\Serializer\SerializerInterface::class),
 
-    JwtConfig::class => fn() => new JwtConfig(),
-    JwtService::class => fn(\DI\Container $c) => new JwtService(
-        $c->get(JwtConfig::class),
-    ),
-    JwtMiddleware::class => fn(\DI\Container $c) => new JwtMiddleware(
-        $c->get(JwtService::class),
-        new ResponseFactory(),
-    ),
+    ResponseFactoryInterface::class => DI\create(ResponseFactory::class),
 
     EmailConfig::class => fn() => new EmailConfig(),
     EmailService::class => fn(\DI\Container $c) => new EmailService(

@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Core\Auth;
+namespace App\Core\Auth\OrdemServico;
 
+use App\Core\Auth\JwtException;
 use App\Core\Auth\SystemClock as AuthSystemClock;
-use App\Core\Config\JwtConfig;
+use App\Core\Config\JwtOrdemServicoConfig;
 use DateTimeImmutable;
 use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Signer\Hmac\Sha256;
@@ -14,10 +15,10 @@ use Lcobucci\JWT\Token\Plain;
 use Lcobucci\JWT\Validation\Constraint\IssuedBy;
 use Lcobucci\JWT\Validation\Constraint\LooseValidAt;
 
-class JwtService {
+class JwtOrdemServicoService {
     private Configuration $config;
 
-    public function __construct(private readonly JwtConfig $jwtConfig) {
+    public function __construct(private readonly JwtOrdemServicoConfig $jwtConfig) {
         $this->config = Configuration::forSymmetricSigner(
             new Sha256(),
             InMemory::plainText($this->jwtConfig->getSecret()),

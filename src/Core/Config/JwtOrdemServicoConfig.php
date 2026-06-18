@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace App\Core\Config;
 
-class JwtConfig extends AbstractJwtConfig {
+class JwtOrdemServicoConfig extends AbstractJwtConfig {
     protected function getSecretKey(): string {
-        return 'JWT_SECRET';
+        return 'JWT_SECRET_ORDEM_SERVICO';
     }
 
     protected function getTtlKey(): string {
-        return 'JWT_TTL';
+        return 'JWT_TTL_ORDEM_SERVICO';
     }
 
     protected function getIssuerKey(): string {
-        return 'JWT_ISSUER';
+        return 'JWT_ISSUER_ORDEM_SERVICO';
     }
 }
