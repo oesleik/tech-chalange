@@ -8,6 +8,7 @@ use App\Core\Config\AppConfig;
 use App\OrdemServico\Service\OrdemServicoService;
 use App\Core\Contract\ContractResolver;
 use App\OrdemServico\Contract\ProximaOrdemServicoResponse;
+use App\OrdemServico\Service\ItensOrdemServicoService;
 use Psr\Http\Message\ResponseInterface;
 use OpenApi\Attributes as OA;
 
@@ -31,6 +32,7 @@ class ObterProximaOrdemServicoController {
         ResponseInterface $response,
         ContractResolver $contractResolver,
         OrdemServicoService $service,
+        ItensOrdemServicoService $itensService,
         AppConfig $appConfig,
     ): ResponseInterface {
         $ordemServico = $service->obterProximaOrdemServicoNaFila();
@@ -39,7 +41,10 @@ class ObterProximaOrdemServicoController {
             return $response->withStatus(204);
         }
 
-        $output = ProximaOrdemServicoResponse::fromModel($ordemServico, $appConfig);
+        $pecas = $itensService->obterPecasPorIdOrdemServico($ordemServico->getId());
+        $servicos = $itensService->obterServicosPorIdOrdemServico($ordemServico->getId());
+
+        $output = ProximaOrdemServicoResponse::fromModel($ordemServico, $pecas, $servicos, $appConfig);
         $response->getBody()->write($contractResolver->toJson($output));
         return $response->withHeader('Content-Type', 'application/json');
     }

@@ -9,12 +9,29 @@ use App\Core\AppDatabase;
 use App\Core\Database\TransactionHandler;
 use App\OrdemServico\Model\PecaOrdemServicoModel;
 use App\OrdemServico\Model\ServicoOrdemServicoModel;
+use PDO;
 
 class ItensOrdemServicoService {
     public function __construct(
         private AppDatabase $pdo,
         private TransactionHandler $transactionHandler
     ) {}
+
+    /** @return PecaOrdemServicoModel[] */
+    public function obterPecasPorIdOrdemServico(int $idOrdemServico): array {
+        $stmt = $this->pdo->prepare("SELECT * FROM pecas_ordem_servico WHERE id_ordem_servico = ?");
+        $stmt->execute([$idOrdemServico]);
+        $pecas = [];
+
+        while ($row = $stmt->fetch(PDO::FETCH_OBJ)) {
+            $pecas[] = new PecaOrdemServicoModel(
+                idPeca: $row->id_peca,
+                quantidade: $row->quantidade,
+            );
+        }
+
+        return $pecas;
+    }
 
     /** @param PecaOrdemServicoModel[] $pecas */
     public function adicionarPecas(OrdemServicoModel $ordemServico, array $pecas): void {
@@ -43,6 +60,22 @@ class ItensOrdemServicoService {
 
         $this->adicionarPecas($ordemServico, $pecas);
         $tsx->commit();
+    }
+
+    /** @return ServicoOrdemServicoModel[] */
+    public function obterServicosPorIdOrdemServico(int $idOrdemServico): array {
+        $stmt = $this->pdo->prepare("SELECT * FROM servicos_ordem_servico WHERE id_ordem_servico = ?");
+        $stmt->execute([$idOrdemServico]);
+        $servicos = [];
+
+        while ($row = $stmt->fetch(PDO::FETCH_OBJ)) {
+            $servicos[] = new ServicoOrdemServicoModel(
+                idServico: $row->id_servico,
+                quantidade: $row->quantidade,
+            );
+        }
+
+        return $servicos;
     }
 
     /** @param ServicoOrdemServicoModel[] $servicos */

@@ -301,7 +301,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/OrdemServicoResponse"
+                                    "$ref": "#/components/schemas/OrdemServicoResumidaResponse"
                                 }
                             }
                         }
@@ -338,7 +338,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/OrdemServicoResponse"
+                                    "$ref": "#/components/schemas/OrdemServicoResumidaResponse"
                                 }
                             }
                         }
@@ -375,7 +375,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/OrdemServicoResponse"
+                                    "$ref": "#/components/schemas/OrdemServicoResumidaResponse"
                                 }
                             }
                         }
@@ -412,7 +412,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/OrdemServicoResponse"
+                                    "$ref": "#/components/schemas/OrdemServicoResumidaResponse"
                                 }
                             }
                         }
@@ -449,7 +449,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/OrdemServicoResponse"
+                                    "$ref": "#/components/schemas/OrdemServicoResumidaResponse"
                                 }
                             }
                         }
@@ -478,7 +478,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
-                                        "$ref": "#/components/schemas/OrdemServicoResponse"
+                                        "$ref": "#/components/schemas/OrdemServicoResumidaResponse"
                                     }
                                 }
                             }
@@ -508,7 +508,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/OrdemServicoResponse"
+                                    "$ref": "#/components/schemas/OrdemServicoResumidaResponse"
                                 }
                             }
                         }
@@ -559,7 +559,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/OrdemServicoResponse"
+                                    "$ref": "#/components/schemas/OrdemServicoCompletaResponse"
                                 }
                             }
                         }
@@ -614,7 +614,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/OrdemServicoResponse"
+                                    "$ref": "#/components/schemas/OrdemServicoCompletaResponse"
                                 }
                             }
                         }
@@ -671,7 +671,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/OrdemServicoResponse"
+                                    "$ref": "#/components/schemas/OrdemServicoCompletaResponse"
                                 }
                             }
                         }
@@ -726,7 +726,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/OrdemServicoResponse"
+                                    "$ref": "#/components/schemas/OrdemServicoCompletaResponse"
                                 }
                             }
                         }
@@ -773,7 +773,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/OrdemServicoResponse"
+                                    "$ref": "#/components/schemas/OrdemServicoCompletaResponse"
                                 }
                             }
                         }
@@ -1457,13 +1457,71 @@
                     "ordensServico": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/OrdemServicoResponse"
+                            "$ref": "#/components/schemas/OrdemServicoResumidaResponse"
                         }
                     }
                 },
                 "type": "object"
             },
-            "OrdemServicoResponse": {
+            "OrdemServicoCompletaResponse": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 123
+                    },
+                    "id_cliente": {
+                        "type": "integer",
+                        "example": 456
+                    },
+                    "id_veiculo": {
+                        "type": "integer",
+                        "example": 789
+                    },
+                    "situacao": {
+                        "type": "string",
+                        "enum": [
+                            "Recebida",
+                            "EmDiagnostico",
+                            "AguardandoAprovacao",
+                            "Aprovada",
+                            "Rejeitada",
+                            "EmExecucao",
+                            "Finalizada",
+                            "Entregue"
+                        ]
+                    },
+                    "valor_total": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 500
+                    },
+                    "data_solicitacao": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2026-06-14 10:30:00"
+                    },
+                    "data_aprovacao": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2026-06-14 11:00:00",
+                        "nullable": true
+                    },
+                    "pecas": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/PecaOrdemServicoResponse"
+                        }
+                    },
+                    "servicos": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ServicoOrdemServicoResponse"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "OrdemServicoResumidaResponse": {
                 "properties": {
                     "id": {
                         "type": "integer",
@@ -1522,6 +1580,13 @@
                 },
                 "type": "object"
             },
+            "PecaOrdemServicoResponse": {
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/PecaOrdemServicoRequest"
+                    }
+                ]
+            },
             "PecasOrdemServicoRequest": {
                 "properties": {
                     "pecas": {
@@ -1543,7 +1608,7 @@
                         ]
                     },
                     "ordem_servico": {
-                        "$ref": "#/components/schemas/OrdemServicoResponse"
+                        "$ref": "#/components/schemas/OrdemServicoCompletaResponse"
                     },
                     "links": {
                         "type": "array",
@@ -1566,6 +1631,13 @@
                     }
                 },
                 "type": "object"
+            },
+            "ServicoOrdemServicoResponse": {
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/ServicoOrdemServicoRequest"
+                    }
+                ]
             },
             "ServicosOrdemServicoRequest": {
                 "properties": {

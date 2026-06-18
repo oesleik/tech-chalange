@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\OrdemServico\Controller;
 
-use App\OrdemServico\Contract\OrdemServicoResponse;
+use App\OrdemServico\Contract\OrdemServicoResumidaResponse;
 use App\OrdemServico\Service\OrdemServicoService;
 use App\Core\Contract\ContractResolver;
 use App\OrdemServico\Model\SituacaoOrdemServicoEnum;
@@ -51,7 +51,7 @@ use OpenApi\Attributes as OA;
 #[OA\Response(
     response: 200,
     description: 'Situação atualizada com sucesso',
-    content: new OA\JsonContent(ref: '#/components/schemas/OrdemServicoResponse')
+    content: new OA\JsonContent(ref: '#/components/schemas/OrdemServicoResumidaResponse')
 )]
 #[OA\Response(
     response: 404,
@@ -104,7 +104,7 @@ class AtualizarSituacaoController {
             return $response->withStatus(409, $e->getMessage());
         }
 
-        $output = OrdemServicoResponse::fromModel($ordemServico);
+        $output = OrdemServicoResumidaResponse::fromModel($ordemServico);
         $response->getBody()->write($this->contractResolver->toJson($output));
         return $response->withHeader('Content-Type', 'application/json');
     }
