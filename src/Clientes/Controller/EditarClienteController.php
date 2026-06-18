@@ -11,11 +11,11 @@ use App\Clientes\Service\ClienteService;
 use App\Clientes\ValueObject\CpfOrCnpjValueFactory;
 use App\Clientes\ValueObject\EmailValue;
 use App\Clientes\ValueObject\TelefoneValue;
-use App\Core\Consts\SqlStateEnum;
 use App\Core\Contract\ContractResolver;
 use App\Core\Contract\InvalidContractException;
 use App\Core\Contract\ValidationError;
 use App\Core\Contract\ValidationErrorResponse;
+use App\Core\Database\DatabaseErrorEnum;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use OpenApi\Attributes as OA;
@@ -93,7 +93,7 @@ class EditarClienteController {
             $response->getBody()->write($contractResolver->toJson(ValidationErrorResponse::from($e->getViolations())));
             return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
         } catch (PDOException $e) {
-            if ($e->getCode() == SqlStateEnum::DUPLICATE_ENTRY->value) {
+            if (DatabaseErrorEnum::fromPdoException($e) == DatabaseErrorEnum::DUPLICATE_ENTRY) {
                 $response->getBody()->write($contractResolver->toJson(new ValidationErrorResponse([
                     new ValidationError("cpf_cnpj", "Cliente já existente para este CPF/CNPJ."),
                 ])));

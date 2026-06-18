@@ -8,7 +8,7 @@ use App\Veiculos\Contract\VeiculoResponse;
 use App\Veiculos\Contract\EditarVeiculoRequest;
 use App\Veiculos\Model\VeiculoModel;
 use App\Veiculos\Service\VeiculoService;
-use App\Core\Consts\SqlStateEnum;
+use App\Core\Database\DatabaseErrorEnum;
 use App\Core\Contract\ContractResolver;
 use App\Core\Contract\InvalidContractException;
 use App\Core\Contract\ValidationError;
@@ -84,7 +84,7 @@ class EditarVeiculoController {
             $response->getBody()->write($contractResolver->toJson(ValidationErrorResponse::from($e->getViolations())));
             return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
         } catch (PDOException $e) {
-            if ($e->getCode() == SqlStateEnum::DUPLICATE_ENTRY->value) {
+            if (DatabaseErrorEnum::fromPdoException($e) == DatabaseErrorEnum::DUPLICATE_ENTRY) {
                 $response->getBody()->write($contractResolver->toJson(new ValidationErrorResponse([
                     new ValidationError("placa", "Veículo já existente para esta placa."),
                 ])));

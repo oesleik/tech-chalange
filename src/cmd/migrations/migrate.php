@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use App\Core\AppDatabase;
 use App\Core\Config\MigrationsConfig;
-use App\Core\Consts\SqlStateEnum;
+use App\Core\Database\DatabaseErrorEnum;
 use App\Core\ServiceContainerBuilder;
 
 require __DIR__ . '/../../bootstrap.php';
@@ -29,7 +29,7 @@ try {
         $versionsExecuted[] = $row["version"];
     }
 } catch (PDOException $e) {
-    if ($e->getCode() != SqlStateEnum::TABLE_NOT_FOUND->value) {
+    if (DatabaseErrorEnum::fromPdoException($e) == DatabaseErrorEnum::TABLE_DOES_NOT_EXIST) {
         throw $e;
     }
 }
