@@ -15,7 +15,7 @@ abstract class AbstractJwtConfig extends AbstractConfig {
     }
 
     public function getTtl(): int {
-        return $this->getIntegerEnv($this->getTtlKey()) ?? 60 * 60 * 24 * 7;
+        return $this->getIntegerEnv($this->getTtlKey()) ?? 60 * 60 * 1; // 3600 segundos = 1 hora
     }
 
     public function getIssuer(): string {

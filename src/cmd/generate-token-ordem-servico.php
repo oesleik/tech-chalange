@@ -16,11 +16,11 @@ if (file_exists($envFile)) {
     }
 }
 
-$secret = $_ENV['JWT_SECRET_ORDEM_SERVICO'] ?? null;
-$issuer = $_ENV['JWT_ISSUER_ORDEM_SERVICO'] ?? 'tech-challenge-api';
+$secret = $_ENV['OS_EMAIL_ACTION_TOKEN_SECRET'] ?? null;
+$issuer = $_ENV['OS_EMAIL_ACTION_TOKEN_ISSUER'] ?? 'tech-challenge-api';
 
 if (empty($secret)) {
-    fwrite(STDERR, "ERRO: JWT_SECRET_ORDEM_SERVICO não definido no .env\n");
+    fwrite(STDERR, "ERRO: OS_EMAIL_ACTION_TOKEN_SECRET não definido no .env\n");
     exit(1);
 }
 

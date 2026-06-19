@@ -29,7 +29,7 @@ use OpenApi\Attributes as OA;
     description: 'Ordem de Serviço atualizada com sucesso',
     content: new OA\JsonContent(ref: '#/components/schemas/OrdemServicoResponse')
 )]
-#[OA\Response(response: 400, description: 'Token inválido, expirado ou sem o id da Ordem de Serviço')]
+#[OA\Response(response: 400, description: 'ID da Ordem de Serviço inválido')]
 #[OA\Response(response: 404, description: 'Ordem de Serviço não encontrada')]
 #[OA\Response(response: 409, description: 'Situação atual da Ordem de Serviço não permite aprovação')]
 class AtualizarSituacaoEmailController {
@@ -52,7 +52,7 @@ class AtualizarSituacaoEmailController {
             $idOrdemServico = $claims['id_ordem_servico'] ?? null;
 
             if (!is_int($idOrdemServico) && !ctype_digit((string) $idOrdemServico)) {
-                return $this->erro($response, 'Token não contém um id de Ordem de Serviço válido.', 400);
+                return $this->erro($response, 'Não foi possível identificar a Ordem de Serviço.', 400);
             }
 
             $idOrdemServico = intval($idOrdemServico);
@@ -72,12 +72,11 @@ class AtualizarSituacaoEmailController {
                 );
             }
 
-            $this->service->atualizarSituacao(
+            $ordemServicoAtualizada = $this->service->atualizarSituacao(
                 $ordemServico,
                 $novaSituacao
             );
 
-            $ordemServicoAtualizada = $this->service->obterOrdemServicoPorId($idOrdemServico);
             $output = OrdemServicoResponse::fromModel($ordemServicoAtualizada);
 
             $response->getBody()->write($this->contractResolver->toJson($output));
