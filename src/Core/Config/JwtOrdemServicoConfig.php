@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace App\Core\Config;
 
-class JwtConfig extends AbstractJwtConfig {
+class JwtOrdemServicoConfig extends AbstractJwtConfig {
     protected function getSecretKey(): string {
-        return 'JWT_SECRET';
+        return 'OS_EMAIL_ACTION_TOKEN_SECRET';
     }
 
     protected function getTtlKey(): string {
-        return 'JWT_TTL';
+        return 'OS_EMAIL_ACTION_TOKEN_TTL';
     }
 
     protected function getIssuerKey(): string {
-        return 'JWT_ISSUER';
+        return 'OS_EMAIL_ACTION_TOKEN_ISSUER';
     }
 }
