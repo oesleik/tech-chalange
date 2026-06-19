@@ -45,4 +45,8 @@ enum SituacaoOrdemServicoEnum: string {
     public function deveModificarDataAprovacao(): bool {
         return in_array($this, [self::APROVADA, self::REJEITADA], true);
     }
+
+    public function estaFinalizada(): bool {
+        return in_array($this, [self::FINALIZADA, self::ENTREGUE], true);
+    }
 }

@@ -526,6 +526,230 @@
                 }
             }
         },
+        "/ordens-servico/{id}/pecas": {
+            "put": {
+                "tags": [
+                    "Ordens de Serviço - Peças e Serviços"
+                ],
+                "summary": "Atualizar peças da ordem de serviço (substitui todas as peças atuais)",
+                "operationId": "atualizarPecasOrdemServico",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PecasOrdemServicoRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Situação atualizada com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OrdemServicoResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Ordem de serviço não encontrada"
+                    },
+                    "422": {
+                        "description": "Não foi possível editar os itens da ordem de serviço"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Ordens de Serviço - Peças e Serviços"
+                ],
+                "summary": "Adicionar peças na ordem de serviço",
+                "operationId": "adicionarPecasOrdemServico",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PecasOrdemServicoRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Situação atualizada com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OrdemServicoResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Ordem de serviço não encontrada"
+                    },
+                    "422": {
+                        "description": "Não foi possível editar os itens da ordem de serviço"
+                    }
+                }
+            }
+        },
+        "/ordens-servico/{id}/servicos": {
+            "put": {
+                "tags": [
+                    "Ordens de Serviço - Peças e Serviços"
+                ],
+                "summary": "Atualizar serviços da ordem de serviço (substitui todos os serviços atuais)",
+                "operationId": "atualizarServicosOrdemServico",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ServicosOrdemServicoRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Situação atualizada com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OrdemServicoResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Ordem de serviço não encontrada"
+                    },
+                    "422": {
+                        "description": "Não foi possível editar os itens da ordem de serviço"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Ordens de Serviço - Peças e Serviços"
+                ],
+                "summary": "Adicionar serviços na ordem de serviço",
+                "operationId": "adicionarServicosOrdemServico",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ServicosOrdemServicoRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Situação atualizada com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OrdemServicoResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Ordem de serviço não encontrada"
+                    },
+                    "422": {
+                        "description": "Não foi possível editar os itens da ordem de serviço"
+                    }
+                }
+            }
+        },
         "/ordens-servico/{id}": {
             "get": {
                 "tags": [
@@ -1285,6 +1509,30 @@
                 },
                 "type": "object"
             },
+            "PecaOrdemServicoRequest": {
+                "properties": {
+                    "id_peca": {
+                        "type": "integer",
+                        "example": 123
+                    },
+                    "quantidade": {
+                        "type": "integer",
+                        "example": 1
+                    }
+                },
+                "type": "object"
+            },
+            "PecasOrdemServicoRequest": {
+                "properties": {
+                    "pecas": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/PecaOrdemServicoRequest"
+                        }
+                    }
+                },
+                "type": "object"
+            },
             "ProximaOrdemServicoResponse": {
                 "properties": {
                     "tipo_servico": {
@@ -1301,6 +1549,30 @@
                         "type": "array",
                         "items": {
                             "$ref": "#/components/schemas/ApiLinkSchema"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "ServicoOrdemServicoRequest": {
+                "properties": {
+                    "id_servico": {
+                        "type": "integer",
+                        "example": 123
+                    },
+                    "quantidade": {
+                        "type": "integer",
+                        "example": 1
+                    }
+                },
+                "type": "object"
+            },
+            "ServicosOrdemServicoRequest": {
+                "properties": {
+                    "servicos": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ServicoOrdemServicoRequest"
                         }
                     }
                 },
@@ -1530,6 +1802,10 @@
         },
         {
             "name": "Ordens de Serviço - Situação"
+        },
+        {
+            "name": "Ordens de Serviço - Peças e Serviços",
+            "description": "Ordens de Serviço - Peças e Serviços"
         }
     ]
 }

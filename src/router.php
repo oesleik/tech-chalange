@@ -69,6 +69,11 @@ $app->group('', function (RouteCollectorProxy $group): void {
         $group->put("/{id:[0-9]+}/em-execucao", [App\OrdemServico\Controller\AtualizarSituacaoController::class, "atualizarParaEmExecucao"]);
         $group->put("/{id:[0-9]+}/finalizada", [App\OrdemServico\Controller\AtualizarSituacaoController::class, "atualizarParaFinalizada"]);
         $group->put("/{id:[0-9]+}/entregue", [App\OrdemServico\Controller\AtualizarSituacaoController::class, "atualizarParaEntregue"]);
+
+        $group->post("/{id:[0-9]+}/pecas", [App\OrdemServico\Controller\EditarItensOrdemServicoController::class, "adicionarPecas"]);
+        $group->put("/{id:[0-9]+}/pecas", [App\OrdemServico\Controller\EditarItensOrdemServicoController::class, "atualizarPecas"]);
+        $group->post("/{id:[0-9]+}/servicos", [App\OrdemServico\Controller\EditarItensOrdemServicoController::class, "adicionarServicos"]);
+        $group->put("/{id:[0-9]+}/servicos", [App\OrdemServico\Controller\EditarItensOrdemServicoController::class, "atualizarServicos"]);
     });
 
     $group->group('/estoque', function (RouteCollectorProxy $g): void {
