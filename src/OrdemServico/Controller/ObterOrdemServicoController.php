@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\OrdemServico\Controller;
 
-use App\OrdemServico\Contract\OrdemServicoResponse;
+use App\OrdemServico\Contract\OrdemServicoCompletaResponse;
 use App\OrdemServico\Service\OrdemServicoService;
 use App\Core\Contract\ContractResolver;
+use App\OrdemServico\Service\ItensOrdemServicoService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use OpenApi\Attributes as OA;
@@ -27,7 +28,7 @@ class ObterOrdemServicoController {
     #[OA\Response(
         response: 200,
         description: 'Detalhes da Ordem de Serviço',
-        content: new OA\JsonContent(ref: '#/components/schemas/OrdemServicoResponse')
+        content: new OA\JsonContent(ref: '#/components/schemas/OrdemServicoCompletaResponse')
     )]
     #[OA\Response(
         response: 404,
@@ -38,6 +39,7 @@ class ObterOrdemServicoController {
         ResponseInterface $response,
         ContractResolver $contractResolver,
         OrdemServicoService $service,
+        ItensOrdemServicoService $itensService,
     ): ResponseInterface {
         try {
             $id = (int) $request->getAttribute('id');
@@ -50,7 +52,10 @@ class ObterOrdemServicoController {
                     ->withStatus(404);
             }
 
-            $output = OrdemServicoResponse::fromModel($ordemServico);
+            $pecas = $itensService->obterPecasPorIdOrdemServico($ordemServico->getId());
+            $servicos = $itensService->obterServicosPorIdOrdemServico($ordemServico->getId());
+
+            $output = OrdemServicoCompletaResponse::fromModel($ordemServico, $pecas, $servicos);
             $response->getBody()->write($contractResolver->toJson($output));
             return $response->withHeader('Content-Type', 'application/json');
         } catch (\Throwable $e) {

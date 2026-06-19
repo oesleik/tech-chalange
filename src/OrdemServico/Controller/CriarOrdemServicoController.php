@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\OrdemServico\Controller;
 
 use App\OrdemServico\Contract\CriarOrdemServicoRequest;
-use App\OrdemServico\Contract\OrdemServicoResponse;
+use App\OrdemServico\Contract\OrdemServicoResumidaResponse;
 use App\OrdemServico\Service\OrdemServicoService;
 use App\Core\Contract\ContractResolver;
 use Psr\Http\Message\ResponseInterface;
@@ -28,7 +28,7 @@ class CriarOrdemServicoController {
     #[OA\Response(
         response: 201,
         description: 'Ordem de Serviço criada com sucesso',
-        content: new OA\JsonContent(ref: '#/components/schemas/OrdemServicoResponse')
+        content: new OA\JsonContent(ref: '#/components/schemas/OrdemServicoResumidaResponse')
     )]
     #[OA\Response(
         response: 400,
@@ -48,7 +48,7 @@ class CriarOrdemServicoController {
             $ordemServico = $req->toOrdemServicoModel();
             $ordemServicoCriada = $service->criarOrdemServico($ordemServico);
 
-            $output = OrdemServicoResponse::fromModel($ordemServicoCriada);
+            $output = OrdemServicoResumidaResponse::fromModel($ordemServicoCriada);
 
             $response->getBody()->write($contractResolver->toJson($output));
             return $response

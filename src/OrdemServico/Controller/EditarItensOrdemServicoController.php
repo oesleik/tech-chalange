@@ -6,7 +6,7 @@ namespace App\OrdemServico\Controller;
 
 use App\Core\Database\DatabaseErrorEnum;
 use App\Core\Contract\AbstractContract;
-use App\OrdemServico\Contract\OrdemServicoResponse;
+use App\OrdemServico\Contract\OrdemServicoCompletaResponse;
 use App\OrdemServico\Service\OrdemServicoService;
 use App\Core\Contract\ContractResolver;
 use App\Core\Contract\InvalidContractException;
@@ -59,7 +59,7 @@ use Psr\Http\Message\ServerRequestInterface;
 #[OA\Response(
     response: 200,
     description: 'Situação atualizada com sucesso',
-    content: new OA\JsonContent(ref: '#/components/schemas/OrdemServicoResponse')
+    content: new OA\JsonContent(ref: '#/components/schemas/OrdemServicoCompletaResponse')
 )]
 #[OA\Response(
     response: 400,
@@ -166,7 +166,10 @@ class EditarItensOrdemServicoController {
 
             $ordemServico = $handler($ordemServico, $contract);
 
-            $output = OrdemServicoResponse::fromModel($ordemServico);
+            $pecas = $this->itensService->obterPecasPorIdOrdemServico($ordemServico->getId());
+            $servicos = $this->itensService->obterServicosPorIdOrdemServico($ordemServico->getId());
+
+            $output = OrdemServicoCompletaResponse::fromModel($ordemServico, $pecas, $servicos);
             $response->getBody()->write($this->contractResolver->toJson($output));
             return $response->withHeader('Content-Type', 'application/json');
         } catch (InvalidContractException $e) {

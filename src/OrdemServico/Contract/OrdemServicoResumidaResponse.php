@@ -10,7 +10,7 @@ use App\OrdemServico\Model\SituacaoOrdemServicoEnum;
 use OpenApi\Attributes as OA;
 
 #[OA\Schema]
-readonly class OrdemServicoResponse extends AbstractContract {
+readonly class OrdemServicoResumidaResponse extends AbstractContract {
     public function __construct(
         #[OA\Property(example: 123)]
         public int $id,

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\OrdemServico\Controller;
 
-use App\OrdemServico\Contract\OrdemServicoResponse;
 use App\OrdemServico\Contract\ListarOrdensServicoResponse;
 use App\OrdemServico\Service\OrdemServicoService;
 use App\Core\Contract\ContractResolver;
+use App\OrdemServico\Contract\OrdemServicoResumidaResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use OpenApi\Attributes as OA;
@@ -24,7 +24,7 @@ class ListarOrdensServicoController {
         description: 'Lista de Ordens de Serviço',
         content: new OA\JsonContent(
             type: 'array',
-            items: new OA\Items(ref: '#/components/schemas/OrdemServicoResponse')
+            items: new OA\Items(ref: '#/components/schemas/OrdemServicoResumidaResponse')
         )
     )]
     public function __invoke(
@@ -36,7 +36,7 @@ class ListarOrdensServicoController {
         try {
             $ordensServico = $service->listarOrdensServico();
             $output = new ListarOrdensServicoResponse(
-                ordensServico: array_map(fn($os) => OrdemServicoResponse::fromModel($os), $ordensServico)
+                ordensServico: array_map(fn($os) => OrdemServicoResumidaResponse::fromModel($os), $ordensServico)
             );
 
             $response->getBody()->write($contractResolver->toJson($output));
