@@ -85,6 +85,7 @@ $app->group('', function (RouteCollectorProxy $group): void {
 
     $group->group('/estoque', function (RouteCollectorProxy $g): void {
         $g->post('/entrada', [EstoqueController::class, 'registrarEntrada']);
+        $g->post('/baixa', [EstoqueController::class, 'registrarBaixa']);
         $g->get('/pecas/{id:[0-9]+}', [EstoqueController::class, 'consultarEstoque']);
     });
 
