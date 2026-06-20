@@ -7,6 +7,7 @@ namespace App\Estoque\Controller;
 use App\Core\Contract\ContractResolver;
 use App\Core\Contract\InvalidContractException;
 use App\Estoque\Contract\EntradaEstoqueContract;
+use App\Estoque\Contract\BaixaEstoqueContract;
 use App\Estoque\Repository\EstoqueRepository;
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface;
@@ -94,6 +95,59 @@ class EstoqueController {
             new OA\Response(response: 404, description: 'Peça não encontrada'),
         ]
     )]
+
+    #[OA\Post(
+        path: '/estoque/baixa',
+        summary: 'Registrar baixa de peças no estoque',
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(ref: '#/components/schemas/BaixaEstoqueRequest')
+        ),
+        tags: ['Estoque'],
+        responses: [
+            new OA\Response(
+                response: 201,
+                description: 'Baixa registrada com sucesso',
+                content: new OA\JsonContent(ref: '#/components/schemas/BaixaEstoqueResponse')
+            ),
+            new OA\Response(response: 404, description: 'Peça não encontrada'),
+            new OA\Response(response: 409, description: 'Estoque insuficiente'),
+            new OA\Response(response: 422, description: 'Dados inválidos'),
+        ]
+    )]
+    public function registrarBaixa(
+        ServerRequestInterface $request,
+        ResponseInterface $response,
+    ): ResponseInterface {
+        try {
+            $body     = (array) $request->getParsedBody();
+            $contract = $this->contractResolver->fromArray($body, BaixaEstoqueContract::class);
+            $baixa    = $this->repository->registrarBaixa($contract->id_peca, $contract->quantidade);
+
+            $response->getBody()->write(json_encode($baixa));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
+
+        } catch (InvalidContractException $e) {
+            $errors = [];
+            foreach ($e->getViolations() as $violation) {
+                $field          = trim($violation->getPropertyPath(), '[]');
+                $errors[$field] = $violation->getMessage();
+            }
+
+            $response->getBody()->write(json_encode(['errors' => $errors]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(422);
+
+        } catch (\RuntimeException $e) {
+            $status = match ($e->getCode()) {
+                404     => 404,
+                409     => 409,
+                default => 400,
+            };
+            $response->getBody()->write(json_encode(['error' => $e->getMessage()]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($status);
+        }
+    }
+
     public function consultarEstoque(
         ServerRequestInterface $request,
         ResponseInterface $response,

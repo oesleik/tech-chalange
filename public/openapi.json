@@ -249,7 +249,7 @@
                     "Estoque"
                 ],
                 "summary": "Consultar estoque atual de uma peça",
-                "operationId": "907db9633d48b356e9508f67b864eaa6",
+                "operationId": "1f9ad4a60f7c88a0647b5b5c9338069b",
                 "parameters": [
                     {
                         "name": "id",
@@ -274,6 +274,46 @@
                     },
                     "404": {
                         "description": "Peça não encontrada"
+                    }
+                }
+            }
+        },
+        "/estoque/baixa": {
+            "post": {
+                "tags": [
+                    "Estoque"
+                ],
+                "summary": "Registrar baixa de peças no estoque",
+                "operationId": "7f29db16f4ff63ab13db88c1a34dde46",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/BaixaEstoqueRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Baixa registrada com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaixaEstoqueResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Peça não encontrada"
+                    },
+                    "409": {
+                        "description": "Estoque insuficiente"
+                    },
+                    "422": {
+                        "description": "Dados inválidos"
                     }
                 }
             }
@@ -459,6 +499,66 @@
                     },
                     "409": {
                         "description": "Ordem de Serviço não atualizada"
+                    }
+                }
+            }
+        },
+        "/email/ordens-servico/aprovada": {
+            "put": {
+                "tags": [
+                    "Ordens de Serviço - Situação"
+                ],
+                "summary": "Atualizar ordem de serviço para aprovada",
+                "operationId": "atualizarParaAprovada",
+                "responses": {
+                    "200": {
+                        "description": "Ordem de Serviço atualizada com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OrdemServicoResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "ID da Ordem de Serviço inválido"
+                    },
+                    "404": {
+                        "description": "Ordem de Serviço não encontrada"
+                    },
+                    "409": {
+                        "description": "Situação atual da Ordem de Serviço não permite aprovação"
+                    }
+                }
+            }
+        },
+        "/email/ordens-servico/rejeitada": {
+            "put": {
+                "tags": [
+                    "Ordens de Serviço - Situação"
+                ],
+                "summary": "Atualizar ordem de serviço para rejeitada",
+                "operationId": "atualizarParaRejeitada",
+                "responses": {
+                    "200": {
+                        "description": "Ordem de Serviço atualizada com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OrdemServicoResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "ID da Ordem de Serviço inválido"
+                    },
+                    "404": {
+                        "description": "Ordem de Serviço não encontrada"
+                    },
+                    "409": {
+                        "description": "Situação atual da Ordem de Serviço não permite aprovação"
                     }
                 }
             }
@@ -1435,6 +1535,48 @@
                     "estoque_atual": {
                         "type": "integer",
                         "example": 10
+                    }
+                },
+                "type": "object"
+            },
+            "BaixaEstoqueRequest": {
+                "properties": {
+                    "id_peca": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "quantidade": {
+                        "type": "integer",
+                        "example": 5
+                    }
+                },
+                "type": "object"
+            },
+            "BaixaEstoqueResponse": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 2
+                    },
+                    "id_peca": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "peca": {
+                        "type": "string",
+                        "example": "Filtro de óleo"
+                    },
+                    "quantidade": {
+                        "type": "integer",
+                        "example": 5
+                    },
+                    "tipo_lancamento": {
+                        "type": "string",
+                        "example": "baixa"
+                    },
+                    "estoque_atual": {
+                        "type": "integer",
+                        "example": 5
                     }
                 },
                 "type": "object"

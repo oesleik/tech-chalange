@@ -82,4 +82,51 @@ class EstoqueRepositoryTest extends TestCase {
 
         $this->repository->consultarEstoquePorPeca(999);
     }
+
+    public function testRegistrarBaixaComSucesso(): void {
+        $stmtPeca = $this->createMock(PDOStatement::class);
+        $stmtPeca->method('fetch')->willReturn(['id' => 1, 'descricao' => 'Filtro de óleo']);
+
+        $stmtEstoqueAtual = $this->createMock(PDOStatement::class);
+        $stmtEstoqueAtual->method('fetch')->willReturn(['estoque_atual' => '10']);
+
+        $stmtInsert = $this->createMock(PDOStatement::class);
+
+        $this->db->method('prepare')
+            ->willReturnOnConsecutiveCalls($stmtPeca, $stmtEstoqueAtual, $stmtInsert);
+        $this->db->method('lastInsertId')->willReturn('2');
+
+        $result = $this->repository->registrarBaixa(1, 4);
+
+        $this->assertSame(2, $result['id']);
+        $this->assertSame('baixa', $result['tipo_lancamento']);
+        $this->assertSame(6, $result['estoque_atual']); // 10 - 4
+    }
+
+    public function testRegistrarBaixaLancaExcecaoQuandoPecaNaoEncontrada(): void {
+        $stmt = $this->createMock(PDOStatement::class);
+        $stmt->method('fetch')->willReturn(false);
+        $this->db->method('prepare')->willReturn($stmt);
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionCode(404);
+
+        $this->repository->registrarBaixa(999, 5);
+    }
+
+    public function testRegistrarBaixaLancaExcecaoQuandoEstoqueInsuficiente(): void {
+        $stmtPeca = $this->createMock(PDOStatement::class);
+        $stmtPeca->method('fetch')->willReturn(['id' => 1, 'descricao' => 'Filtro de óleo']);
+
+        $stmtEstoqueAtual = $this->createMock(PDOStatement::class);
+        $stmtEstoqueAtual->method('fetch')->willReturn(['estoque_atual' => '3']);
+
+        $this->db->method('prepare')
+            ->willReturnOnConsecutiveCalls($stmtPeca, $stmtEstoqueAtual);
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionCode(409);
+
+        $this->repository->registrarBaixa(1, 10);
+    }
 }
