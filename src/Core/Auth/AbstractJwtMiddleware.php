@@ -11,19 +11,25 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
 abstract class AbstractJwtMiddleware implements MiddlewareInterface {
+    protected bool $useTokenQueryParam = false;
+
     public function __construct(
-        private readonly AbstractJwtService $jwtService,
-        private readonly ResponseFactoryInterface $responseFactory,
+        protected readonly AbstractJwtService $jwtService,
+        protected readonly ResponseFactoryInterface $responseFactory,
     ) {}
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface {
-        $authHeader = $request->getHeaderLine('Authorization');
+        $token = $this->resolveToken($request);
 
-        if (empty($authHeader) || !str_starts_with($authHeader, 'Bearer ')) {
-            return $this->unauthorized('Token não informado. Use: Authorization: Bearer <token>');
+        if ($token === null) {
+            $message = 'Token não informado.';
+            if ($this->useTokenQueryParam) {
+                $message .= ' Use o header Authorization: Bearer <token> ou o parâmetro ?token=<token> na URL.';
+            } else {
+                $message .= ' Use o header Authorization: Bearer <token>.';
+            }
+            return $this->unauthorized($message);
         }
-
-        $token = substr($authHeader, 7);
 
         try {
             $claims = $this->jwtService->validate($token);
@@ -32,6 +38,22 @@ abstract class AbstractJwtMiddleware implements MiddlewareInterface {
         } catch (JwtException $e) {
             return $this->unauthorized($e->getMessage());
         }
+    }
+
+    private function resolveToken(ServerRequestInterface $request): ?string {
+        $authHeader = $request->getHeaderLine('Authorization');
+        if (!empty($authHeader) && str_starts_with($authHeader, 'Bearer ')) {
+            return substr($authHeader, 7);
+        }
+
+        if ($this->useTokenQueryParam) {
+            $queryParams = $request->getQueryParams();
+            if (!empty($queryParams['token'])) {
+                return $queryParams['token'];
+            }
+        }
+
+        return null;
     }
 
     private function unauthorized(string $message): ResponseInterface {

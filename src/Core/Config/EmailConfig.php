@@ -4,50 +4,32 @@ declare(strict_types=1);
 
 namespace App\Core\Config;
 
-class EmailConfig {
-    private string $host;
-    private int $port;
-    private string $username;
-    private string $password;
-    private string $encryption;
-    private string $fromAddress;
-    private string $fromName;
-
-    public function __construct() {
-        $this->host        = getenv('MAIL_HOST') ?: 'smtp.mailtrap.io';
-        $this->port         = (int) (getenv('MAIL_PORT') ?: 587);
-        $this->username      = getenv('MAIL_USERNAME') ?: '';
-        $this->password      = getenv('MAIL_PASSWORD') ?: '';
-        $this->encryption    = getenv('MAIL_ENCRYPTION') ?: 'tls';
-        $this->fromAddress  = getenv('MAIL_FROM_ADDRESS') ?: 'no-reply@example.com';
-        $this->fromName      = getenv('MAIL_FROM_NAME') ?: 'Tech Challenge';
-    }
-
+class EmailConfig extends AbstractConfig {
     public function getHost(): string {
-        return $this->host;
+        return $this->getStringEnv('MAIL_HOST') ?: 'sandbox.smtp.mailtrap.io';
     }
 
     public function getPort(): int {
-        return $this->port;
+        return $this->getIntegerEnv('MAIL_PORT') ?: 2525;
     }
 
     public function getUsername(): string {
-        return $this->username;
+        return $this->getStringEnv('MAIL_USERNAME') ?: '';
     }
 
     public function getPassword(): string {
-        return $this->password;
+        return $this->getStringEnv('MAIL_PASSWORD') ?: '';
     }
 
     public function getEncryption(): string {
-        return $this->encryption;
+        return $this->getStringEnv('MAIL_ENCRYPTION') ?: 'tls';
     }
 
     public function getFromAddress(): string {
-        return $this->fromAddress;
+        return $this->getStringEnv('MAIL_FROM_ADDRESS') ?: 'no-reply@example.com';
     }
 
     public function getFromName(): string {
-        return $this->fromName;
+        return $this->getStringEnv('MAIL_FROM_NAME') ?: 'Tech Challenge';
     }
 }
