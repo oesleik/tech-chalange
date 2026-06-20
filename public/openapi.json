@@ -221,59 +221,10 @@
                         }
                     },
                     "404": {
-                        "description": "Peça não encontrada",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ValidationErrorResponse"
-                                }
-                            }
-                        }
+                        "description": "Peça não encontrada"
                     },
                     "422": {
-                        "description": "Dados inválidos",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ValidationErrorResponse"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/estoque/pecas/{id}": {
-            "get": {
-                "tags": [
-                    "Estoque"
-                ],
-                "summary": "Consultar estoque atual de uma peça",
-                "operationId": "1f9ad4a60f7c88a0647b5b5c9338069b",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer",
-                            "example": 1
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Estoque atual da peça",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ConsultaEstoqueResponse"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Peça não encontrada"
+                        "description": "Dados inválidos"
                     }
                 }
             }
@@ -314,6 +265,41 @@
                     },
                     "422": {
                         "description": "Dados inválidos"
+                    }
+                }
+            }
+        },
+        "/estoque/pecas/{id}": {
+            "get": {
+                "tags": [
+                    "Estoque"
+                ],
+                "summary": "Consultar estoque atual de uma peça",
+                "operationId": "907db9633d48b356e9508f67b864eaa6",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Estoque atual da peça",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ConsultaEstoqueResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Peça não encontrada"
                     }
                 }
             }
