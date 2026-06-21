@@ -60,18 +60,18 @@ jobs:
       - name: Lint (php-cs-fixer dry-run)
         id: lint
         continue-on-error: true
-        run: docker compose run --rm -T php vendor/bin/php-cs-fixer fix --dry-run --diff --using-cache=no
+        run: docker compose run --rm -T --no-deps php vendor/bin/php-cs-fixer fix --dry-run --diff --using-cache=no
 
       - name: Static analysis (phpstan)
         id: phpstan
         continue-on-error: true
-        run: docker compose run --rm -T php vendor/bin/phpstan analyse src --no-interaction --no-progress --error-format=github
+        run: docker compose run --rm -T --no-deps php vendor/bin/phpstan analyse src --no-interaction --no-progress --error-format=github
 
       - name: Run tests and generate coverage
         id: tests
         continue-on-error: true
         run: |
-          docker compose run --rm -T php vendor/bin/phpunit --configuration phpunit.xml \
+          docker compose run --rm -T --no-deps php vendor/bin/phpunit --configuration phpunit.xml \
             --coverage-clover=coverage/clover.xml --coverage-html=coverage/html --log-junit=coverage/junit.xml
 
       - name: Upload coverage HTML
