@@ -83,6 +83,8 @@ $app->group('', function (RouteCollectorProxy $group): void {
         $group->put("/{id:[0-9]+}/servicos", [App\OrdemServico\Controller\EditarItensOrdemServicoController::class, "atualizarServicos"]);
 
         $group->post("/{id:[0-9]+}/enviar-orcamento", App\OrdemServico\Controller\EnviarOrcamentoOrdemServicoEmailController::class);
+
+		$group->get("/relatorios/media_tempo_servicos", [App\OrdemServico\Controller\RelatoriosOrdemServicoController::class, "relatorioMediaTempoServicos"]);
     });
 
     $group->group('/estoque', function (RouteCollectorProxy $g): void {

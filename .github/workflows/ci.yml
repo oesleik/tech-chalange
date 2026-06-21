@@ -1,0 +1,122 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Prepare environment file
+        run: cp .env.example .env
+
+      - name: Cache Composer
+        uses: actions/cache@v4
+        id: composer-cache
+        with:
+          path: ~/.composer/cache
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Install dependencies (composer)
+        run: |
+          docker run --rm \
+            -v ${{ github.workspace }}:/app \
+            -v $HOME/.composer/cache:/tmp/composer-cache \
+            -e COMPOSER_CACHE_DIR=/tmp/composer-cache \
+            -w /app \
+            composer:2 \
+            sh -lc "composer install --prefer-dist --no-interaction --no-progress"
+
+      - name: Setup Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          driver: docker-container
+
+      - name: Build PHP image
+        uses: docker/build-push-action@v5
+        with:
+          builder: ${{ steps.buildx.outputs.name }}
+          context: .
+          file: Dockerfile
+          push: false
+          load: true
+          tags: tech-challenge_php:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Lint (php-cs-fixer dry-run)
+        id: lint
+        continue-on-error: true
+        run: docker compose run --rm -T --no-deps php vendor/bin/php-cs-fixer fix --dry-run --diff --using-cache=no
+
+      - name: Static analysis (phpstan)
+        id: phpstan
+        continue-on-error: true
+        run: docker compose run --rm -T --no-deps php vendor/bin/phpstan analyse src --no-interaction --no-progress --error-format=github
+
+      - name: Run tests and generate coverage
+        id: tests
+        continue-on-error: true
+        run: |
+          docker compose run --rm -T --no-deps php vendor/bin/phpunit --configuration phpunit.xml \
+            --coverage-clover=coverage/clover.xml --coverage-html=coverage/html --log-junit=coverage/junit.xml
+
+      - name: Upload coverage HTML
+        if: ${{ steps.tests.outcome == 'success' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-html
+          path: coverage/html
+
+      - name: Upload coverage clover
+        if: ${{ steps.tests.outcome == 'success' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-clover
+          path: coverage/clover.xml
+
+      - name: Upload junit report
+        if: ${{ steps.tests.outcome == 'success' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: junit
+          path: coverage/junit.xml
+
+      - name: SonarCloud Scan
+        id: sonar
+        if: ${{ steps.tests.outcome == 'success' && env.SONAR_TOKEN && env.SONAR_DISABLE_CI != 'true' }}
+        continue-on-error: true
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_DISABLE_CI: ${{ secrets.SONAR_DISABLE_CI }}
+        uses: SonarSource/sonarqube-scan-action@master
+        with:
+          args: |
+            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
+            -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }}
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+            -Dsonar.php.coverage.reportPaths=coverage/clover.xml
+
+      - name: Fail if any step failed
+        if: always()
+        run: |
+          failed=0
+          if [ "${{ steps.lint.outcome }}" != "success" ]; then echo "lint failed: ${{ steps.lint.outcome }}"; failed=1; fi
+          if [ "${{ steps.phpstan.outcome }}" != "success" ]; then echo "phpstan failed: ${{ steps.phpstan.outcome }}"; failed=1; fi
+          if [ "${{ steps.tests.outcome }}" != "success" ]; then echo "tests failed: ${{ steps.tests.outcome }}"; failed=1; fi
+          if [ "${{ steps.sonar.outcome }}" != "success" ] && [ "${{ env.SONAR_TOKEN }}" != "" ]; then echo "sonar failed: ${{ steps.sonar.outcome }}"; failed=1; fi
+          if [ "$failed" -ne 0 ]; then exit 1; fi

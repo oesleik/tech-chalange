@@ -1,4 +1,6 @@
 .env
 vendor/
+coverage/
 .env.swp
 .php-cs-fixer.cache
+.phpunit.result.cache
