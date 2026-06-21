@@ -37,7 +37,15 @@ jobs:
             sh -lc "composer install --prefer-dist --no-interaction --no-progress"
 
       - name: Build PHP image
-        run: docker compose build php
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile
+          push: false
+          load: true
+          tags: tech-challenge_php:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Lint (php-cs-fixer dry-run)
         id: lint
