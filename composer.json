@@ -33,4 +33,16 @@
         "optimize-autoloader": true,
         "sort-packages": true
     }
+    ,
+    "scripts": {
+        "lint": "vendor/bin/php-cs-fixer fix --dry-run --diff --using-cache=no",
+        "phpstan": "vendor/bin/phpstan analyse src",
+        "test": "vendor/bin/phpunit",
+        "test:coverage": "vendor/bin/phpunit --coverage-clover=coverage/clover.xml --coverage-html=coverage/html",
+        "ci": [
+            "@lint",
+            "@phpstan",
+            "@test:coverage"
+        ]
+    }
 }

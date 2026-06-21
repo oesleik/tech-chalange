@@ -1,0 +1,82 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Cache Composer
+        uses: actions/cache@v4
+        id: composer-cache
+        with:
+          path: ~/.composer/cache
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Install dependencies (composer)
+        run: |
+          docker run --rm \
+            -v ${{ github.workspace }}:/app \
+            -v $HOME/.composer/cache:/tmp/composer-cache \
+            -e COMPOSER_CACHE_DIR=/tmp/composer-cache \
+            -w /app \
+            composer:2 \
+            sh -lc "composer install --prefer-dist --no-interaction --no-progress"
+
+      - name: Build PHP image
+        run: docker compose build php
+
+      - name: Lint (php-cs-fixer dry-run)
+        run: docker compose run --rm -T php vendor/bin/php-cs-fixer fix --dry-run --diff --using-cache=no
+
+      - name: Static analysis (phpstan)
+        run: docker compose run --rm -T php vendor/bin/phpstan analyse src --no-interaction --no-progress --error-format=github
+
+      - name: Run tests and generate coverage
+        run: |
+          docker compose run --rm -T php vendor/bin/phpunit --configuration phpunit.xml \
+            --coverage-clover=coverage/clover.xml --coverage-html=coverage/html --log-junit=coverage/junit.xml
+
+      - name: Upload coverage HTML
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-html
+          path: coverage/html
+
+      - name: Upload coverage clover
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-clover
+          path: coverage/clover.xml
+
+      - name: Upload junit report
+        uses: actions/upload-artifact@v4
+        with:
+          name: junit
+          path: coverage/junit.xml
+
+      - name: SonarCloud Scan
+        if: ${{ secrets.SONAR_TOKEN != '' }}
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: |
+            -Dsonar.php.coverage.reportPaths=coverage/clover.xml
+
+      - name: Wait for SonarCloud Quality Gate
+        if: ${{ secrets.SONAR_TOKEN != '' }}
+        uses: sonarsource/sonarcloud-quality-gate-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
