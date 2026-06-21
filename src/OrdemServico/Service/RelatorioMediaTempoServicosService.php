@@ -30,13 +30,13 @@ class RelatorioMediaTempoServicosService {
 			ORDER BY ((total_tempo_executando / quantidade_execucoes) * valor_unitario) DESC, s.descricao ASC
 		";
 
-		$situacoesFinalizadas = [
-			SituacaoOrdemServicoEnum::FINALIZADA->value,
-			SituacaoOrdemServicoEnum::ENTREGUE->value,
-		];
+        $situacoesFinalizadas = [
+            SituacaoOrdemServicoEnum::FINALIZADA->value,
+            SituacaoOrdemServicoEnum::ENTREGUE->value,
+        ];
 
-		$stmt = $this->pdo->prepare($query);
-		$stmt->execute([...$situacoesFinalizadas]);
+        $stmt = $this->pdo->prepare($query);
+        $stmt->execute([...$situacoesFinalizadas]);
 
         /** @var ServicoRelatorioMediaTempoServicosResponse[] */
         $servicos = [];
