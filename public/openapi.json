@@ -894,6 +894,27 @@
                 }
             }
         },
+        "/ordens-servico/relatorios/media_tempo_servicos": {
+            "get": {
+                "tags": [
+                    "Ordens de Serviço - Relatórios"
+                ],
+                "summary": "Relatório sobre média de tempo por serviço na execução de ordens de serviço",
+                "operationId": "relatorioMediaTempoServicos",
+                "responses": {
+                    "200": {
+                        "description": "Relatório sobre a média de tempo de execução por serviço",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RelatorioMediaTempoServicosResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/pecas/": {
             "get": {
                 "tags": [
@@ -1747,6 +1768,59 @@
                 },
                 "type": "object"
             },
+            "RelatorioMediaTempoServicosResponse": {
+                "properties": {
+                    "servicos": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ServicoRelatorioMediaTempoServicosResponse"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "ServicoRelatorioMediaTempoServicosResponse": {
+                "properties": {
+                    "id_servico": {
+                        "type": "integer",
+                        "example": 123
+                    },
+                    "descricao": {
+                        "type": "string",
+                        "example": "Troca de óleo"
+                    },
+                    "valor_unitario": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 49.9
+                    },
+                    "media_tempo": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 1.5
+                    },
+                    "quantidade_execucoes": {
+                        "type": "integer",
+                        "example": 3
+                    },
+                    "total_tempo_executando": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 4.5
+                    },
+                    "min_tempo_execucao": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 1.1
+                    },
+                    "max_tempo_execucao": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 2.2
+                    }
+                },
+                "type": "object"
+            },
             "ServicoOrdemServicoRequest": {
                 "properties": {
                     "id_servico": {
@@ -2001,11 +2075,13 @@
             "name": "Ordens de Serviço"
         },
         {
+            "name": "Ordens de Serviço - Peças e Serviços"
+        },
+        {
             "name": "Ordens de Serviço - Situação"
         },
         {
-            "name": "Ordens de Serviço - Peças e Serviços",
-            "description": "Ordens de Serviço - Peças e Serviços"
+            "name": "Ordens de Serviço - Relatórios"
         }
     ]
 }
