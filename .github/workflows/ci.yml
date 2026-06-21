@@ -39,9 +39,16 @@ jobs:
             composer:2 \
             sh -lc "composer install --prefer-dist --no-interaction --no-progress"
 
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          driver: docker-container
+          install: true
+
       - name: Build PHP image
         uses: docker/build-push-action@v5
         with:
+          builder: default
           context: .
           file: Dockerfile
           push: false
