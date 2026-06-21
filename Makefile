@@ -56,4 +56,15 @@ generate-jwt-secret: ## Gerar chave JWT
 	docker compose exec --user "$(shell id -u):$(shell id -g)" php php src/cmd/generate-token.php
 
 generate-jwt-secret-ordem-servico: ## Gerar chave JWT para Ordem de Serviço
-	docker compose exec --user "$(shell id -u):$(shell id -g)" php php src/cmd/generate-token-ordem-servico.php
+	docker compose exec php php src/cmd/generate-token-ordem-servico.php
+
+security-scan: ## Rodar scan de vulnerabilidades (OWASP ZAP)
+	@mkdir -p docs/security
+	docker run --rm \
+		--network host \
+		-v "$(PWD)/docs/security:/zap/wrk/:rw" \
+		-t zaproxy/zap-stable \
+		zap-baseline.py \
+		-t http://localhost/ \
+		-r zap-baseline-report.html \
+		-J zap-baseline-report.json

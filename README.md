@@ -138,3 +138,39 @@ make help
 - Em **produção**, altere todas as senhas do `.env` e defina `APP_DEBUG=false`.
 - O diretório `vendor/` é gerenciado automaticamente pelo container — não é necessário rodar `composer install` manualmente.
 - Scripts `.sql` colocados em `docker/mysql/init/` são executados automaticamente na **primeira criação** do banco.
+
+## 🔐 Autenticação (JWT)
+
+As rotas administrativas são protegidas por JWT. Gere um token manualmente:
+
+```bash
+make generate-jwt-secret
+```
+
+No Swagger UI (`/docs`), clique em **Authorize** 🔓 no topo da página e cole o token.
+
+> ⚠️ O token expira conforme `JWT_TTL` no `.env` (padrão: 3600 segundos / 1 hora). Gere um novo quando expirar.
+
+## 🛡️ Análise de Vulnerabilidades (OWASP ZAP)
+
+O projeto utiliza o [OWASP ZAP](https://www.zaproxy.org/) para análise de segurança via scan de baseline. Não requer instalação, roda direto via Docker.
+
+Com o ambiente no ar (`make up`), rode:
+
+```bash
+make security-scan
+```
+
+O scan roda o spider por ~1 minuto e faz análise passiva (sem ataques ativos), reportando problemas de headers de segurança, vazamento de informações, cookies, etc.
+
+Os relatórios são gerados em `docs/security/`:
+- `zap-baseline-report.html` — relatório visual (abra no navegador)
+- `zap-baseline-report.json` — relatório em formato JSON
+
+Para visualizar:
+
+```bash
+xdg-open docs/security/zap-baseline-report.html
+```
+
+> ℹ️ Esse scan é uma atividade pontual para gerar o relatório de vulnerabilidades. Rode novamente apenas se quiser comparar resultados após correções de segurança.
