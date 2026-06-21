@@ -67,16 +67,16 @@ jobs:
           path: coverage/junit.xml
 
       - name: SonarCloud Scan
-        if: ${{ secrets.SONAR_TOKEN != '' }}
-        uses: SonarSource/sonarcloud-github-action@master
+        if: ${{ env.SONAR_TOKEN }}
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        uses: SonarSource/sonarcloud-github-action@master
         with:
           args: |
             -Dsonar.php.coverage.reportPaths=coverage/clover.xml
 
       - name: Wait for SonarCloud Quality Gate
-        if: ${{ secrets.SONAR_TOKEN != '' }}
-        uses: sonarsource/sonarcloud-quality-gate-action@master
+        if: ${{ env.SONAR_TOKEN }}
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        uses: sonarsource/sonarcloud-quality-gate-action@master
