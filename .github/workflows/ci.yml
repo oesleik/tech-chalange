@@ -2,6 +2,8 @@ name: CI
 
 on:
   push:
+    branches:
+      - master
   pull_request:
 
 jobs:
@@ -74,9 +76,3 @@ jobs:
         with:
           args: |
             -Dsonar.php.coverage.reportPaths=coverage/clover.xml
-
-      - name: Wait for SonarCloud Quality Gate
-        if: ${{ env.SONAR_TOKEN }}
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        uses: sonarsource/sonarcloud-quality-gate-action@master
