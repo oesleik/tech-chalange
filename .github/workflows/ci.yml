@@ -5,6 +5,7 @@ on:
     branches:
       - master
   pull_request:
+    types: [opened, synchronize, reopened]
 
 jobs:
   ci:
@@ -97,10 +98,11 @@ jobs:
 
       - name: SonarCloud Scan
         id: sonar
-        if: ${{ steps.tests.outcome == 'success' && env.SONAR_TOKEN }}
+        if: ${{ steps.tests.outcome == 'success' && env.SONAR_TOKEN && env.SONAR_DISABLE_CI != 'true' }}
         continue-on-error: true
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_DISABLE_CI: ${{ secrets.SONAR_DISABLE_CI }}
         uses: SonarSource/sonarqube-scan-action@master
         with:
           args: |
