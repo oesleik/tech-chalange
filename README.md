@@ -144,13 +144,7 @@ make help
 As rotas administrativas são protegidas por JWT. Gere um token manualmente:
 
 ```bash
-docker compose exec php php -r "
-require 'vendor/autoload.php';
-\$container = (new App\Core\ServiceContainerBuilder())->build();
-\$jwtService = \$container->get(App\Core\Auth\JwtService::class);
-echo \$jwtService->generate(['user_id' => 1]);
-echo PHP_EOL;
-"
+make generate-jwt-secret
 ```
 
 No Swagger UI (`/docs`), clique em **Authorize** 🔓 no topo da página e cole o token.
