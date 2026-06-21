@@ -24,6 +24,7 @@ services:
   # PHP-FPM 8.4 — Processador PHP
   # --------------------------------------------------
   php:
+    image: tech-challenge_php:ci
     build:
       context: .
       dockerfile: Dockerfile

@@ -8,7 +8,7 @@ new-migration: ## Criar uma nova migration do banco de dados
 	docker compose exec --user "$(shell id -u):$(shell id -g)" php php src/cmd/migrations/create.php
 
 migrate: ## Rodar migrations do banco de dados
-	docker compose exec php php src/cmd/migrations/migrate.php
+	docker compose exec --user "$(shell id -u):$(shell id -g)" php php src/cmd/migrations/migrate.php
 
 require: ## Instalar uma nova dependência no composer
 	printf "Package name: "; \
@@ -16,19 +16,20 @@ require: ## Instalar uma nova dependência no composer
 	if [ -z "$$pkg" ]; then \
 		echo "package is required"; exit 1; \
 	fi; \
-	docker compose exec php composer require "$$pkg"
+	docker compose exec --user "$(shell id -u):$(shell id -g)" php composer require "$$pkg"
 
 shell: ## Abrir terminal dentro do container
-	docker compose exec php bash
+	docker compose exec --user "$(shell id -u):$(shell id -g)" php bash
 
 test: ## Rodar testes unitários
-	docker compose exec php vendor/bin/phpunit src
+	docker compose exec --user "$(shell id -u):$(shell id -g)" php vendor/bin/phpunit src && \
+	echo "Open coverage/index.html on your browser to see coverage results"
 
 format: ## Rodar o formatter (php-cs-fixer)
 	docker compose exec --user "$(shell id -u):$(shell id -g)" php vendor/bin/php-cs-fixer fix
 
 lint: ## Rodar o linter (phpstan)
-	docker compose exec php vendor/bin/phpstan analyse src
+	docker compose exec --user "$(shell id -u):$(shell id -g)" php vendor/bin/phpstan analyse src
 
 api-docs: ## Gerar documentação swagger da API
 	docker compose exec --user "$(shell id -u):$(shell id -g)" php vendor/bin/openapi src -o public/openapi.json
@@ -52,7 +53,7 @@ destroy: ## Interrompe os containers e remove os volumes (inclusive o banco de d
 	docker compose down -v
 
 generate-jwt-secret: ## Gerar chave JWT
-	docker compose exec php php src/cmd/generate-token.php
+	docker compose exec --user "$(shell id -u):$(shell id -g)" php php src/cmd/generate-token.php
 
 generate-jwt-secret-ordem-servico: ## Gerar chave JWT para Ordem de Serviço
 	docker compose exec php php src/cmd/generate-token-ordem-servico.php

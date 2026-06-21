@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\OrdemServico\Controller;
 
-use App\OrdemServico\Contract\OrdemServicoResponse;
 use App\OrdemServico\Model\SituacaoOrdemServicoEnum;
 use App\OrdemServico\Service\OrdemServicoService;
 use App\Core\Contract\ContractResolver;
+use App\OrdemServico\Contract\OrdemServicoResumidaResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use OpenApi\Attributes as OA;
@@ -77,7 +77,7 @@ class AtualizarSituacaoEmailController {
                 $novaSituacao
             );
 
-            $output = OrdemServicoResponse::fromModel($ordemServicoAtualizada);
+            $output = OrdemServicoResumidaResponse::fromModel($ordemServicoAtualizada);
 
             $response->getBody()->write($this->contractResolver->toJson($output));
             return $response->withHeader('Content-Type', 'application/json');
