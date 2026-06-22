@@ -612,6 +612,44 @@
                 }
             }
         },
+        "/ordens-servico/filtrar": {
+            "post": {
+                "tags": [
+                    "Ordens de Serviço"
+                ],
+                "summary": "Filtrar Ordens de Serviço",
+                "description": "Filtra ordens de serviço por situação, cliente e/ou veículo",
+                "operationId": "filtrarOrdensServico",
+                "requestBody": {
+                    "description": "Filtros para busca",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/FiltrarOrdensServicoRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Lista de Ordens de Serviço filtradas",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/OrdemServicoResumidaResponse"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Dados inválidos"
+                    }
+                }
+            }
+        },
         "/ordens-servico/{id}/pecas": {
             "put": {
                 "tags": [
@@ -1597,6 +1635,29 @@
                     "id_veiculo": {
                         "type": "integer",
                         "example": 789
+                    }
+                },
+                "type": "object"
+            },
+            "FiltrarOrdensServicoRequest": {
+                "properties": {
+                    "situacao": {
+                        "description": "Situação da Ordem de Serviço",
+                        "type": "string",
+                        "example": "Aprovada",
+                        "nullable": true
+                    },
+                    "id_cliente": {
+                        "description": "ID do Cliente",
+                        "type": "integer",
+                        "example": 123,
+                        "nullable": true
+                    },
+                    "id_veiculo": {
+                        "description": "ID do Veículo",
+                        "type": "integer",
+                        "example": 456,
+                        "nullable": true
                     }
                 },
                 "type": "object"
