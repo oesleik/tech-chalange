@@ -11,24 +11,19 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
 abstract class AbstractJwtMiddleware implements MiddlewareInterface {
-    protected bool $useTokenQueryParam = false;
 
     public function __construct(
         protected readonly AbstractJwtService $jwtService,
         protected readonly ResponseFactoryInterface $responseFactory,
     ) {}
 
+    abstract protected function getTokenFromRequest(ServerRequestInterface $request): ?string;
+
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface {
-        $token = $this->resolveToken($request);
+        $token = $this->getTokenFromRequest($request);
 
         if ($token === null) {
-            $message = 'Token não informado.';
-            if ($this->useTokenQueryParam) {
-                $message .= ' Use o header Authorization: Bearer <token> ou o parâmetro ?token=<token> na URL.';
-            } else {
-                $message .= ' Use o header Authorization: Bearer <token>.';
-            }
-            return $this->unauthorized($message);
+            return $this->unauthorized("Token não informado.");
         }
 
         try {
@@ -38,22 +33,6 @@ abstract class AbstractJwtMiddleware implements MiddlewareInterface {
         } catch (JwtException $e) {
             return $this->unauthorized($e->getMessage());
         }
-    }
-
-    private function resolveToken(ServerRequestInterface $request): ?string {
-        $authHeader = $request->getHeaderLine('Authorization');
-        if (!empty($authHeader) && str_starts_with($authHeader, 'Bearer ')) {
-            return substr($authHeader, 7);
-        }
-
-        if ($this->useTokenQueryParam) {
-            $queryParams = $request->getQueryParams();
-            if (!empty($queryParams['token'])) {
-                return $queryParams['token'];
-            }
-        }
-
-        return null;
     }
 
     private function unauthorized(string $message): ResponseInterface {

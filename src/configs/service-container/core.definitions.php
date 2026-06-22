@@ -48,13 +48,4 @@ return [
     EmailService::class => fn(\DI\Container $c) => new EmailService(
         $c->get(EmailConfig::class),
     ),
-
-    EnviarOrcamentoOrdemServicoEmailService::class => fn(\DI\Container $c) => new EnviarOrcamentoOrdemServicoEmailService(
-        ordemServicoService: $c->get(OrdemServicoService::class),
-        itensOrdemServicoService: $c->get(ItensOrdemServicoService::class),
-        clienteService: $c->get(ClienteService::class),
-        jwtOrdemServicoService: $c->get(JwtOrdemServicoService::class),
-        emailService: $c->get(EmailService::class),
-        appConfig: $c->get(AppConfig::class),
-    ),
 ];
