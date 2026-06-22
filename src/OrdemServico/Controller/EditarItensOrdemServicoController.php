@@ -86,10 +86,9 @@ class EditarItensOrdemServicoController {
         ServerRequestInterface $request,
         ResponseInterface $response,
     ): ResponseInterface {
-        $handler = function (OrdemServicoModel $ordemServico, PecasOrdemServicoRequest $req): OrdemServicoModel {
+        $handler = function (OrdemServicoModel $ordemServico, PecasOrdemServicoRequest $req): void {
             $pecas = $req->toPecasOrdemServicoModelArray();
             $this->itensService->adicionarPecas($ordemServico, $pecas);
-            return $ordemServico;
         };
 
         return $this->editarItens($id, $request, $response, PecasOrdemServicoRequest::class, "id_peca", $handler);
@@ -100,10 +99,9 @@ class EditarItensOrdemServicoController {
         ServerRequestInterface $request,
         ResponseInterface $response,
     ): ResponseInterface {
-        $handler = function (OrdemServicoModel $ordemServico, PecasOrdemServicoRequest $req): OrdemServicoModel {
+        $handler = function (OrdemServicoModel $ordemServico, PecasOrdemServicoRequest $req): void {
             $pecas = $req->toPecasOrdemServicoModelArray();
             $this->itensService->atualizarPecas($ordemServico, $pecas);
-            return $ordemServico;
         };
 
         return $this->editarItens($id, $request, $response, PecasOrdemServicoRequest::class, "id_peca", $handler);
@@ -114,10 +112,9 @@ class EditarItensOrdemServicoController {
         ServerRequestInterface $request,
         ResponseInterface $response,
     ): ResponseInterface {
-        $handler = function (OrdemServicoModel $ordemServico, ServicosOrdemServicoRequest $req): OrdemServicoModel {
+        $handler = function (OrdemServicoModel $ordemServico, ServicosOrdemServicoRequest $req): void {
             $servicos = $req->toServicosOrdemServicoModelArray();
             $this->itensService->adicionarServicos($ordemServico, $servicos);
-            return $ordemServico;
         };
 
         return $this->editarItens($id, $request, $response, ServicosOrdemServicoRequest::class, "id_servico", $handler);
@@ -128,10 +125,9 @@ class EditarItensOrdemServicoController {
         ServerRequestInterface $request,
         ResponseInterface $response,
     ): ResponseInterface {
-        $handler = function (OrdemServicoModel $ordemServico, ServicosOrdemServicoRequest $req): OrdemServicoModel {
+        $handler = function (OrdemServicoModel $ordemServico, ServicosOrdemServicoRequest $req): void {
             $servicos = $req->toServicosOrdemServicoModelArray();
             $this->itensService->atualizarServicos($ordemServico, $servicos);
-            return $ordemServico;
         };
 
         return $this->editarItens($id, $request, $response, ServicosOrdemServicoRequest::class, "id_servico", $handler);
@@ -140,7 +136,7 @@ class EditarItensOrdemServicoController {
     /**
      * @template T of AbstractContract
      * @param class-string<T> $contractClass
-     * @param Closure(OrdemServicoModel $ordemServico, T $contract):OrdemServicoModel $handler
+     * @param Closure(OrdemServicoModel $ordemServico, T $contract):void $handler
      */
     private function editarItens(
         int $id,
@@ -164,8 +160,10 @@ class EditarItensOrdemServicoController {
                 return $response->withStatus(422, "A ordem de serviço já está finalizada");
             }
 
-            $ordemServico = $handler($ordemServico, $contract);
+            $handler($ordemServico, $contract);
 
+			// Obtendo dados atualizados
+			$ordemServico = $this->ordemServicoService->obterOrdemServicoPorId($id);
             $pecas = $this->itensService->obterPecasPorIdOrdemServico($ordemServico->getId());
             $servicos = $this->itensService->obterServicosPorIdOrdemServico($ordemServico->getId());
 

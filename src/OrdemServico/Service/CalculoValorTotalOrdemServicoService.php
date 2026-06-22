@@ -8,7 +8,7 @@ use App\Core\AppDatabase;
 use App\OrdemServico\ValueObject\ValorTotalValue;
 use PDO;
 
-class CalculoValorTotaOrdemServicoService {
+class CalculoValorTotalOrdemServicoService {
     public function __construct(
         private AppDatabase $pdo,
         private OrdemServicoService $ordemServicoService
@@ -37,7 +37,7 @@ class CalculoValorTotaOrdemServicoService {
 
         $total = 0;
         foreach ($itens as $item) {
-            $total += $this->safeMultiplicacaoQuantidadePorValor($item->quantidade, $item->valor_unitario);
+            $total += $this->safeMultiplicacaoQuantidadePorValor(intval($item->quantidade), floatval($item->valor_unitario));
         }
 
         return $total;
@@ -55,7 +55,7 @@ class CalculoValorTotaOrdemServicoService {
 
         $total = 0;
         foreach ($itens as $item) {
-            $total += $this->safeMultiplicacaoQuantidadePorValor($item->quantidade, $item->valor_unitario);
+            $total += $this->safeMultiplicacaoQuantidadePorValor(intval($item->quantidade), floatval($item->valor_unitario));
         }
 
         return $total;
