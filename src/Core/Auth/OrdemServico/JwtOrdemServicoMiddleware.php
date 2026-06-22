@@ -12,7 +12,7 @@ class JwtOrdemServicoMiddleware extends AbstractJwtMiddleware {
     public function __construct(JwtOrdemServicoService $jwtOrdemServicoService, ResponseFactoryInterface $responseFactory) {
         parent::__construct($jwtOrdemServicoService, $responseFactory);
     }
-    
+
     protected function getTokenFromRequest(ServerRequestInterface $request): ?string {
         $queryParams = $request->getQueryParams();
         if (!empty($queryParams['token'])) {

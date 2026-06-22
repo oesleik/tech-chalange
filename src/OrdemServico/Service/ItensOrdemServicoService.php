@@ -19,7 +19,12 @@ class ItensOrdemServicoService {
 
     /** @return PecaOrdemServicoModel[] */
     public function obterPecasPorIdOrdemServico(int $idOrdemServico): array {
-        $stmt = $this->pdo->prepare("SELECT * FROM pecas_ordem_servico WHERE id_ordem_servico = ?");
+        $stmt = $this->pdo->prepare(
+            "SELECT pos.id_peca, pos.quantidade, p.valor_unitario
+             FROM pecas_ordem_servico pos
+             JOIN pecas p ON p.id = pos.id_peca
+             WHERE pos.id_ordem_servico = ?"
+        );
         $stmt->execute([$idOrdemServico]);
         $pecas = [];
 
@@ -27,6 +32,7 @@ class ItensOrdemServicoService {
             $pecas[] = new PecaOrdemServicoModel(
                 idPeca: $row->id_peca,
                 quantidade: $row->quantidade,
+                valorUnitario: isset($row->valor_unitario) ? floatval($row->valor_unitario) : null,
             );
         }
 
@@ -64,7 +70,12 @@ class ItensOrdemServicoService {
 
     /** @return ServicoOrdemServicoModel[] */
     public function obterServicosPorIdOrdemServico(int $idOrdemServico): array {
-        $stmt = $this->pdo->prepare("SELECT * FROM servicos_ordem_servico WHERE id_ordem_servico = ?");
+        $stmt = $this->pdo->prepare(
+            "SELECT sos.id_servico, sos.quantidade, s.valor_unitario
+             FROM servicos_ordem_servico sos
+             JOIN servicos s ON s.id = sos.id_servico
+             WHERE sos.id_ordem_servico = ?"
+        );
         $stmt->execute([$idOrdemServico]);
         $servicos = [];
 
@@ -72,6 +83,7 @@ class ItensOrdemServicoService {
             $servicos[] = new ServicoOrdemServicoModel(
                 idServico: $row->id_servico,
                 quantidade: $row->quantidade,
+                valorUnitario: isset($row->valor_unitario) ? floatval($row->valor_unitario) : null,
             );
         }
 

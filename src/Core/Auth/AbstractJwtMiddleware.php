@@ -11,7 +11,6 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
 abstract class AbstractJwtMiddleware implements MiddlewareInterface {
-
     public function __construct(
         protected readonly AbstractJwtService $jwtService,
         protected readonly ResponseFactoryInterface $responseFactory,

@@ -39,8 +39,8 @@ class EnviarOrcamentoOrdemServicoEmailService {
             'id_ordem_servico' => $idOrdemServico,
         ]);
 
-        $baseUrl     = rtrim($this->appConfig->getBaseUrl(), '/');
-        $urlAprovada = "{$baseUrl}/email/ordens-servico/aprovada?token={$token}";
+        $baseUrl      = rtrim($this->appConfig->getBaseUrl(), '/');
+        $urlAprovada  = "{$baseUrl}/email/ordens-servico/aprovada?token={$token}";
         $urlRejeitada = "{$baseUrl}/email/ordens-servico/rejeitada?token={$token}";
 
         $valorTotal = $ordemServico->getValorTotal();
@@ -67,6 +67,10 @@ class EnviarOrcamentoOrdemServicoEmailService {
         );
     }
 
+    private function formatarMoeda(float $valor): string {
+        return 'R$ ' . number_format($valor, 2, ',', '.');
+    }
+
     /**
      * @param \App\OrdemServico\Model\PecaOrdemServicoModel[]    $pecas
      * @param \App\OrdemServico\Model\ServicoOrdemServicoModel[] $servicos
@@ -82,37 +86,65 @@ class EnviarOrcamentoOrdemServicoEmailService {
     ): string {
         $linhasPecas = '';
         foreach ($pecas as $peca) {
+            $valorUnitario = $peca->getValorUnitario();
+            $valorUnitarioFormatado = $valorUnitario !== null
+                ? $this->formatarMoeda($valorUnitario)
+                : '—';
+            $subtotalFormatado = $valorUnitario !== null
+                ? $this->formatarMoeda($valorUnitario * $peca->getQuantidade())
+                : '—';
+
             $linhasPecas .= sprintf(
                 '<tr>
                     <td style="padding:8px;border-bottom:1px solid #eee;">Peça #%d</td>
                     <td style="padding:8px;border-bottom:1px solid #eee;text-align:center;">%d</td>
+                    <td style="padding:8px;border-bottom:1px solid #eee;text-align:right;">%s</td>
+                    <td style="padding:8px;border-bottom:1px solid #eee;text-align:right;font-weight:bold;">%s</td>
                 </tr>',
                 $peca->getIdPeca(),
                 $peca->getQuantidade(),
+                $valorUnitarioFormatado,
+                $subtotalFormatado,
             );
         }
 
         $linhasServicos = '';
         foreach ($servicos as $servico) {
+            $valorUnitario = $servico->getValorUnitario();
+            $valorUnitarioFormatado = $valorUnitario !== null
+                ? $this->formatarMoeda($valorUnitario)
+                : '—';
+            $subtotalFormatado = $valorUnitario !== null
+                ? $this->formatarMoeda($servico->getSubtotal())
+                : '—';
+
             $linhasServicos .= sprintf(
                 '<tr>
                     <td style="padding:8px;border-bottom:1px solid #eee;">Serviço #%d</td>
                     <td style="padding:8px;border-bottom:1px solid #eee;text-align:center;">%d</td>
+                    <td style="padding:8px;border-bottom:1px solid #eee;text-align:right;">%s</td>
+                    <td style="padding:8px;border-bottom:1px solid #eee;text-align:right;font-weight:bold;">%s</td>
                 </tr>',
                 $servico->getIdServico(),
                 $servico->getQuantidade(),
+                $valorUnitarioFormatado,
+                $subtotalFormatado,
             );
         }
+
+        $cabecalhoTabela = "<thead>
+            <tr style='background:#f5f5f5;'>
+                <th style='padding:8px;text-align:left;'>Descrição</th>
+                <th style='padding:8px;text-align:center;'>Qtd</th>
+                <th style='padding:8px;text-align:right;'>Valor Unit.</th>
+                <th style='padding:8px;text-align:right;'>Subtotal</th>
+            </tr>
+        </thead>";
 
         $tabelaPecas = $linhasPecas !== ''
             ? "<h3 style='color:#444;'>Peças</h3>
                <table width='100%' cellpadding='0' cellspacing='0' style='border-collapse:collapse;'>
-                   <thead>
-                       <tr style='background:#f5f5f5;'>
-                           <th style='padding:8px;text-align:left;'>Descrição</th>
-                           <th style='padding:8px;text-align:center;'>Qtd</th>
-                       </tr>
-                   </thead>
+                   {$cabecalhoTabela}
                    <tbody>{$linhasPecas}</tbody>
                </table>"
             : '';
@@ -120,12 +152,7 @@ class EnviarOrcamentoOrdemServicoEmailService {
         $tabelaServicos = $linhasServicos !== ''
             ? "<h3 style='color:#444;margin-top:20px;'>Serviços</h3>
                <table width='100%' cellpadding='0' cellspacing='0' style='border-collapse:collapse;'>
-                   <thead>
-                       <tr style='background:#f5f5f5;'>
-                           <th style='padding:8px;text-align:left;'>Descrição</th>
-                           <th style='padding:8px;text-align:center;'>Qtd</th>
-                       </tr>
-                   </thead>
+                   {$cabecalhoTabela}
                    <tbody>{$linhasServicos}</tbody>
                </table>"
             : '';
