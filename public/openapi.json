@@ -19,6 +19,17 @@
                 ],
                 "summary": "Listar clientes cadastrados",
                 "operationId": "listarClientes",
+                "parameters": [
+                    {
+                        "name": "cpfCnpj",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "CPF ou CNPJ para filtrar clientes (aceita pontos/traços)"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Lista de clientes encontrados",

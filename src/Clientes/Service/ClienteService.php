@@ -17,11 +17,25 @@ class ClienteService {
     ) {}
 
     /** @return ClienteModel[] */
-    public function listarClientes(): array {
-        $result = $this->pdo->query("SELECT * FROM clientes", PDO::FETCH_OBJ);
-        $clientes = [];
+    public function listarClientes(?string $cpfCnpj = null): array {
+        if ($cpfCnpj === null) {
+            $result = $this->pdo->query("SELECT * FROM clientes", PDO::FETCH_OBJ);
+            $clientes = [];
 
-        foreach ($result as $row) {
+            foreach ($result as $row) {
+                $clientes[] = $this->gerarModelPorRow($row);
+            }
+
+            return $clientes;
+        }
+
+        // Normalizar: remover caracteres não numéricos
+        $clean = preg_replace('/\D/', '', $cpfCnpj) ?: $cpfCnpj;
+        $stmt = $this->pdo->prepare("SELECT * FROM clientes WHERE cpf_cnpj = ?");
+        $stmt->execute([$clean]);
+
+        $clientes = [];
+        while ($row = $stmt->fetchObject()) {
             $clientes[] = $this->gerarModelPorRow($row);
         }
 
