@@ -613,23 +613,48 @@
             }
         },
         "/ordens-servico/filtrar": {
-            "post": {
+            "get": {
                 "tags": [
                     "Ordens de Serviço"
                 ],
                 "summary": "Filtrar Ordens de Serviço",
                 "description": "Filtra ordens de serviço por situação, cliente e/ou veículo",
                 "operationId": "filtrarOrdensServico",
-                "requestBody": {
-                    "description": "Filtros para busca",
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/FiltrarOrdensServicoRequest"
-                            }
+                "parameters": [
+                    {
+                        "name": "situacao",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "clienteId",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "veiculoId",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
                         }
                     }
-                },
+                    ,
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Lista de Ordens de Serviço filtradas",
@@ -1651,6 +1676,12 @@
                         "description": "ID do Cliente",
                         "type": "integer",
                         "example": 123,
+                        "nullable": true
+                    },
+                    "id": {
+                        "description": "ID da Ordem de Serviço",
+                        "type": "integer",
+                        "example": 100,
                         "nullable": true
                     },
                     "id_veiculo": {

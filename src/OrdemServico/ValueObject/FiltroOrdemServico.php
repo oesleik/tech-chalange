@@ -11,6 +11,7 @@ readonly class FiltroOrdemServico {
         private ?SituacaoOrdemServicoEnum $situacao = null,
         private ?int $idCliente = null,
         private ?int $idVeiculo = null,
+        private ?int $idOrdem = null,
     ) {}
 
     public function getSituacao(): ?SituacaoOrdemServicoEnum {
@@ -25,8 +26,12 @@ readonly class FiltroOrdemServico {
         return $this->idVeiculo;
     }
 
+    public function getIdOrdem(): ?int {
+        return $this->idOrdem;
+    }
+
     public function temFiltroAtivo(): bool {
-        return $this->situacao !== null || $this->idCliente !== null || $this->idVeiculo !== null;
+        return $this->situacao !== null || $this->idCliente !== null || $this->idVeiculo !== null || $this->idOrdem !== null;
     }
 
     public static function fromArray(array $dados): self {
@@ -43,6 +48,7 @@ readonly class FiltroOrdemServico {
             situacao: $situacao,
             idCliente: isset($dados['id_cliente']) ? (int) $dados['id_cliente'] : null,
             idVeiculo: isset($dados['id_veiculo']) ? (int) $dados['id_veiculo'] : null,
+            idOrdem: isset($dados['id']) ? (int) $dados['id'] : null,
         );
     }
 }

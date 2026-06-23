@@ -104,6 +104,11 @@ class OrdemServicoService {
             $params[] = $filtro->getIdVeiculo();
         }
 
+        if ($filtro->getIdOrdem() !== null) {
+            $sql .= " AND id = ?";
+            $params[] = $filtro->getIdOrdem();
+        }
+
         $sql .= " ORDER BY data_solicitacao DESC";
 
         $stmt = $this->pdo->prepare($sql);

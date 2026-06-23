@@ -16,17 +16,17 @@ use Psr\Http\Message\ServerRequestInterface;
 use OpenApi\Attributes as OA;
 
 class FiltrarOrdensServicoController {
-    #[OA\Post(
+    #[OA\Get(
         path: '/ordens-servico/filtrar',
         operationId: 'filtrarOrdensServico',
         summary: 'Filtrar Ordens de Serviço',
         description: 'Filtra ordens de serviço por situação, cliente e/ou veículo',
         tags: ['Ordens de Serviço']
     )]
-    #[OA\RequestBody(
-        description: 'Filtros para busca',
-        content: new OA\JsonContent(ref: '#/components/schemas/FiltrarOrdensServicoRequest')
-    )]
+    #[OA\Parameter(name: 'situacao', in: 'query', required: false, schema: new OA\Schema(type: 'string'))]
+    #[OA\Parameter(name: 'clienteId', in: 'query', required: false, schema: new OA\Schema(type: 'integer'))]
+    #[OA\Parameter(name: 'veiculoId', in: 'query', required: false, schema: new OA\Schema(type: 'integer'))]
+    #[OA\Parameter(name: 'id', in: 'query', required: false, schema: new OA\Schema(type: 'integer'))]
     #[OA\Response(
         response: 200,
         description: 'Lista de Ordens de Serviço filtradas',
@@ -46,8 +46,8 @@ class FiltrarOrdensServicoController {
         OrdemServicoService $service,
     ): ResponseInterface {
         try {
-            $payload = json_decode($request->getBody()->getContents(), true) ?? [];
-            $req = $contractResolver->fromArray($payload, FiltrarOrdensServicoRequest::class);
+            $queryParams = $request->getQueryParams() ?? [];
+            $req = $contractResolver->fromArray($queryParams, FiltrarOrdensServicoRequest::class);
 
             $filtroOrdemServico = $req->toFiltroOrdemServico();
             $ordensServico = $service->filtrarOrdensServico($filtroOrdemServico);
