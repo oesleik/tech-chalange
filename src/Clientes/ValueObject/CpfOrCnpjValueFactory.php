@@ -4,14 +4,20 @@ declare(strict_types=1);
 
 namespace App\Clientes\ValueObject;
 
+use InvalidArgumentException;
+
 abstract class CpfOrCnpjValueFactory {
     public static function make(string $value): CpfValue|CnpjValue {
-        $cleanedValue = str_replace(['-', '.'], '', $value);
+		try {
+			return new CpfValue($value);
+		} catch (InvalidArgumentException) {
+		}
 
-        if (strlen($cleanedValue) <= 11) {
-            return new CpfValue($value);
-        }
+		try {
+			return new CnpjValue($value);
+		} catch (InvalidArgumentException) {
+		}
 
-        return new CnpjValue($value);
+		throw new InvalidArgumentException("CPF/CNPJ inválido");
     }
 }
