@@ -6,6 +6,7 @@ namespace App\OrdemServico\Service;
 
 use App\OrdemServico\Model\OrdemServicoModel;
 use App\OrdemServico\ValueObject\ValorTotalValue;
+use App\OrdemServico\ValueObject\FiltroOrdemServico;
 use App\Core\AppDatabase;
 use App\OrdemServico\Model\SituacaoOrdemServicoEnum;
 use DateTime;
@@ -83,6 +84,44 @@ class OrdemServicoService {
         return $ordensServico;
     }
 
+    /** @return OrdemServicoModel[] */
+    public function filtrarOrdensServico(FiltroOrdemServico $filtro): array {
+        $sql = "SELECT * FROM ordens_servico WHERE 1=1";
+        $params = [];
+
+        if ($filtro->getSituacao() !== null) {
+            $sql .= " AND situacao = ?";
+            $params[] = $filtro->getSituacao()->value;
+        }
+
+        if ($filtro->getIdCliente() !== null) {
+            $sql .= " AND id_cliente = ?";
+            $params[] = $filtro->getIdCliente();
+        }
+
+        if ($filtro->getIdVeiculo() !== null) {
+            $sql .= " AND id_veiculo = ?";
+            $params[] = $filtro->getIdVeiculo();
+        }
+
+        if ($filtro->getIdOrdem() !== null) {
+            $sql .= " AND id = ?";
+            $params[] = $filtro->getIdOrdem();
+        }
+
+        $sql .= " ORDER BY data_solicitacao DESC";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
+
+        $ordensServico = [];
+        while ($row = $stmt->fetchObject()) {
+            $ordensServico[] = $this->gerarModelPorRow($row);
+        }
+
+        return $ordensServico;
+    }
+
     public function criarOrdemServico(OrdemServicoModel $ordemServico): OrdemServicoModel {
         $stmt = $this->pdo->prepare(
             "INSERT INTO ordens_servico (id_cliente, id_veiculo, situacao, valor_total, data_solicitacao)
@@ -141,12 +180,15 @@ class OrdemServicoService {
     }
 
     private function gerarModelPorRow(object $row): OrdemServicoModel {
+        // Garantir que sempre exista um ValorTotalValue (usar 0 quando nulo no banco)
+        $valorTotalValue = new ValorTotalValue(floatval($row->valor_total ?? 0));
+
         return new OrdemServicoModel(
             id: intval($row->id),
             idCliente: intval($row->id_cliente),
             idVeiculo: intval($row->id_veiculo),
             situacao: SituacaoOrdemServicoEnum::from($row->situacao),
-            valorTotal: $row->valor_total !== null ? new ValorTotalValue(floatval($row->valor_total)) : null,
+            valorTotal: $valorTotalValue,
             dataSolicitacao: new DateTime($row->data_solicitacao),
             dataAprovacao: $row->data_aprovacao !== null ? new DateTime($row->data_aprovacao) : null,
         );
