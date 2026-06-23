@@ -12,6 +12,7 @@
 		</include>
 		<exclude>
 			<directory suffix="Test.php">src</directory>
+			<directory suffix="TestStub.php">src</directory>
 		</exclude>
 	</source>
 
