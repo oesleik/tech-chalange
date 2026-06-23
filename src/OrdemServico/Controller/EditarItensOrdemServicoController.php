@@ -162,8 +162,8 @@ class EditarItensOrdemServicoController {
 
             $handler($ordemServico, $contract);
 
-			// Obtendo dados atualizados
-			$ordemServico = $this->ordemServicoService->obterOrdemServicoPorId($id);
+            // Obtendo dados atualizados
+            $ordemServico = $this->ordemServicoService->obterOrdemServicoPorId($id);
             $pecas = $this->itensService->obterPecasPorIdOrdemServico($ordemServico->getId());
             $servicos = $this->itensService->obterServicosPorIdOrdemServico($ordemServico->getId());
 

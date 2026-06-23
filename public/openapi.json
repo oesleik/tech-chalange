@@ -23,11 +23,11 @@
                     {
                         "name": "cpfCnpj",
                         "in": "query",
+                        "description": "CPF ou CNPJ para filtrar clientes",
                         "required": false,
                         "schema": {
                             "type": "string"
-                        },
-                        "description": "CPF ou CNPJ para filtrar clientes (aceita pontos/traços)"
+                        }
                     }
                 ],
                 "responses": {
@@ -560,6 +560,56 @@
                 }
             }
         },
+        "/consulta/ordem-servico": {
+            "get": {
+                "tags": [
+                    "Consulta Pública"
+                ],
+                "summary": "Consulta pública de Ordem de Serviço por CPF/CNPJ e placa do veículo",
+                "description": "Rota pública. Retorna a Ordem de Serviço mais recente vinculada ao cliente (CPF ou CNPJ) e ao veículo (placa) informados.",
+                "operationId": "consultarOrdemServicoPorVeiculo",
+                "parameters": [
+                    {
+                        "name": "cpf_cnpj",
+                        "in": "query",
+                        "description": "CPF (11 dígitos) ou CNPJ (14 dígitos) do cliente, com ou sem formatação",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "123.456.789-09"
+                        }
+                    },
+                    {
+                        "name": "placa",
+                        "in": "query",
+                        "description": "Placa do veículo (formato antigo AAA-1234 ou Mercosul AAA1A23)",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "ABC-1234"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ordem de Serviço encontrada",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OrdemServicoCompletaResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Parâmetros inválidos — CPF/CNPJ ou placa com formato incorreto"
+                    },
+                    "404": {
+                        "description": "Cliente, veículo ou Ordem de Serviço não encontrados"
+                    }
+                }
+            }
+        },
         "/ordens-servico/": {
             "get": {
                 "tags": [
@@ -619,69 +669,6 @@
                                 }
                             }
                         }
-                    }
-                }
-            }
-        },
-        "/ordens-servico/filtrar": {
-            "get": {
-                "tags": [
-                    "Ordens de Serviço"
-                ],
-                "summary": "Filtrar Ordens de Serviço",
-                "description": "Filtra ordens de serviço por situação, cliente e/ou veículo",
-                "operationId": "filtrarOrdensServico",
-                "parameters": [
-                    {
-                        "name": "situacao",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "clienteId",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    },
-                    {
-                        "name": "veiculoId",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                    ,
-                    {
-                        "name": "id",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Lista de Ordens de Serviço filtradas",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/OrdemServicoResumidaResponse"
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Dados inválidos"
                     }
                 }
             }
@@ -906,6 +893,98 @@
                     },
                     "422": {
                         "description": "Não foi possível editar os itens da ordem de serviço"
+                    }
+                }
+            }
+        },
+        "/ordens-servico/{id}/enviar-orcamento": {
+            "post": {
+                "tags": [
+                    "Ordens de Serviço"
+                ],
+                "summary": "Envia o orçamento da Ordem de Serviço por e-mail ao cliente",
+                "operationId": "enviarOrcamentoEmail",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "E-mail enviado com sucesso"
+                    },
+                    "404": {
+                        "description": "Ordem de Serviço não encontrada"
+                    },
+                    "500": {
+                        "description": "Falha ao enviar o e-mail"
+                    }
+                }
+            }
+        },
+        "/ordens-servico/filtrar": {
+            "get": {
+                "tags": [
+                    "Ordens de Serviço"
+                ],
+                "summary": "Filtrar Ordens de Serviço",
+                "description": "Filtra ordens de serviço por situação, cliente e/ou veículo",
+                "operationId": "filtrarOrdensServico",
+                "parameters": [
+                    {
+                        "name": "situacao",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "clienteId",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "veiculoId",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de Ordens de Serviço filtradas",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/OrdemServicoResponse"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Dados inválidos"
                     }
                 }
             }
@@ -1662,6 +1741,19 @@
                 },
                 "type": "object"
             },
+            "ConsultarOrdemServicoPorVeiculoEClienteRequest": {
+                "properties": {
+                    "cpf_cnpj": {
+                        "type": "string",
+                        "example": "123.456.789-09"
+                    },
+                    "placa": {
+                        "type": "string",
+                        "example": "ABC-1234"
+                    }
+                },
+                "type": "object"
+            },
             "CriarOrdemServicoRequest": {
                 "properties": {
                     "id_cliente": {
@@ -1683,16 +1775,16 @@
                         "example": "Aprovada",
                         "nullable": true
                     },
-                    "id_cliente": {
-                        "description": "ID do Cliente",
-                        "type": "integer",
-                        "example": 123,
-                        "nullable": true
-                    },
                     "id": {
                         "description": "ID da Ordem de Serviço",
                         "type": "integer",
                         "example": 100,
+                        "nullable": true
+                    },
+                    "id_cliente": {
+                        "description": "ID do Cliente",
+                        "type": "integer",
+                        "example": 123,
                         "nullable": true
                     },
                     "id_veiculo": {
@@ -2185,6 +2277,10 @@
         },
         {
             "name": "Ordens de Serviço - Relatórios"
+        },
+        {
+            "name": "Consulta Pública",
+            "description": "Consulta Pública"
         }
     ]
 }
