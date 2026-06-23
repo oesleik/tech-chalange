@@ -14,7 +14,8 @@ use PDO;
 class ItensOrdemServicoService {
     public function __construct(
         private AppDatabase $pdo,
-        private TransactionHandler $transactionHandler
+        private TransactionHandler $transactionHandler,
+		private CalculoValorTotalOrdemServicoService $atualizarValorTotalService
     ) {}
 
     /** @return PecaOrdemServicoModel[] */
@@ -54,6 +55,7 @@ class ItensOrdemServicoService {
             ]);
         }
 
+		$this->atualizarValorTotalService->calcularEAtualizar($ordemServico->getId());
         $tsx->commit();
     }
 
@@ -105,6 +107,7 @@ class ItensOrdemServicoService {
             ]);
         }
 
+		$this->atualizarValorTotalService->calcularEAtualizar($ordemServico->getId());
         $tsx->commit();
     }
 
