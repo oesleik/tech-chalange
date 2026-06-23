@@ -27,6 +27,7 @@ $app->addErrorMiddleware(
 // Rotas públicas
 $app->get('/', [BaseController::class, 'index']);
 $app->get('/health', [BaseController::class, 'health']);
+$app->get('/consulta/ordem-servico', App\OrdemServico\Controller\ConsultarOrdemServicoPorVeiculoEClienteController::class);
 
 // Rota pública validada por token, um JWT específico da Ordem de Serviço
 $app->group('/email', function (RouteCollectorProxy $group): void {

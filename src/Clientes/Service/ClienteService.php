@@ -35,6 +35,13 @@ class ClienteService {
         return $result ? $this->gerarModelPorRow($result) : null;
     }
 
+    public function obterClientePorCpfCnpj(string $cpfCnpj): ?ClienteModel {
+        $stmt = $this->pdo->prepare("SELECT * FROM clientes WHERE cpf_cnpj = ?");
+        $stmt->execute([$cpfCnpj]);
+        $result = $stmt->fetchObject();
+        return $result ? $this->gerarModelPorRow($result) : null;
+    }
+
     public function criarCliente(ClienteModel $cliente): ClienteModel {
         $stmt = $this->pdo->prepare("INSERT INTO clientes (nome, cpf_cnpj, email, telefone) VALUES (?, ?, ?, ?)");
 

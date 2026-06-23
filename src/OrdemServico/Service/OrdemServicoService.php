@@ -40,6 +40,18 @@ class OrdemServicoService {
         return $result ? $this->gerarModelPorRow($result) : null;
     }
 
+    public function obterOrdemServicoPorClienteEVeiculo(int $idCliente, int $idVeiculo): ?OrdemServicoModel {
+        $stmt = $this->pdo->prepare(
+            "SELECT * FROM ordens_servico
+             WHERE id_cliente = ? AND id_veiculo = ?
+             ORDER BY data_solicitacao DESC
+             LIMIT 1"
+        );
+        $stmt->execute([$idCliente, $idVeiculo]);
+        $result = $stmt->fetchObject();
+        return $result ? $this->gerarModelPorRow($result) : null;
+    }
+
     public function obterProximaOrdemServicoNaFila(): ?OrdemServicoModel {
         $stmt = $this->pdo->prepare("SELECT * FROM ordens_servico WHERE situacao = ? ORDER BY data_aprovacao ASC LIMIT 1");
         $stmt->execute([SituacaoOrdemServicoEnum::APROVADA->value]);

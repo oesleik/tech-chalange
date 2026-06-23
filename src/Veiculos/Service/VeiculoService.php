@@ -32,6 +32,13 @@ class VeiculoService {
         return $result ? $this->gerarModelPorRow($result) : null;
     }
 
+    public function obterVeiculoPorPlaca(string $placa): ?VeiculoModel {
+        $stmt = $this->pdo->prepare("SELECT * FROM veiculos WHERE UPPER(REPLACE(placa, '-', '')) = ?");
+        $stmt->execute([$placa]);
+        $result = $stmt->fetchObject();
+        return $result ? $this->gerarModelPorRow($result) : null;
+    }
+
     public function criarVeiculo(VeiculoModel $veiculo): VeiculoModel {
         $stmt = $this->pdo->prepare("INSERT INTO veiculos (placa, marca, modelo) VALUES (?, ?, ?)");
         $stmt->execute([
