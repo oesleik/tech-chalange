@@ -14,11 +14,11 @@ require_once __DIR__ . "/SymfonyIdentityTranslatorTestStub.php";
 
 class CpfOrCnpjTest extends CompoundConstraintTestCase {
     protected function createCompound(): Compound {
-		return new CpfOrCnpj();
+        return new CpfOrCnpj();
     }
 
     public function testNullIsValid(): void {
-		$this->validateValue(null);
+        $this->validateValue(null);
         $this->assertNoViolation();
     }
 
@@ -42,7 +42,7 @@ class CpfOrCnpjTest extends CompoundConstraintTestCase {
     #[DataProvider('provideInvalidValues')]
     public function testInvalidValueIsInvalid(string $value): void {
         $this->validateValue($value);
-		$this->assertViolationsCount(1);
+        $this->assertViolationsCount(1);
     }
 
     public static function provideInvalidValues(): \Generator {

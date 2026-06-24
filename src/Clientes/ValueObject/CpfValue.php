@@ -10,11 +10,11 @@ class CpfValue {
     public function __construct(
         private string $cpf
     ) {
-		$this->cpf = $this->limparCpf($this->cpf);
+        $this->cpf = $this->limparCpf($this->cpf);
 
-		if (!$this->ehCpfValido($this->cpf)) {
-			throw new InvalidArgumentException("CPF inválido");
-		}
+        if (!$this->ehCpfValido($this->cpf)) {
+            throw new InvalidArgumentException("CPF inválido");
+        }
     }
 
     public function getValue(): string {
@@ -33,11 +33,11 @@ class CpfValue {
         return $this->getValue();
     }
 
-	private function limparCpf(string $cpf): string {
-		return str_replace(['-', '.'], '', $cpf);
-	}
+    private function limparCpf(string $cpf): string {
+        return str_replace(['-', '.'], '', $cpf);
+    }
 
-	private function ehCpfValido(string $cpf): bool {
+    private function ehCpfValido(string $cpf): bool {
         if (strlen($cpf) !== 11) {
             return false;
         }

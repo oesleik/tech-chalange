@@ -16,6 +16,12 @@ class ServiceContainerBuilder {
         $this->builder->addDefinitions($defsDir . "/core.definitions.php");
     }
 
+    public function forTesting(): static {
+        $defsDir = __DIR__ . "/../configs/service-container";
+        $this->builder->addDefinitions($defsDir . "/test.definitions.php");
+        return $this;
+    }
+
     public function build(): \DI\Container {
         return $this->builder->build();
     }

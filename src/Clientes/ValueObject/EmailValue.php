@@ -10,14 +10,14 @@ class EmailValue {
     public function __construct(
         private string $email
     ) {
-		if (
-			empty($email) ||
-			!preg_match("/.@./", $email) ||
-			!filter_var($email, FILTER_VALIDATE_EMAIL)
-		) {
-			throw new InvalidArgumentException("E-mail inválido");
-		}
-	}
+        if (
+            empty($email)
+            || !preg_match("/.@./", $email)
+            || !filter_var($email, FILTER_VALIDATE_EMAIL)
+        ) {
+            throw new InvalidArgumentException("E-mail inválido");
+        }
+    }
 
     public function getValue(): string {
         return $this->email;

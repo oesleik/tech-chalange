@@ -26,13 +26,13 @@ class CpfValidator extends ConstraintValidator {
             throw new UnexpectedValueException($value, 'string');
         }
 
-		try {
-			new CpfValue($value);
-		} catch (InvalidArgumentException) {
-			$this->context->buildViolation($constraint->message)
-				->setParameter('{{ string }}', $value)
-				->addViolation();
-		}
+        try {
+            new CpfValue($value);
+        } catch (InvalidArgumentException) {
+            $this->context->buildViolation($constraint->message)
+                ->setParameter('{{ string }}', $value)
+                ->addViolation();
+        }
     }
 
 }

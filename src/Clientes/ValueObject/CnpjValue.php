@@ -12,9 +12,9 @@ class CnpjValue {
     ) {
         $this->cnpj = $this->limparCnpj($this->cnpj);
 
-		if (!$this->ehCnpjValido($this->cnpj)) {
-			throw new InvalidArgumentException("CNPJ inválido");
-		}
+        if (!$this->ehCnpjValido($this->cnpj)) {
+            throw new InvalidArgumentException("CNPJ inválido");
+        }
     }
 
     public function getValue(): string {
@@ -33,12 +33,12 @@ class CnpjValue {
         return $this->getValue();
     }
 
-	private function limparCnpj(string $cnpj): string {
-		return strtoupper(str_replace(['-', '.', '/'], '', $cnpj));
-	}
-	
+    private function limparCnpj(string $cnpj): string {
+        return strtoupper(str_replace(['-', '.', '/'], '', $cnpj));
+    }
+
     private function ehCnpjValido(string $cnpj): bool {
-		if (strlen($cnpj) !== 14) {
+        if (strlen($cnpj) !== 14) {
             return false;
         }
 

@@ -10,10 +10,10 @@ class TelefoneValue {
     public function __construct(
         private string $telefone
     ) {
-		if (strlen($telefone) < 8 || preg_match("/[^\d\(\)\s\+-]/", $telefone)) {
-			throw new InvalidArgumentException("Telefone inválido");
-		}
-	}
+        if (strlen($telefone) < 8 || preg_match("/[^\d\(\)\s\+-]/", $telefone)) {
+            throw new InvalidArgumentException("Telefone inválido");
+        }
+    }
 
     public function getValue(): string {
         return $this->telefone;

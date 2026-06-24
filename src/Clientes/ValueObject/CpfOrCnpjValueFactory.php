@@ -8,16 +8,16 @@ use InvalidArgumentException;
 
 abstract class CpfOrCnpjValueFactory {
     public static function make(string $value): CpfValue|CnpjValue {
-		try {
-			return new CpfValue($value);
-		} catch (InvalidArgumentException) {
-		}
+        try {
+            return new CpfValue($value);
+        } catch (InvalidArgumentException) {
+        }
 
-		try {
-			return new CnpjValue($value);
-		} catch (InvalidArgumentException) {
-		}
+        try {
+            return new CnpjValue($value);
+        } catch (InvalidArgumentException) {
+        }
 
-		throw new InvalidArgumentException("CPF/CNPJ inválido");
+        throw new InvalidArgumentException("CPF/CNPJ inválido");
     }
 }

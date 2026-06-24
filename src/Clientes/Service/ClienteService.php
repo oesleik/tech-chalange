@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Clientes\Service;
 
 use App\Clientes\Model\ClienteModel;
+use App\Clientes\ValueObject\CnpjValue;
 use App\Clientes\ValueObject\CpfOrCnpjValueFactory;
+use App\Clientes\ValueObject\CpfValue;
 use App\Clientes\ValueObject\EmailValue;
 use App\Clientes\ValueObject\TelefoneValue;
 use App\Core\AppDatabase;
@@ -17,7 +19,7 @@ class ClienteService {
     ) {}
 
     /** @return ClienteModel[] */
-    public function listarClientes(?string $cpfCnpj = null): array {
+    public function listarClientes(CpfValue|CnpjValue|null $cpfCnpj = null): array {
         if ($cpfCnpj === null) {
             $result = $this->pdo->query("SELECT * FROM clientes", PDO::FETCH_OBJ);
             $clientes = [];
@@ -29,10 +31,8 @@ class ClienteService {
             return $clientes;
         }
 
-        // Normalizar: remover caracteres não numéricos
-        $clean = preg_replace('/\D/', '', $cpfCnpj) ?: $cpfCnpj;
         $stmt = $this->pdo->prepare("SELECT * FROM clientes WHERE cpf_cnpj = ?");
-        $stmt->execute([$clean]);
+        $stmt->execute([$cpfCnpj->getValue()]);
 
         $clientes = [];
         while ($row = $stmt->fetchObject()) {
@@ -45,13 +45,6 @@ class ClienteService {
     public function obterClientePorId(int $id): ?ClienteModel {
         $stmt = $this->pdo->prepare("SELECT * FROM clientes WHERE id = ?");
         $stmt->execute([$id]);
-        $result = $stmt->fetchObject();
-        return $result ? $this->gerarModelPorRow($result) : null;
-    }
-
-    public function obterClientePorCpfCnpj(string $cpfCnpj): ?ClienteModel {
-        $stmt = $this->pdo->prepare("SELECT * FROM clientes WHERE cpf_cnpj = ?");
-        $stmt->execute([$cpfCnpj]);
         $result = $stmt->fetchObject();
         return $result ? $this->gerarModelPorRow($result) : null;
     }
@@ -95,7 +88,7 @@ class ClienteService {
 
     private function gerarModelPorRow(object $row): ClienteModel {
         return new ClienteModel(
-            id: $row->id,
+            id: intval($row->id),
             nome: $row->nome,
             cpfCnpj: CpfOrCnpjValueFactory::make($row->cpf_cnpj),
             email: new EmailValue($row->email),

@@ -26,13 +26,13 @@ class CnpjValidator extends ConstraintValidator {
             throw new UnexpectedValueException($value, 'string');
         }
 
-		try {
-			new CnpjValue($value);
-		} catch (InvalidArgumentException) {
-			$this->context->buildViolation($constraint->message)
-				->setParameter('{{ string }}', $value)
-				->addViolation();
-		}
+        try {
+            new CnpjValue($value);
+        } catch (InvalidArgumentException) {
+            $this->context->buildViolation($constraint->message)
+                ->setParameter('{{ string }}', $value)
+                ->addViolation();
+        }
     }
 
 }

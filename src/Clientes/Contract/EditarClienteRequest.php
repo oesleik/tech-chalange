@@ -54,14 +54,4 @@ readonly class EditarClienteRequest extends AbstractContract {
         ]);
     }
 
-    public function toClienteModel(): ClienteModel {
-        return new ClienteModel(
-            id: 0,
-            nome: $this->nome,
-            cpfCnpj: CpfOrCnpjValueFactory::make($this->cpf_cnpj),
-            email: new EmailValue($this->email),
-            telefone: new TelefoneValue($this->telefone),
-        );
-    }
-
 }
