@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Clientes\Validator;
 
+use App\Clientes\ValueObject\CnpjValue;
+use InvalidArgumentException;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
@@ -24,50 +26,13 @@ class CnpjValidator extends ConstraintValidator {
             throw new UnexpectedValueException($value, 'string');
         }
 
-        if ($this->ehCnpjValido($value)) {
-            return;
+        try {
+            new CnpjValue($value);
+        } catch (InvalidArgumentException) {
+            $this->context->buildViolation($constraint->message)
+                ->setParameter('{{ string }}', $value)
+                ->addViolation();
         }
-
-        $this->context->buildViolation($constraint->message)
-            ->setParameter('{{ string }}', $value)
-            ->addViolation();
     }
 
-    private function ehCnpjValido(string $cnpj): bool {
-        $cnpj = strtoupper(str_replace(['-', '.', '/'], '', $cnpj));
-
-        if (strlen($cnpj) !== 14) {
-            return false;
-        }
-
-        $base = substr($cnpj, 0, 12);
-        [$dv1, $dv2] = $this->descobrirDv($base);
-
-        return $cnpj === $base . $dv1 . $dv2;
-    }
-
-    private function descobrirDv(string $base): array {
-        $sumDv1 = $sumDv2 = 0;
-
-        $pesoDv1 = [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
-        $pesoDv2 = [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3];
-
-        foreach (str_split($base) as $index => $char) {
-            $digit = ord($char) - 48;
-            $sumDv1 += $digit * $pesoDv1[$index];
-            $sumDv2 += $digit * $pesoDv2[$index];
-        }
-
-        $dv1 = $this->calcularDv($sumDv1);
-
-        $sumDv2 += $dv1 * 2;
-        $dv2 = $this->calcularDv($sumDv2);
-
-        return [$dv1, $dv2];
-    }
-
-    private function calcularDv(int $sumDv): int {
-        $remainder = $sumDv % 11;
-        return $remainder < 2 ? 0 : 11 - $remainder;
-    }
 }

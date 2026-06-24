@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\OrdemServico\Controller;
 
 use App\Clientes\Service\ClienteService;
+use App\Clientes\ValueObject\CpfOrCnpjValueFactory;
 use App\Core\Contract\ContractResolver;
 use App\Core\Contract\InvalidContractException;
 use App\OrdemServico\Contract\ConsultarOrdemServicoPorVeiculoEClienteRequest;
@@ -65,7 +66,9 @@ class ConsultarOrdemServicoPorVeiculoEClienteController {
             return $this->erro($response, $e->getViolations(), 400);
         }
 
-        $cliente = $this->clienteService->obterClientePorCpfCnpj($input->cpf_cnpj);
+        $clientes = $this->clienteService->listarClientes(CpfOrCnpjValueFactory::make($input->cpf_cnpj));
+        $cliente = $clientes[0] ?? null;
+
         if ($cliente === null) {
             return $this->erroSimples($response, 'Cliente não encontrado para o CPF/CNPJ informado.', 404);
         }
