@@ -70,7 +70,7 @@ class VeiculoService {
 
     private function gerarModelPorRow(object $row): VeiculoModel {
         return new VeiculoModel(
-            id: $row->id,
+            id: intval($row->id),
             placa: $row->placa,
             marca: $row->marca,
             modelo: $row->modelo,
