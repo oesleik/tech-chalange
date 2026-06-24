@@ -5,7 +5,7 @@ declare(strict_types=1);
 use App\Core\Config\AppConfig;
 use App\Core\Config\MigrationsConfig;
 
-require __DIR__ . '/../../bootstrap.php';
+require_once __DIR__ . '/../../bootstrap.php';
 
 echo "Give the new migration a short name: ";
 $input = fgets(STDIN);

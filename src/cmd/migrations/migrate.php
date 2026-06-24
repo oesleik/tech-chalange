@@ -7,7 +7,7 @@ use App\Core\Config\MigrationsConfig;
 use App\Core\Database\DatabaseErrorEnum;
 use App\Core\ServiceContainerBuilder;
 
-require __DIR__ . '/../../bootstrap.php';
+require_once __DIR__ . '/../../bootstrap.php';
 
 $containerBuilder = new ServiceContainerBuilder();
 $container = $containerBuilder->build();
