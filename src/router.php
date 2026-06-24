@@ -97,4 +97,4 @@ $app->group('', function (RouteCollectorProxy $group): void {
 
 })->add(JwtMiddleware::class);
 
-$app->run();
+return $app;

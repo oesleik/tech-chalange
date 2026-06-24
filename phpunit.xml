@@ -13,6 +13,7 @@
 		<exclude>
 			<directory suffix="Test.php">src</directory>
 			<directory suffix="TestStub.php">src</directory>
+			<directory suffix=".php">src/cmd</directory>
 		</exclude>
 	</source>
 
