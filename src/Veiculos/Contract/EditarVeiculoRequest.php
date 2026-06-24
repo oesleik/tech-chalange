@@ -39,12 +39,4 @@ readonly class EditarVeiculoRequest extends AbstractContract {
         ]);
     }
 
-    public function toVeiculoModel(): VeiculoModel {
-        return new VeiculoModel(
-            id: 0,
-            placa: $this->placa,
-            marca: $this->marca,
-            modelo: $this->modelo,
-        );
-    }
 }
