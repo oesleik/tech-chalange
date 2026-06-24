@@ -21,9 +21,9 @@ class ListarVeiculosControllerTest extends TestCase {
         $serviceMock->expects($this->exactly(1))->method("listarVeiculos")->willReturn([
             new VeiculoModel(
                 id: 123,
-				placa: "ABC-1234",
-				marca: "Volkswagen",
-				modelo: "Gol",
+                placa: "ABC-1234",
+                marca: "Volkswagen",
+                modelo: "Gol",
             ),
         ]);
 

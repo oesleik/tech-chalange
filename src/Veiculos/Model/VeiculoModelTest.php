@@ -10,8 +10,8 @@ class VeiculoModelTest extends TestCase {
         $base = new VeiculoModel(
             id: 123,
             placa: "ABC-1234",
-			marca: "Volkswagen",
-			modelo: "Gol",
+            marca: "Volkswagen",
+            modelo: "Gol",
         );
 
         $this->assertEquals(123, $base->getId());

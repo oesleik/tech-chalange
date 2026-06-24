@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 
 class VeiculoServiceTest extends TestCase {
     public function testListarVeiculos(): void {
-		$mocks = [
+        $mocks = [
             (object) [
                 "id" => "123",
                 "placa" => "ABC-1234",
@@ -45,14 +45,14 @@ class VeiculoServiceTest extends TestCase {
         $this->assertEquals($mocks[1]->placa, $res[1]->getPlaca());
         $this->assertEquals($mocks[1]->marca, $res[1]->getMarca());
         $this->assertEquals($mocks[1]->modelo, $res[1]->getModelo());
-	}
+    }
 
-	public function testObterVeiculoPorId(): void {
+    public function testObterVeiculoPorId(): void {
         $mock = (object) [
             "id" => "123",
-			"placa" => "ABC-1234",
-			"marca" => "Volkswagen",
-			"modelo" => "Gol",
+            "placa" => "ABC-1234",
+            "marca" => "Volkswagen",
+            "modelo" => "Gol",
         ];
 
         $stmtStub = $this->createStub(PDOStatement::class);
@@ -75,12 +75,12 @@ class VeiculoServiceTest extends TestCase {
         $this->assertNull($res);
     }
 
-	public function testObterVeiculoPorPlaca(): void {
+    public function testObterVeiculoPorPlaca(): void {
         $mock = (object) [
             "id" => "123",
-			"placa" => "ABC-1234",
-			"marca" => "Volkswagen",
-			"modelo" => "Gol",
+            "placa" => "ABC-1234",
+            "marca" => "Volkswagen",
+            "modelo" => "Gol",
         ];
 
         $stmtStub = $this->createStub(PDOStatement::class);
@@ -103,7 +103,7 @@ class VeiculoServiceTest extends TestCase {
         $this->assertNull($res);
     }
 
-	public function testCriarVeiculo(): void {
+    public function testCriarVeiculo(): void {
         $stmtStub = $this->createStub(PDOStatement::class);
         $dbStub = $this->createStub(AppDatabase::class);
         $dbStub->method("prepare")->willReturn($stmtStub);
@@ -111,9 +111,9 @@ class VeiculoServiceTest extends TestCase {
 
         $veiculo = new VeiculoModel(
             id: 0,
-			placa: "ABC-1234",
-			marca: "Volkswagen",
-			modelo: "Gol",
+            placa: "ABC-1234",
+            marca: "Volkswagen",
+            modelo: "Gol",
         );
 
         $service = new VeiculoService($dbStub);
@@ -121,7 +121,7 @@ class VeiculoServiceTest extends TestCase {
 
         $this->assertInstanceOf(VeiculoModel::class, $res);
         $this->assertNotSame($veiculo, $res);
-		$this->assertEquals(123, $res->getId());
+        $this->assertEquals(123, $res->getId());
         $this->assertEquals($veiculo->getPlaca(), $res->getPlaca());
         $this->assertEquals($veiculo->getMarca(), $res->getMarca());
         $this->assertEquals($veiculo->getModelo(), $res->getModelo());
@@ -132,11 +132,11 @@ class VeiculoServiceTest extends TestCase {
         $dbStub = $this->createStub(AppDatabase::class);
         $dbStub->method("prepare")->willReturn($stmtStub);
 
-         $veiculo = new VeiculoModel(
+        $veiculo = new VeiculoModel(
             id: 123,
-			placa: "AAA-4D56",
-			marca: "Fiat",
-			modelo: "Uno",
+            placa: "AAA-4D56",
+            marca: "Fiat",
+            modelo: "Uno",
         );
 
         $service = new VeiculoService($dbStub);

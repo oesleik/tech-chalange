@@ -24,8 +24,8 @@ class CriarVeiculoControllerTest extends TestCase {
             new VeiculoModel(
                 id: 123,
                 placa: "ABC-1234",
-				marca: "Volkswagen",
-				modelo: "Gol",
+                marca: "Volkswagen",
+                modelo: "Gol",
             )
         );
 

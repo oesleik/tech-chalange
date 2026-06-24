@@ -24,8 +24,8 @@ class EditarVeiculoControllerTest extends TestCase {
             new VeiculoModel(
                 id: 123,
                 placa: "ABC-1234",
-				marca: "Volkswagen",
-				modelo: "Gol",
+                marca: "Volkswagen",
+                modelo: "Gol",
             )
         );
 
@@ -50,7 +50,7 @@ class EditarVeiculoControllerTest extends TestCase {
             service: $serviceMock,
         );
 
-		$this->assertEquals($response->getStatusCode(), 200);
+        $this->assertEquals($response->getStatusCode(), 200);
 
         $response->getBody()->rewind();
         $res = json_decode($response->getBody()->getContents());
@@ -75,8 +75,8 @@ class EditarVeiculoControllerTest extends TestCase {
             new VeiculoModel(
                 id: 123,
                 placa: "ABC-1234",
-				marca: "Volkswagen",
-				modelo: "Gol",
+                marca: "Volkswagen",
+                modelo: "Gol",
             )
         );
         $serviceMock->expects($this->exactly(1))->method("atualizarVeiculo")->willThrowException($exception);
@@ -182,8 +182,8 @@ class EditarVeiculoControllerTest extends TestCase {
             new VeiculoModel(
                 id: 123,
                 placa: "ABC-1234",
-				marca: "Volkswagen",
-				modelo: "Gol",
+                marca: "Volkswagen",
+                modelo: "Gol",
             )
         );
 
