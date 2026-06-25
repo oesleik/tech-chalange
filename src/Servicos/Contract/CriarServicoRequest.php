@@ -14,8 +14,8 @@ readonly class CriarServicoRequest extends AbstractContract {
     public function __construct(
         #[OA\Property(example: "Troca de óleo")]
         public string $descricao,
-        #[OA\Property(example: 49.9)]
-        public float $valor_unitario,
+        #[OA\Property(example: 49.9, type: "float")]
+        public float|int $valor_unitario,
     ) {}
 
     public static function getConstraints(): Assert\Collection {
@@ -36,7 +36,7 @@ readonly class CriarServicoRequest extends AbstractContract {
         return new ServicoModel(
             id: 0,
             descricao: $this->descricao,
-            valorUnitario: $this->valor_unitario,
+            valorUnitario: floatval($this->valor_unitario),
         );
     }
 }

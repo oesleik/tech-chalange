@@ -2,37 +2,38 @@
 
 declare(strict_types=1);
 
-use App\Peca\Controller\CriarPecaController;
-use App\Peca\Model\PecaModel;
-use App\Peca\Service\PecaService;
+use App\Servicos\Controller\CriarServicoController;
+use App\Servicos\Model\ServicoModel;
+use App\Servicos\Service\ServicosService;
 use App\Core\Contract\ContractResolver;
+use App\Core\Database\DatabaseErrorEnum;
 use App\Core\ServiceContainerBuilder;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Psr7\Factory\ServerRequestFactory;
 
-class CriarPecaControllerTest extends TestCase {
-    public function testCriarPecaController(): void {
+class CriarServicoControllerTest extends TestCase {
+    public function testCriarServicoController(): void {
         $containerBuilder = new ServiceContainerBuilder();
         $container = $containerBuilder->forTesting()->build();
 
-        $controller = new CriarPecaController();
-        $serviceMock = $this->createMock(PecaService::class);
+        $controller = new CriarServicoController();
+        $serviceMock = $this->createMock(ServicosService::class);
 
-        $serviceMock->expects($this->exactly(1))->method("criarPeca")->withAnyParameters()->willReturn(
-            new PecaModel(
+        $serviceMock->expects($this->exactly(1))->method("criarServico")->withAnyParameters()->willReturn(
+            new ServicoModel(
                 id: 123,
-                descricao: "Vela",
-                valorUnitario: 22.45
+                descricao: "Revisão",
+                valorUnitario: 145,
             )
         );
 
         $requestFactory = new ServerRequestFactory();
-        $request = $requestFactory->createServerRequest("POST", "/pecas/");
+        $request = $requestFactory->createServerRequest("POST", "/servicos/");
 
         $request->getBody()->write(json_encode([
-            "descricao" => "Vela",
-            "valor_unitario" => 22.45,
+            "descricao" => "Revisão",
+            "valor_unitario" => 145,
         ]));
 
         $request->getBody()->rewind();
@@ -50,19 +51,19 @@ class CriarPecaControllerTest extends TestCase {
         $res = json_decode($response->getBody()->getContents());
 
         $this->assertEquals(123, $res->id);
-        $this->assertEquals("Vela", $res->descricao);
-        $this->assertEquals(22.45, $res->valor_unitario);
+        $this->assertEquals("Revisão", $res->descricao);
+        $this->assertEquals(145, $res->valor_unitario);
     }
 
-    public function testCriarPecaControllerInvalidInput(): void {
+    public function testCriarServicoControllerInvalidInput(): void {
         $containerBuilder = new ServiceContainerBuilder();
         $container = $containerBuilder->forTesting()->build();
 
-        $controller = new CriarPecaController();
-        $serviceMock = $this->createMock(PecaService::class);
+        $controller = new CriarServicoController();
+        $serviceMock = $this->createMock(ServicosService::class);
 
         $requestFactory = new ServerRequestFactory();
-        $request = $requestFactory->createServerRequest("POST", "/pecas/");
+        $request = $requestFactory->createServerRequest("POST", "/servicos/");
 
         $request->getBody()->write(json_encode([
             "descricao" => "",

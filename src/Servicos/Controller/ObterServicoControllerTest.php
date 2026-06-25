@@ -2,27 +2,27 @@
 
 declare(strict_types=1);
 
-use App\Peca\Controller\ObterPecaController;
-use App\Peca\Model\PecaModel;
-use App\Peca\Service\PecaService;
+use App\Servicos\Controller\ObterServicoController;
+use App\Servicos\Model\ServicoModel;
+use App\Servicos\Service\ServicosService;
 use App\Core\Contract\ContractResolver;
 use App\Core\ServiceContainerBuilder;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 
-class ObterPecaControllerTest extends TestCase {
-    public function testObterPecaController(): void {
+class ObterServicoControllerTest extends TestCase {
+    public function testObterServicoController(): void {
         $containerBuilder = new ServiceContainerBuilder();
         $container = $containerBuilder->forTesting()->build();
 
-        $controller = new ObterPecaController();
-        $serviceMock = $this->createMock(PecaService::class);
+        $controller = new ObterServicoController();
+        $serviceMock = $this->createMock(ServicosService::class);
 
-        $serviceMock->expects($this->exactly(1))->method("obterPecaPorId")->with(123)->willReturn(
-            new PecaModel(
+        $serviceMock->expects($this->exactly(1))->method("obterServicoPorId")->with(123)->willReturn(
+            new ServicoModel(
                 id: 123,
-                descricao: "Vela",
-                valorUnitario: 22.45
+                descricao: "Revisão",
+                valorUnitario: 150,
             )
         );
 
@@ -39,17 +39,17 @@ class ObterPecaControllerTest extends TestCase {
         $res = json_decode($response->getBody()->getContents());
 
         $this->assertEquals(123, $res->id);
-        $this->assertEquals("Vela", $res->descricao);
-        $this->assertEquals(22.45, $res->valor_unitario);
+        $this->assertEquals("Revisão", $res->descricao);
+        $this->assertEquals(150, $res->valor_unitario);
     }
 
-    public function testObterPecaControllerNotFound(): void {
+    public function testObterServicoControllerNotFound(): void {
         $containerBuilder = new ServiceContainerBuilder();
         $container = $containerBuilder->forTesting()->build();
 
-        $controller = new ObterPecaController();
-        $serviceMock = $this->createMock(PecaService::class);
-        $serviceMock->expects($this->exactly(1))->method("obterPecaPorId")->with(123)->willReturn(null);
+        $controller = new ObterServicoController();
+        $serviceMock = $this->createMock(ServicosService::class);
+        $serviceMock->expects($this->exactly(1))->method("obterServicoPorId")->with(123)->willReturn(null);
 
         $response = $controller->__invoke(
             id: 123,

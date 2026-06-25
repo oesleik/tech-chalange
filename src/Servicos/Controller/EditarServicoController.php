@@ -68,7 +68,7 @@ class EditarServicoController {
             $servicoAtualizar = new ServicoModel(
                 id: $servico->getId(),
                 descricao: $req->descricao ?? $servico->getDescricao(),
-                valorUnitario: $req->valor_unitario ?? $servico->getValorUnitario(),
+                valorUnitario: floatval($req->valor_unitario ?? $servico->getValorUnitario()),
             );
 
             $service->atualizarServico($servicoAtualizar);
