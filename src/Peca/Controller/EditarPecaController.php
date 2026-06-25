@@ -68,7 +68,7 @@ class EditarPecaController {
             $pecaAtualizar = new PecaModel(
                 id: $peca->getId(),
                 descricao: $req->descricao ?? $peca->getDescricao(),
-                valorUnitario: $req->valor_unitario ?? $peca->getValorUnitario(),
+                valorUnitario: floatval($req->valor_unitario ?? $peca->getValorUnitario()),
             );
 
             $service->atualizarPeca($pecaAtualizar);

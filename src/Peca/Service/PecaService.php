@@ -67,7 +67,7 @@ class PecaService {
 
     private function gerarModelPorRow(object $row): PecaModel {
         return new PecaModel(
-            id: $row->id,
+            id: intval($row->id),
             descricao: $row->descricao,
             valorUnitario: floatval($row->valor_unitario),
         );

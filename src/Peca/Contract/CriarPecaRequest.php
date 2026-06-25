@@ -14,8 +14,8 @@ readonly class CriarPecaRequest extends AbstractContract {
     public function __construct(
         #[OA\Property(example: "Filtro de óleo")]
         public string $descricao,
-        #[OA\Property(example: 49.90)]
-        public float $valor_unitario,
+        #[OA\Property(example: 49.90, type: "float")]
+        public float|int $valor_unitario,
     ) {}
 
     public static function getConstraints(): Assert\Collection {
@@ -26,7 +26,7 @@ readonly class CriarPecaRequest extends AbstractContract {
             ],
             'valor_unitario' => [
                 new Assert\NotBlank(),
-                new Assert\Type('float'),
+                new Assert\Type('numeric'),
                 new Assert\PositiveOrZero(),
             ],
         ]);
@@ -36,7 +36,7 @@ readonly class CriarPecaRequest extends AbstractContract {
         return new PecaModel(
             id: 0,
             descricao: $this->descricao,
-            valorUnitario: $this->valor_unitario,
+            valorUnitario: floatval($this->valor_unitario),
         );
     }
 }

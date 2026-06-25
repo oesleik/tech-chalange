@@ -117,10 +117,6 @@ class EditarClienteControllerTest extends TestCase {
 
         $controller = new EditarClienteController();
         $serviceMock = $this->createMock(ClienteService::class);
-
-        $exception = new PDOException();
-        $exception->errorInfo = [0, DatabaseErrorEnum::DUPLICATE_ENTRY->value];
-
         $serviceMock->expects($this->exactly(1))->method("obterClientePorId")->with(123)->willReturn(null);
 
         $requestFactory = new ServerRequestFactory();

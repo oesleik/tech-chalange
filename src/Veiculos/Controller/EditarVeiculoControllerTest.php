@@ -109,10 +109,6 @@ class EditarVeiculoControllerTest extends TestCase {
 
         $controller = new EditarVeiculoController();
         $serviceMock = $this->createMock(VeiculoService::class);
-
-        $exception = new PDOException();
-        $exception->errorInfo = [0, DatabaseErrorEnum::DUPLICATE_ENTRY->value];
-
         $serviceMock->expects($this->exactly(1))->method("obterVeiculoPorId")->with(123)->willReturn(null);
 
         $requestFactory = new ServerRequestFactory();
