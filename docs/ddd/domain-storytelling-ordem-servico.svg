@@ -1,0 +1,1194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- created with diagram-js / http://bpmn.io -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="background-color:white" width="1094" height="1640" viewBox="135 15 1109 1655" version="1.1"><defs><marker id="activity-black-black-67m5wavlok43roqcm06x94ncc" viewBox="0 0 20 20" refX="11" refY="10" markerWidth="10" markerHeight="10" orient="auto"><path d="M 1 5 L 11 10 L 1 15 Z" style="fill: black; stroke-width: 1px; stroke-linecap: round; stroke-dasharray: 10000, 1; stroke: black;"/></marker></defs><g class="djs-group"><g class="djs-element djs-shape" style = "display:block" transform="translate(140 45)"><g class="djs-visual"><text lineHeight="1.2" class="djs-label" style="font-family: Arial, sans-serif; font-size: 30; font-weight: normal; fill: rgb(0, 0, 0);"><tspan x="8" y="10" font-size="30">Fluxo da ordem de serviço</tspan></text></g></g></g><g class="djs-group"><g class="djs-element djs-shape" data-element-id="shape_1037" style="display: block;" transform="matrix(1 0 0 1 155 80)"><g class="djs-visual"><rect x="0" y="0" width="763" height="411" rx="0" ry="0" style="stroke: rgb(0, 0, 0); stroke-width: 2px; fill: none;"/><text lineHeight="1.2" class="djs-label" style="font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; fill: rgb(0, 0, 0);"><tspan x="8" y="18.799999999999997">Solicitar ordem de serviço para trabalhar</tspan></text></g><rect class="djs-hit djs-hit-all" x="0" y="0" width="763" height="411" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;"/><rect x="-5" y="-5" rx="4" width="773" height="421" class="djs-outline" style="fill: none;"/></g><g class="djs-children"><g class="djs-group"><g class="djs-element djs-shape" data-element-id="shape_7628" style="display: block;" transform="matrix(1 0 0 1 616 350)"><g class="djs-visual"><svg xmlns="http://www.w3.org/2000/svg" fill=" #000000" width="48.75" height="48.75" viewBox="0 0 24 26" x="12.5" y="12.5"><path fill="none" d="M0 0h24v24H0V0z"/><path d="M8 16h8v2H8zm0-4h8v2H8zm6-10H6c-1.1 0-2 .9-2 2v16c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/></svg><text lineHeight="1.2" class="djs-label" style="font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; fill: rgb(0, 0, 0);"><tspan x="9.7841796875" y="74.75">Ordem de </tspan><tspan x="17.58203125" y="88.75">serviço</tspan></text></g><rect class="djs-hit djs-hit-all" x="0" y="0" width="75" height="75" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;"/><rect x="-5" y="-5" rx="4" width="85" height="85" class="djs-outline" style="fill: none;"/></g></g><g class="djs-group"><g class="djs-element djs-connection" data-element-id="connection_2196" style="display: block;"><g class="djs-visual"><path style="stroke: black; fill: none; stroke-width: 1.5px; stroke-linejoin: round; marker-end: url('#activity-black-black-67m5wavlok43roqcm06x94ncc');" d="M616,388L469,388"/><text lineHeight="1.2" wordWrap="break-word" overflowWrap="break-word" hyphens="auto" class="djs-label" style="font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; fill: black;"><tspan x="526.3" y="403">como</tspan></text></g><path d="M616,388L469,388" class="djs-hit djs-hit-stroke" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;"/><rect x="464" y="383" rx="4" width="157" height="10" class="djs-outline" style="fill: none;"/></g></g><g class="djs-group"><g class="djs-element djs-shape" data-element-id="shape_0608" style="display: block;" transform="matrix(1 0 0 1 388 350)"><g class="djs-visual"><svg xmlns="http://www.w3.org/2000/svg" fill=" #000000" width="48.75" height="48.75" viewBox="0 0 24 26" x="12.5" y="12.5"><path fill="none" d="M0 0h24v24H0V0z"/><path d="M11 8v5l4.25 2.52.77-1.28-3.52-2.09V8zm10 2V3l-2.64 2.64C16.74 4.01 14.49 3 12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9h-2c0 3.86-3.14 7-7 7s-7-3.14-7-7 3.14-7 7-7c1.93 0 3.68.79 4.95 2.05L14 10h7z"/></svg><text lineHeight="1.2" class="djs-label" style="font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; fill: rgb(0, 0, 0);"><tspan x="28.25" y="74.75">Em </tspan><tspan x="5.732421875" y="88.75">diagnóstico </tspan><tspan x="20.1953125" y="102.75">ou em </tspan><tspan x="6.3134765625" y="116.75">andamento</tspan></text></g><rect class="djs-hit djs-hit-all" x="0" y="0" width="75" height="75" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;"/><rect x="-5" y="-5" rx="4" width="85" height="85" class="djs-outline" style="fill: none;"/></g></g><g class="djs-group"><g class="djs-element djs-connection" data-element-id="connection_7027" style="display: block;"><g class="djs-visual"><path style="stroke: black; stroke-width: 1.5px; stroke-linejoin: round; stroke-dasharray: 5, 5;" d="M388,370L332,344"/></g><path d="M388,370L332,344" class="djs-hit djs-hit-stroke" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;"/><rect x="327" y="339" rx="4" width="66" height="36" class="djs-outline" style="fill: none;"/></g></g><g class="djs-group"><g class="djs-element djs-shape" data-element-id="shape_7822" style="display: block;" transform="matrix(1 0 0 1 232 305)"><g class="djs-visual"><rect x="0" y="0" width="100" height="129" rx="0" ry="0" style="stroke: none; stroke-width: 2px; fill: none;"/><path d="m 0, 0 m 10,0 l -10,0 l 0,129 l 10,0" style="fill: none; stroke-width: 2px; stroke: black;"/><text lineHeight="1.2" class="djs-label" style="font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; fill: black;"><tspan x="5" y="15.799999999999999">Se estava </tspan><tspan x="5" y="30.199999999999996">pendente fica </tspan><tspan x="5" y="44.599999999999994">como em </tspan><tspan x="5" y="58.99999999999999">diagnóstico. </tspan><tspan x="5" y="73.39999999999999">Se estava como</tspan><tspan x="5" y="87.79999999999998">aprovada, fica</tspan><tspan x="5" y="102.19999999999999">como em </tspan><tspan x="5" y="116.6">execução</tspan></text></g><rect class="djs-hit djs-hit-all" x="0" y="0" width="100" height="129" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;"/><rect x="-5" y="-5" rx="4" width="110" height="139" class="djs-outline" style="fill: none;"/></g></g></g></g><g class="djs-group"><g class="djs-element djs-shape" data-element-id="shape_1135" style="display: block;" transform="matrix(1 0 0 1 156 517)"><g class="djs-visual"><rect x="0" y="0" width="1011" height="481" rx="0" ry="0" style="stroke: rgb(0, 0, 0); stroke-width: 2px; fill: none;"/><text lineHeight="1.2" class="djs-label" style="font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; fill: rgb(0, 0, 0);"><tspan x="8" y="18.799999999999997">Ordem de serviço em aberto (pendente de diagnóstico)</tspan></text></g><rect class="djs-hit djs-hit-all" x="0" y="0" width="1011" height="481" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;"/><rect x="-5" y="-5" rx="4" width="1021" height="491" class="djs-outline" style="fill: none;"/></g><g class="djs-children"><g class="djs-group"><g class="djs-element djs-shape" data-element-id="shape_7154" style="display: block;" transform="matrix(1 0 0 1 436 557)"><g class="djs-visual"><svg xmlns="http://www.w3.org/2000/svg" fill=" #000000" width="48.75" height="48.75" viewBox="0 0 24 24" x="12.5" y="12.5"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M7 15h7v2H7zm0-4h10v2H7zm0-4h10v2H7zm12-4h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-.14 0-.27.01-.4.04-.39.08-.74.28-1.01.55-.18.18-.33.4-.43.64-.1.23-.16.49-.16.77v14c0 .27.06.54.16.78s.25.45.43.64c.27.27.62.47 1.01.55.13.02.26.03.4.03h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7-.25c.41 0 .75.34.75.75s-.34.75-.75.75-.75-.34-.75-.75.34-.75.75-.75zM19 19H5V5h14v14z"/></svg><text lineHeight="1.2" class="djs-label" style="font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; fill: rgb(0, 0, 0);"><tspan x="4.736328125" y="74.75">Diagnóstico</tspan></text></g><rect class="djs-hit djs-hit-all" x="0" y="0" width="75" height="75" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;"/><rect x="-5" y="-5" rx="4" width="85" height="85" class="djs-outline" style="fill: none;"/></g></g><g class="djs-group"><g class="djs-element djs-shape" data-element-id="shape_5955" style="display: block;" transform="matrix(1 0 0 1 637 695)"><g class="djs-visual"><svg xmlns="http://www.w3.org/2000/svg" fill=" #000000" viewBox="0 0 24 26" width="75" height="75"><path d="M20,18c1.1,0,2-0.9,2-2V6c0-1.1-0.9-2-2-2H4C2.9,4,2,4.9,2,6v10c0,1.1,0.9,2,2,2H0v2h24v-2H20z M4,6h16v10H4V6z"/></svg><text lineHeight="1.2" class="djs-label" style="font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; fill: rgb(0, 0, 0);"><tspan x="14.9130859375" y="75">Sistema</tspan></text></g><rect class="djs-hit djs-hit-all" x="0" y="0" width="75" height="75" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;"/><rect x="-5" y="-5" rx="4" width="85" height="85" class="djs-outline" style="fill: none;"/></g></g><g class="djs-group"><g class="djs-element djs-shape" data-element-id="shape_5894" style="display: block;" transform="matrix(1 0 0 1 176 557)"><g class="djs-visual"><svg xmlns="http://www.w3.org/2000/svg" fill=" #000000" viewBox="0 0 24 26" width="75" height="75"><path d="M12 5.9c1.16 0 2.1.94 2.1 2.1s-.94 2.1-2.1 2.1S9.9 9.16 9.9 8s.94-2.1 2.1-2.1m0 9c2.97 0 6.1 1.46 6.1 2.1v1.1H5.9V17c0-.64 3.13-2.1 6.1-2.1M12 4C9.79 4 8 5.79 8 8s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 9c-2.67 0-8 1.34-8 4v3h16v-3c0-2.66-5.33-4-8-4z"/><path d="M0 0h24v24H0z" fill="none"/></svg><text lineHeight="1.2" class="djs-label" style="font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; fill: rgb(0, 0, 0);"><tspan x="10.783203125" y="75">Mecânico</tspan></text></g><rect class="djs-hit djs-hit-all" x="0" y="0" width="75" height="75" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;"/><rect x="-5" y="-5" rx="4" width="85" height="85" class="djs-outline" style="fill: none;"/></g></g><g class="djs-group"><g class="djs-element djs-shape" data-element-id="shape_3517" style="display: block;" transform="matrix(1 0 0 1 855 695)"><g class="djs-visual"><svg xmlns="http://www.w3.org/2000/svg" fill=" #000000" width="48.75" height="48.75" viewBox="0 0 24 26" x="12.5" y="12.5"><path fill="none" d="M0 0h24v24H0V0z"/><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg><text lineHeight="1.2" class="djs-label" style="font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; fill: rgb(0, 0, 0);"><tspan x="6.6591796875" y="74.75">Orçamento</tspan></text></g><rect class="djs-hit djs-hit-all" x="0" y="0" width="75" height="75" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;"/><rect x="-5" y="-5" rx="4" width="85" height="85" class="djs-outline" style="fill: none;"/></g></g><g class="djs-group"><g class="djs-element djs-shape" data-element-id="shape_1457" style="display: block;" transform="matrix(1 0 0 1 436 695)"><g class="djs-visual"><svg xmlns="http://www.w3.org/2000/svg" fill=" #000000" width="48.75" height="48.75" viewBox="0 0 24 26" x="12.5" y="12.5"><path fill="none" d="M0 0h24v24H0V0z"/><path d="M8 16h8v2H8zm0-4h8v2H8zm6-10H6c-1.1 0-2 .9-2 2v16c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/></svg><text lineHeight="1.2" class="djs-label" style="font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; fill: rgb(0, 0, 0);"><tspan x="9.7841796875" y="74.75">Ordem de </tspan><tspan x="17.58203125" y="88.75">serviço</tspan></text></g><rect class="djs-hit djs-hit-all" x="0" y="0" width="75" height="75" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;"/><rect x="-5" y="-5" rx="4" width="85" height="85" class="djs-outline" style="fill: none;"/></g></g><g class="djs-group"><g class="djs-element djs-shape" data-element-id="shape_0077" style="display: block;" transform="matrix(1 0 0 1 637 557)"><g class="djs-visual"><svg xmlns="http://www.w3.org/2000/svg" fill=" #000000" width="48.75" height="48.75" viewBox="0 0 24 26" x="12.5" y="12.5"><path fill="none" d="M0 0h24v24H0V0z"/><path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.85 7h10.29l1.08 3.11H5.77L6.85 7zM19 17H5v-5h14v5z"/><circle cx="7.5" cy="14.5" r="1.5"/><circle cx="16.5" cy="14.5" r="1.5"/></svg><text lineHeight="1.2" class="djs-label" style="font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; fill: rgb(0, 0, 0);"><tspan x="16.9052734375" y="74.75">Veículo</tspan></text></g><rect class="djs-hit djs-hit-all" x="0" y="0" width="75" height="75" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;"/><rect x="-5" y="-5" rx="4" width="85" height="85" class="djs-outline" style="fill: none;"/></g></g><g class="djs-group"><g class="djs-element djs-connection" data-element-id="connection_8814" style="display: block;"><g class="djs-visual"><path style="stroke: black; fill: none; stroke-width: 1.5px; stroke-linejoin: round; marker-end: url('#activity-black-black-67m5wavlok43roqcm06x94ncc');" d="M704,771L855,876"/><text lineHeight="1.2" wordWrap="break-word" overflowWrap="break-word" hyphens="auto" class="djs-label" style="font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; fill: black;"><tspan x="789.3022283733426" y="817.3681522488951">atualiza</tspan></text><path d="
+      M 724 782.6044567466851
+      m 11,0
+      a 11,11 0 1,0 -22,0
+      a 11,11 0 1,0 22,0
+      " style="fill: white; stroke: black;"/><text lineHeight="1.2" position="absolute" class="djs-labelNumber" style="font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; fill: black;"><tspan x="720" y="786.6044567466851">7</tspan></text></g><path d="M704,771L855,876" class="djs-hit djs-hit-stroke" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;"/><rect x="699" y="766" rx="4" width="161" height="115" class="djs-outline" style="fill: none;"/></g></g><g class="djs-group"><g class="djs-element djs-connection" data-element-id="connection_8414" style="display: block;"><g class="djs-visual"><path style="stroke: black; fill: none; stroke-width: 1.5px; stroke-linejoin: round; marker-end: url('#activity-black-black-67m5wavlok43roqcm06x94ncc');" d="M936,906L1055,906"/><text lineHeight="1.2" wordWrap="break-word" overflowWrap="break-word" hyphens="auto" class="djs-label" style="font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; fill: black;"><tspan x="979.3" y="921">como</tspan></text></g><path d="M936,906L1055,906" class="djs-hit djs-hit-stroke" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;"/><rect x="931" y="901" rx="4" width="129" height="10" class="djs-outline" style="fill: none;"/></g></g><g class="djs-group"><g class="djs-element djs-shape" data-element-id="shape_0420" style="display: block;" transform="matrix(1 0 0 1 855 868)"><g class="djs-visual"><svg xmlns="http://www.w3.org/2000/svg" fill=" #000000" width="48.75" height="48.75" viewBox="0 0 24 26" x="12.5" y="12.5"><path fill="none" d="M0 0h24v24H0V0z"/><path d="M8 16h8v2H8zm0-4h8v2H8zm6-10H6c-1.1 0-2 .9-2 2v16c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/></svg><text lineHeight="1.2" class="djs-label" style="font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; fill: rgb(0, 0, 0);"><tspan x="9.7841796875" y="74.75">Ordem de </tspan><tspan x="17.58203125" y="88.75">serviço</tspan></text></g><rect class="djs-hit djs-hit-all" x="0" y="0" width="75" height="75" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;"/><rect x="-5" y="-5" rx="4" width="85" height="85" class="djs-outline" style="fill: none;"/></g></g><g class="djs-group"><g class="djs-element djs-shape" data-element-id="shape_4061" style="display: block;" transform="matrix(1 0 0 1 1055 868)"><g class="djs-visual"><svg xmlns="http://www.w3.org/2000/svg" fill=" #000000" width="48.75" height="48.75" viewBox="0 0 24 26" x="12.5" y="12.5"><path fill="none" d="M0 0h24v24H0V0z"/><path d="M11 8v5l4.25 2.52.77-1.28-3.52-2.09V8zm10 2V3l-2.64 2.64C16.74 4.01 14.49 3 12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9h-2c0 3.86-3.14 7-7 7s-7-3.14-7-7 3.14-7 7-7c1.93 0 3.68.79 4.95 2.05L14 10h7z"/></svg><text lineHeight="1.2" class="djs-label" style="font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; fill: rgb(0, 0, 0);"><tspan x="4.0166015625" y="74.75">Aguardando </tspan><tspan x="8.3173828125" y="88.75">aprovação</tspan></text></g><rect class="djs-hit djs-hit-all" x="0" y="0" width="75" height="75" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;"/><rect x="-5" y="-5" rx="4" width="85" height="85" class="djs-outline" style="fill: none;"/></g></g><g class="djs-group"><g class="djs-element djs-shape" data-element-id="shape_4168" style="display: block;" transform="matrix(1 0 0 1 637 876)"><g class="djs-visual"><svg xmlns="http://www.w3.org/2000/svg" fill=" #000000" viewBox="0 0 24 26" width="48.75" height="48.75" x="12.5" y="12.5"><path fill="none" d="M0,0h24v24H0V0z"/><path fill-opacity="0.9" d="M12,1.95c-5.52,0-10,4.48-10,10s4.48,10,10,10h5v-2h-5c-4.34,0-8-3.66-8-8s3.66-8,8-8s8,3.66,8,8v1.43 c0,0.79-0.71,1.57-1.5,1.57S17,14.17,17,13.38v-1.43c0-2.76-2.24-5-5-5s-5,2.24-5,5s2.24,5,5,5c1.38,0,2.64-0.56,3.54-1.47 c0.65,0.89,1.77,1.47,2.96,1.47c1.97,0,3.5-1.6,3.5-3.57v-1.43C22,6.43,17.52,1.95,12,1.95z M12,14.95c-1.66,0-3-1.34-3-3 s1.34-3,3-3s3,1.34,3,3S13.66,14.95,12,14.95z"/></svg><text lineHeight="1.2" class="djs-label" style="font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; fill: rgb(0, 0, 0);"><tspan x="13.1181640625" y="74.75">Email de </tspan><tspan x="8.3173828125" y="88.75">aprovação</tspan></text></g><rect class="djs-hit djs-hit-all" x="0" y="0" width="75" height="75" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;"/><rect x="-5" y="-5" rx="4" width="85" height="85" class="djs-outline" style="fill: none;"/></g></g><g class="djs-group"><g class="djs-element djs-shape" data-element-id="shape_5091" style="display: block;" transform="matrix(1 0 0 1 436 876)"><g class="djs-visual"><svg xmlns="http://www.w3.org/2000/svg" fill=" #000000" viewBox="0 0 24 26" width="75" height="75"><path d="M12 5.9c1.16 0 2.1.94 2.1 2.1s-.94 2.1-2.1 2.1S9.9 9.16 9.9 8s.94-2.1 2.1-2.1m0 9c2.97 0 6.1 1.46 6.1 2.1v1.1H5.9V17c0-.64 3.13-2.1 6.1-2.1M12 4C9.79 4 8 5.79 8 8s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 9c-2.67 0-8 1.34-8 4v3h16v-3c0-2.66-5.33-4-8-4z"/><path d="M0 0h24v24H0z" fill="none"/></svg><text lineHeight="1.2" class="djs-label" style="font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; fill: rgb(0, 0, 0);"><tspan x="17.91015625" y="75">Cliente</tspan></text></g><rect class="djs-hit djs-hit-all" x="0" y="0" width="75" height="75" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;"/><rect x="-5" y="-5" rx="4" width="85" height="85" class="djs-outline" style="fill: none;"/></g></g></g></g><g class="djs-group"><g class="djs-element djs-connection" data-element-id="connection_4671" style="display: block;"><g class="djs-visual"><path style="stroke: black; stroke-width: 1.5px; stroke-linejoin: round; stroke-dasharray: 5, 5;" d="M687,204L792,174"/></g><path d="M687,204L792,174" class="djs-hit djs-hit-stroke" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;"/><rect x="682" y="169" rx="4" width="115" height="40" class="djs-outline" style="fill: none;"/></g></g><g class="djs-group"><g class="djs-element djs-connection" data-element-id="connection_0573" style="display: block;"><g class="djs-visual"><path style="stroke: black; fill: none; stroke-width: 1.5px; stroke-linejoin: round; marker-end: url('#activity-black-black-67m5wavlok43roqcm06x94ncc');" d="M517,595L637,595"/><text lineHeight="1.2" wordWrap="break-word" overflowWrap="break-word" hyphens="auto" class="djs-label" style="font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; fill: black;"><tspan x="565.9" y="610">no</tspan></text></g><path d="M517,595L637,595" class="djs-hit djs-hit-stroke" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;"/><rect x="512" y="590" rx="4" width="130" height="10" class="djs-outline" style="fill: none;"/></g></g><g class="djs-group"><g class="djs-element djs-connection" data-element-id="connection_0695" style="display: block;"><g class="djs-visual"><path style="stroke: black; fill: none; stroke-width: 1.5px; stroke-linejoin: round; marker-end: url('#activity-black-black-67m5wavlok43roqcm06x94ncc');" d="M675,780L675,876"/><text lineHeight="1.2" wordWrap="break-word" overflowWrap="break-word" hyphens="auto" class="djs-label" style="font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; fill: black;"><tspan x="689" y="828">envia</tspan></text><path d="
+      M 675 800
+      m 11,0
+      a 11,11 0 1,0 -22,0
+      a 11,11 0 1,0 22,0
+      " style="fill: white; stroke: black;"/><text lineHeight="1.2" position="absolute" class="djs-labelNumber" style="font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; fill: black;"><tspan x="671" y="804">6</tspan></text></g><path d="M675,780L675,876" class="djs-hit djs-hit-stroke" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;"/><rect x="670" y="775" rx="4" width="10" height="106" class="djs-outline" style="fill: none;"/></g></g><g class="djs-group"><g class="djs-element djs-connection" data-element-id="connection_2383" style="display: block;"><g class="djs-visual"><path style="stroke: black; fill: none; stroke-width: 1.5px; stroke-linejoin: round; marker-end: url('#activity-black-black-67m5wavlok43roqcm06x94ncc');" d="M468,213L616,213"/><text lineHeight="1.2" wordWrap="break-word" overflowWrap="break-word" hyphens="auto" class="djs-label" style="font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; fill: black;"><tspan x="530.9" y="228">no</tspan></text></g><path d="M468,213L616,213" class="djs-hit djs-hit-stroke" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;"/><rect x="463" y="208" rx="4" width="158" height="10" class="djs-outline" style="fill: none;"/></g></g><g class="djs-group"><g class="djs-element djs-connection" data-element-id="connection_3041" style="display: block;"><g class="djs-visual"><path style="stroke: black; fill: none; stroke-width: 1.5px; stroke-linejoin: round; marker-end: url('#activity-black-black-67m5wavlok43roqcm06x94ncc');" d="M718,733L855,733"/><text lineHeight="1.2" wordWrap="break-word" overflowWrap="break-word" hyphens="auto" class="djs-label" style="font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; fill: black;"><tspan x="760.1" y="748">atualiza</tspan></text><path d="
+      M 738 733
+      m 11,0
+      a 11,11 0 1,0 -22,0
+      a 11,11 0 1,0 22,0
+      " style="fill: white; stroke: black;"/><text lineHeight="1.2" position="absolute" class="djs-labelNumber" style="font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; fill: black;"><tspan x="734" y="737">5</tspan></text></g><path d="M718,733L855,733" class="djs-hit djs-hit-stroke" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;"/><rect x="713" y="728" rx="4" width="147" height="10" class="djs-outline" style="fill: none;"/></g></g><g class="djs-group"><g class="djs-element djs-connection" data-element-id="connection_6732" style="display: block;"><g class="djs-visual"><path style="stroke: black; fill: none; stroke-width: 1.5px; stroke-linejoin: round; marker-end: url('#activity-black-black-67m5wavlok43roqcm06x94ncc');" d="M637,914L517,914"/><text lineHeight="1.2" wordWrap="break-word" overflowWrap="break-word" hyphens="auto" class="djs-label" style="font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; fill: black;"><tspan x="560.8" y="929">para</tspan></text></g><path d="M637,914L517,914" class="djs-hit djs-hit-stroke" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;"/><rect x="512" y="909" rx="4" width="130" height="10" class="djs-outline" style="fill: none;"/></g></g><g class="djs-group"><g class="djs-element djs-connection" data-element-id="connection_6892" style="display: block;"><g class="djs-visual"><path style="stroke: black; fill: none; stroke-width: 1.5px; stroke-linejoin: round; marker-end: url('#activity-black-black-67m5wavlok43roqcm06x94ncc');" d="M248,613L436,713"/><text lineHeight="1.2" wordWrap="break-word" overflowWrap="break-word" hyphens="auto" class="djs-label" style="font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; fill: black;"><tspan x="350.6681961180023" y="656.1121307453349">atualiza</tspan></text><path d="
+      M 268 622.3363922360046
+      m 11,0
+      a 11,11 0 1,0 -22,0
+      a 11,11 0 1,0 22,0
+      " style="fill: white; stroke: black;"/><text lineHeight="1.2" position="absolute" class="djs-labelNumber" style="font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; fill: black;"><tspan x="264" y="626.3363922360046">4</tspan></text></g><path d="M248,613L436,713" class="djs-hit djs-hit-stroke" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;"/><rect x="243" y="608" rx="4" width="198" height="110" class="djs-outline" style="fill: none;"/></g></g><g class="djs-group"><g class="djs-element djs-connection" data-element-id="connection_7933" style="display: block;"><g class="djs-visual"><path style="stroke: black; fill: none; stroke-width: 1.5px; stroke-linejoin: round; marker-end: url('#activity-black-black-67m5wavlok43roqcm06x94ncc');" d="M257,595L436,595"/><text lineHeight="1.2" wordWrap="break-word" overflowWrap="break-word" hyphens="auto" class="djs-label" style="font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; fill: black;"><tspan x="322.65" y="610">realiza</tspan></text><path d="
+      M 277 595
+      m 11,0
+      a 11,11 0 1,0 -22,0
+      a 11,11 0 1,0 22,0
+      " style="fill: white; stroke: black;"/><text lineHeight="1.2" position="absolute" class="djs-labelNumber" style="font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; fill: black;"><tspan x="273" y="599">3</tspan></text></g><path d="M257,595L436,595" class="djs-hit djs-hit-stroke" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;"/><rect x="252" y="590" rx="4" width="189" height="10" class="djs-outline" style="fill: none;"/></g></g><g class="djs-group"><g class="djs-element djs-connection" data-element-id="connection_8331" style="display: block;"><g class="djs-visual"><path style="stroke: black; fill: none; stroke-width: 1.5px; stroke-linejoin: round; marker-end: url('#activity-black-black-67m5wavlok43roqcm06x94ncc');" d="M517,733L637,733"/><text lineHeight="1.2" wordWrap="break-word" overflowWrap="break-word" hyphens="auto" class="djs-label" style="font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; fill: black;"><tspan x="565.9" y="748">no</tspan></text></g><path d="M517,733L637,733" class="djs-hit djs-hit-stroke" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;"/><rect x="512" y="728" rx="4" width="130" height="10" class="djs-outline" style="fill: none;"/></g></g><g class="djs-group"><g class="djs-element djs-connection" data-element-id="connection_9301" style="display: block;"><g class="djs-visual"><path style="stroke: black; fill: none; stroke-width: 1.5px; stroke-linejoin: round; marker-end: url('#activity-black-black-67m5wavlok43roqcm06x94ncc');" d="M256,213L387,213"/><text lineHeight="1.2" wordWrap="break-word" overflowWrap="break-word" hyphens="auto" class="djs-label" style="font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; fill: black;"><tspan x="295.1" y="228">solicita</tspan></text><path d="
+      M 276 213
+      m 11,0
+      a 11,11 0 1,0 -22,0
+      a 11,11 0 1,0 22,0
+      " style="fill: white; stroke: black;"/><text lineHeight="1.2" position="absolute" class="djs-labelNumber" style="font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; fill: black;"><tspan x="272" y="217">1</tspan></text></g><path d="M256,213L387,213" class="djs-hit djs-hit-stroke" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;"/><rect x="251" y="208" rx="4" width="141" height="10" class="djs-outline" style="fill: none;"/></g></g><g class="djs-group"><g class="djs-element djs-connection" data-element-id="connection_2727" style="display: block;"><g class="djs-visual"><path style="stroke: black; fill: none; stroke-width: 1.5px; stroke-linejoin: round; marker-end: url('#activity-black-black-67m5wavlok43roqcm06x94ncc');" d="M654,260L654,350"/><text lineHeight="1.2" wordWrap="break-word" overflowWrap="break-word" hyphens="auto" class="djs-label" style="font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; fill: black;"><tspan x="668" y="305">atualiza</tspan></text><path d="
+      M 654 280
+      m 11,0
+      a 11,11 0 1,0 -22,0
+      a 11,11 0 1,0 22,0
+      " style="fill: white; stroke: black;"/><text lineHeight="1.2" position="absolute" class="djs-labelNumber" style="font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; fill: black;"><tspan x="650" y="284">2</tspan></text></g><path d="M654,260L654,350" class="djs-hit djs-hit-stroke" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;"/><rect x="649" y="255" rx="4" width="10" height="100" class="djs-outline" style="fill: none;"/></g></g><g class="djs-group"><g class="djs-element djs-shape hover" data-element-id="shape_4096" style="display: block;" transform="matrix(1 0 0 1 158 1028)"><g class="djs-visual"><rect x="0" y="0" width="1081" height="622" rx="0" ry="0" style="stroke: rgb(0, 0, 0); stroke-width: 2px; fill: none;"/><text lineHeight="1.2" class="djs-label" style="font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; fill: rgb(0, 0, 0);"><tspan x="8" y="18.799999999999997">Ordem de serviço aprovada para execução</tspan></text></g><rect class="djs-hit djs-hit-all" x="0" y="0" width="1081" height="622" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;"/><rect x="-5" y="-5" rx="4" width="1091" height="632" class="djs-outline" style="fill: none;"/></g><g class="djs-children"><g class="djs-group"><g class="djs-element djs-shape" data-element-id="shape_9861" style="display: block;" transform="matrix(1 0 0 1 198 1351)"><g class="djs-visual"><svg xmlns="http://www.w3.org/2000/svg" fill=" #000000" width="48.75" height="48.75" viewBox="0 0 24 26" x="12.5" y="12.5"><path fill="none" d="M0 0h24v24H0V0z"/><path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.85 7h10.29l1.08 3.11H5.77L6.85 7zM19 17H5v-5h14v5z"/><circle cx="7.5" cy="14.5" r="1.5"/><circle cx="16.5" cy="14.5" r="1.5"/></svg><text lineHeight="1.2" class="djs-label" style="font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; fill: rgb(0, 0, 0);"><tspan x="16.9052734375" y="74.75">Veículo</tspan></text></g><rect class="djs-hit djs-hit-all" x="0" y="0" width="75" height="75" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;"/><rect x="-5" y="-5" rx="4" width="85" height="85" class="djs-outline" style="fill: none;"/></g></g><g class="djs-group"><g class="djs-element djs-shape" data-element-id="shape_9242" style="display: block;" transform="matrix(1 0 0 1 445 1351)"><g class="djs-visual"><svg xmlns="http://www.w3.org/2000/svg" fill=" #000000" width="48.75" height="48.75" viewBox="0 0 24 26" x="12.5" y="12.5"><path fill="none" d="M0 0h24v24H0V0z"/><path d="M8 16h8v2H8zm0-4h8v2H8zm6-10H6c-1.1 0-2 .9-2 2v16c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/></svg><text lineHeight="1.2" class="djs-label" style="font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; fill: rgb(0, 0, 0);"><tspan x="9.7841796875" y="74.75">Ordem de </tspan><tspan x="17.58203125" y="88.75">serviço</tspan></text></g><rect class="djs-hit djs-hit-all" x="0" y="0" width="75" height="75" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;"/><rect x="-5" y="-5" rx="4" width="85" height="85" class="djs-outline" style="fill: none;"/></g></g><g class="djs-group"><g class="djs-element djs-shape" data-element-id="shape_9219" style="display: block;" transform="matrix(1 0 0 1 198 1092)"><g class="djs-visual"><svg xmlns="http://www.w3.org/2000/svg" fill=" #000000" viewBox="0 0 24 26" width="75" height="75"><path d="M12 5.9c1.16 0 2.1.94 2.1 2.1s-.94 2.1-2.1 2.1S9.9 9.16 9.9 8s.94-2.1 2.1-2.1m0 9c2.97 0 6.1 1.46 6.1 2.1v1.1H5.9V17c0-.64 3.13-2.1 6.1-2.1M12 4C9.79 4 8 5.79 8 8s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 9c-2.67 0-8 1.34-8 4v3h16v-3c0-2.66-5.33-4-8-4z"/><path d="M0 0h24v24H0z" fill="none"/></svg><text lineHeight="1.2" class="djs-label" style="font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; fill: rgb(0, 0, 0);"><tspan x="10.783203125" y="75">Mecânico</tspan></text></g><rect class="djs-hit djs-hit-all" x="0" y="0" width="75" height="75" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;"/><rect x="-5" y="-5" rx="4" width="85" height="85" class="djs-outline" style="fill: none;"/></g></g><g class="djs-group"><g class="djs-element djs-shape" data-element-id="shape_8611" style="display: block;" transform="matrix(1 0 0 1 669 1351)"><g class="djs-visual"><svg xmlns="http://www.w3.org/2000/svg" fill=" #000000" viewBox="0 0 24 26" width="75" height="75"><path d="M20,18c1.1,0,2-0.9,2-2V6c0-1.1-0.9-2-2-2H4C2.9,4,2,4.9,2,6v10c0,1.1,0.9,2,2,2H0v2h24v-2H20z M4,6h16v10H4V6z"/></svg><text lineHeight="1.2" class="djs-label" style="font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; fill: rgb(0, 0, 0);"><tspan x="14.9130859375" y="75">Sistema</tspan></text></g><rect class="djs-hit djs-hit-all" x="0" y="0" width="75" height="75" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;"/><rect x="-5" y="-5" rx="4" width="85" height="85" class="djs-outline" style="fill: none;"/></g></g><g class="djs-group"><g class="djs-element djs-shape" data-element-id="shape_7556" style="display: block;" transform="matrix(1 0 0 1 574 1270)"><g class="djs-visual"><rect x="0" y="0" width="100" height="100" rx="0" ry="0" style="stroke: none; stroke-width: 2px; fill: none;"/><path d="m 0, 0 m 10,0 l -10,0 l 0,100 l 10,0" style="fill: none; stroke-width: 2px; stroke: black;"/><text lineHeight="1.2" class="djs-label" style="font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; fill: black;"><tspan x="5" y="15.799999999999999">Atualiza com </tspan><tspan x="5" y="30.199999999999996">horas </tspan><tspan x="5" y="44.599999999999994">trabalhadas, </tspan><tspan x="5" y="58.99999999999999">serviços, peças</tspan><tspan x="5" y="73.39999999999999">e insumos </tspan><tspan x="5" y="87.79999999999998">adicionais</tspan></text></g><rect class="djs-hit djs-hit-all" x="0" y="0" width="100" height="100" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;"/><rect x="-5" y="-5" rx="4" width="110" height="110" class="djs-outline" style="fill: none;"/></g></g><g class="djs-group"><g class="djs-element djs-shape" data-element-id="shape_7465" style="display: block;" transform="matrix(1 0 0 1 1128 1092)"><g class="djs-visual"><svg xmlns="http://www.w3.org/2000/svg" fill=" #000000" viewBox="0 0 24 26" width="75" height="75"><path d="M20,18c1.1,0,2-0.9,2-2V6c0-1.1-0.9-2-2-2H4C2.9,4,2,4.9,2,6v10c0,1.1,0.9,2,2,2H0v2h24v-2H20z M4,6h16v10H4V6z"/></svg><text lineHeight="1.2" class="djs-label" style="font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; fill: rgb(0, 0, 0);"><tspan x="14.9130859375" y="75">Sistema</tspan></text></g><rect class="djs-hit djs-hit-all" x="0" y="0" width="75" height="75" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;"/><rect x="-5" y="-5" rx="4" width="85" height="85" class="djs-outline" style="fill: none;"/></g></g><g class="djs-group"><g class="djs-element djs-shape" data-element-id="shape_5898" style="display: block;" transform="matrix(1 0 0 1 919 1351)"><g class="djs-visual"><svg xmlns="http://www.w3.org/2000/svg" fill=" #000000" viewBox="0 0 24 26" width="48.75" height="48.75" x="12.5" y="12.5"><path fill="none" d="M0,0h24v24H0V0z"/><path fill-opacity="0.9" d="M12,1.95c-5.52,0-10,4.48-10,10s4.48,10,10,10h5v-2h-5c-4.34,0-8-3.66-8-8s3.66-8,8-8s8,3.66,8,8v1.43 c0,0.79-0.71,1.57-1.5,1.57S17,14.17,17,13.38v-1.43c0-2.76-2.24-5-5-5s-5,2.24-5,5s2.24,5,5,5c1.38,0,2.64-0.56,3.54-1.47 c0.65,0.89,1.77,1.47,2.96,1.47c1.97,0,3.5-1.6,3.5-3.57v-1.43C22,6.43,17.52,1.95,12,1.95z M12,14.95c-1.66,0-3-1.34-3-3 s1.34-3,3-3s3,1.34,3,3S13.66,14.95,12,14.95z"/></svg><text lineHeight="1.2" class="djs-label" style="font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; fill: rgb(0, 0, 0);"><tspan x="13.1181640625" y="74.75">Email de </tspan><tspan x="0" y="88.75">finalização da</tspan><tspan x="28.578125" y="102.75">OS</tspan></text></g><rect class="djs-hit djs-hit-all" x="0" y="0" width="75" height="75" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;"/><rect x="-5" y="-5" rx="4" width="85" height="85" class="djs-outline" style="fill: none;"/></g></g><g class="djs-group"><g class="djs-element djs-shape" data-element-id="shape_5311" style="display: block;" transform="matrix(1 0 0 1 1128 1351)"><g class="djs-visual"><svg xmlns="http://www.w3.org/2000/svg" fill=" #000000" viewBox="0 0 24 26" width="75" height="75"><path d="M12 5.9c1.16 0 2.1.94 2.1 2.1s-.94 2.1-2.1 2.1S9.9 9.16 9.9 8s.94-2.1 2.1-2.1m0 9c2.97 0 6.1 1.46 6.1 2.1v1.1H5.9V17c0-.64 3.13-2.1 6.1-2.1M12 4C9.79 4 8 5.79 8 8s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 9c-2.67 0-8 1.34-8 4v3h16v-3c0-2.66-5.33-4-8-4z"/><path d="M0 0h24v24H0z" fill="none"/></svg><text lineHeight="1.2" class="djs-label" style="font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; fill: rgb(0, 0, 0);"><tspan x="17.91015625" y="75">Cliente</tspan></text></g><rect class="djs-hit djs-hit-all" x="0" y="0" width="75" height="75" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;"/><rect x="-5" y="-5" rx="4" width="85" height="85" class="djs-outline" style="fill: none;"/></g></g><g class="djs-group"><g class="djs-element djs-shape" data-element-id="shape_5178" style="display: block;" transform="matrix(1 0 0 1 669 1092)"><g class="djs-visual"><svg xmlns="http://www.w3.org/2000/svg" fill=" #000000" viewBox="0 0 24 26" width="75" height="75"><path d="M12 5.9c1.16 0 2.1.94 2.1 2.1s-.94 2.1-2.1 2.1S9.9 9.16 9.9 8s.94-2.1 2.1-2.1m0 9c2.97 0 6.1 1.46 6.1 2.1v1.1H5.9V17c0-.64 3.13-2.1 6.1-2.1M12 4C9.79 4 8 5.79 8 8s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 9c-2.67 0-8 1.34-8 4v3h16v-3c0-2.66-5.33-4-8-4z"/><path d="M0 0h24v24H0z" fill="none"/></svg><text lineHeight="1.2" class="djs-label" style="font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; fill: rgb(0, 0, 0);"><tspan x="8.3701171875" y="75">Almoxarife</tspan></text></g><rect class="djs-hit djs-hit-all" x="0" y="0" width="75" height="75" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;"/><rect x="-5" y="-5" rx="4" width="85" height="85" class="djs-outline" style="fill: none;"/></g></g><g class="djs-group"><g class="djs-element djs-shape" data-element-id="shape_4692" style="display: block;" transform="matrix(1 0 0 1 1128 1223)"><g class="djs-visual"><svg xmlns="http://www.w3.org/2000/svg" fill=" #000000" viewBox="0 0 24 26" width="75" height="75"><path d="M20,18c1.1,0,2-0.9,2-2V6c0-1.1-0.9-2-2-2H4C2.9,4,2,4.9,2,6v10c0,1.1,0.9,2,2,2H0v2h24v-2H20z M4,6h16v10H4V6z"/></svg><text lineHeight="1.2" class="djs-label" style="font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; fill: rgb(0, 0, 0);"><tspan x="14.9130859375" y="75">Sistema</tspan></text></g><rect class="djs-hit djs-hit-all" x="0" y="0" width="75" height="75" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;"/><rect x="-5" y="-5" rx="4" width="85" height="85" class="djs-outline" style="fill: none;"/></g></g><g class="djs-group"><g class="djs-element djs-shape" data-element-id="shape_1336" style="display: block;" transform="matrix(1 0 0 1 919 1092)"><g class="djs-visual"><svg xmlns="http://www.w3.org/2000/svg" fill=" #000000" width="48.75" height="48.75" viewBox="0 0 24 26" x="12.5" y="12.5"><path fill="none" d="M0 0h24v24H0V0z"/><path d="M18.36 9l.6 3H5.04l.6-3h12.72M20 4H4v2h16V4zm0 3H4l-1 5v2h1v6h10v-6h4v6h2v-6h1v-2l-1-5zM6 18v-4h6v4H6z"/></svg><text lineHeight="1.2" class="djs-label" style="font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; fill: rgb(0, 0, 0);"><tspan x="14.5703125" y="74.75">Estoque</tspan></text></g><rect class="djs-hit djs-hit-all" x="0" y="0" width="75" height="75" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;"/><rect x="-5" y="-5" rx="4" width="85" height="85" class="djs-outline" style="fill: none;"/></g></g><g class="djs-group"><g class="djs-element djs-shape" data-element-id="shape_0588" style="display: block;" transform="matrix(1 0 0 1 445 1092)"><g class="djs-visual"><svg xmlns="http://www.w3.org/2000/svg" fill=" #000000" width="48.75" height="48.75" viewBox="0 0 24 28" x="12.5" y="12.5"><path fill="none" d="M0 0h24v24H0V0z"/><path d="M22.61 18.99l-9.08-9.08c.93-2.34.45-5.1-1.44-7C9.79.61 6.21.4 3.66 2.26L7.5 6.11 6.08 7.52 2.25 3.69C.39 6.23.6 9.82 2.9 12.11c1.86 1.86 4.57 2.35 6.89 1.48l9.11 9.11c.39.39 1.02.39 1.41 0l2.3-2.3c.4-.38.4-1.01 0-1.41zm-3 1.6l-9.46-9.46c-.61.45-1.29.72-2 .82-1.36.2-2.79-.21-3.83-1.25C3.37 9.76 2.93 8.5 3 7.26l3.09 3.09 4.24-4.24-3.09-3.09c1.24-.07 2.49.37 3.44 1.31 1.08 1.08 1.49 2.57 1.24 3.96-.12.71-.42 1.37-.88 1.96l9.45 9.45-.88.89z"/></svg><text lineHeight="1.2" class="djs-label" style="font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; fill: rgb(0, 0, 0);"><tspan x="20.1953125" y="74.75">Peças </tspan><tspan x="4.109375" y="88.75">necessárias</tspan></text></g><rect class="djs-hit djs-hit-all" x="0" y="0" width="75" height="75" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;"/><rect x="-5" y="-5" rx="4" width="85" height="85" class="djs-outline" style="fill: none;"/></g></g><g class="djs-group"><g class="djs-element djs-shape" data-element-id="shape_0464" style="display: block;" transform="matrix(1 0 0 1 919 1223)"><g class="djs-visual"><svg xmlns="http://www.w3.org/2000/svg" fill=" #000000" width="48.75" height="48.75" viewBox="0 0 24 26" x="12.5" y="12.5"><path fill="none" d="M0 0h24v24H0V0z"/><path d="M18.36 9l.6 3H5.04l.6-3h12.72M20 4H4v2h16V4zm0 3H4l-1 5v2h1v6h10v-6h4v6h2v-6h1v-2l-1-5zM6 18v-4h6v4H6z"/></svg><text lineHeight="1.2" class="djs-label" style="font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; fill: rgb(0, 0, 0);"><tspan x="14.5703125" y="74.75">Estoque</tspan></text></g><rect class="djs-hit djs-hit-all" x="0" y="0" width="75" height="75" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;"/><rect x="-5" y="-5" rx="4" width="85" height="85" class="djs-outline" style="fill: none;"/></g></g><g class="djs-group"><g class="djs-element djs-connection" data-element-id="connection_5853" style="display: block;"><g class="djs-visual"><path style="stroke: black; fill: none; stroke-width: 1.5px; stroke-linejoin: round; marker-end: url('#activity-black-black-67m5wavlok43roqcm06x94ncc');" d="M707,1436L707,1533"/><text lineHeight="1.2" wordWrap="break-word" overflowWrap="break-word" hyphens="auto" class="djs-label" style="font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; fill: black;"><tspan x="721" y="1484.5">atualiza</tspan></text><path d="
+      M 707 1456
+      m 11,0
+      a 11,11 0 1,0 -22,0
+      a 11,11 0 1,0 22,0
+      " style="fill: white; stroke: black;"/><text lineHeight="1.2" position="absolute" class="djs-labelNumber" style="font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; fill: black;"><tspan x="700" y="1460">14</tspan></text></g><path d="M707,1436L707,1533" class="djs-hit djs-hit-stroke" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;"/><rect x="702" y="1431" rx="4" width="10" height="107" class="djs-outline" style="fill: none;"/></g></g><g class="djs-group"><g class="djs-element djs-shape" data-element-id="shape_1077" style="display: block;" transform="matrix(1 0 0 1 669 1533)"><g class="djs-visual"><svg xmlns="http://www.w3.org/2000/svg" fill=" #000000" width="48.75" height="48.75" viewBox="0 0 24 26" x="12.5" y="12.5"><path fill="none" d="M0 0h24v24H0V0z"/><path d="M8 16h8v2H8zm0-4h8v2H8zm6-10H6c-1.1 0-2 .9-2 2v16c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/></svg><text lineHeight="1.2" class="djs-label" style="font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; fill: rgb(0, 0, 0);"><tspan x="9.7841796875" y="74.75">Ordem de </tspan><tspan x="17.58203125" y="88.75">serviço</tspan></text></g><rect class="djs-hit djs-hit-all" x="0" y="0" width="75" height="75" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;"/><rect x="-5" y="-5" rx="4" width="85" height="85" class="djs-outline" style="fill: none;"/></g></g><g class="djs-group"><g class="djs-element djs-shape" data-element-id="shape_9405" style="display: block;" transform="matrix(1 0 0 1 919 1533)"><g class="djs-visual"><svg xmlns="http://www.w3.org/2000/svg" fill=" #000000" height="48.75" viewBox="0 0 24 24" width="48.75" x="12.5" y="12.5"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm4.59-12.42L10 14.17l-2.59-2.58L6 13l4 4 8-8z"/></svg><text lineHeight="1.2" class="djs-label" style="font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; fill: rgb(0, 0, 0);"><tspan x="8.86328125" y="74.75">Finalizada</tspan></text></g><rect class="djs-hit djs-hit-all" x="0" y="0" width="75" height="75" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;"/><rect x="-5" y="-5" rx="4" width="85" height="85" class="djs-outline" style="fill: none;"/></g></g><g class="djs-group"><g class="djs-element djs-connection" data-element-id="connection_8177" style="display: block;"><g class="djs-visual"><path style="stroke: black; fill: none; stroke-width: 1.5px; stroke-linejoin: round; marker-end: url('#activity-black-black-67m5wavlok43roqcm06x94ncc');" d="M750,1571L919,1571"/><text lineHeight="1.2" wordWrap="break-word" overflowWrap="break-word" hyphens="auto" class="djs-label" style="font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; fill: black;"><tspan x="818.3" y="1586">como</tspan></text></g><path d="M750,1571L919,1571" class="djs-hit djs-hit-stroke" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;"/><rect x="745" y="1566" rx="4" width="179" height="10" class="djs-outline" style="fill: none;"/></g></g></g></g><g class="djs-group"><g class="djs-element djs-connection" data-element-id="connection_6955" style="display: block;"><g class="djs-visual"><path style="stroke: black; fill: none; stroke-width: 1.5px; stroke-linejoin: round; marker-end: url('#activity-black-black-67m5wavlok43roqcm06x94ncc');" d="M236,1177L236,1351"/><text lineHeight="1.2" wordWrap="break-word" overflowWrap="break-word" hyphens="auto" class="djs-label" style="font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; fill: black;"><tspan x="250" y="1264">trabalha</tspan></text><path d="
+      M 236 1197
+      m 11,0
+      a 11,11 0 1,0 -22,0
+      a 11,11 0 1,0 22,0
+      " style="fill: white; stroke: black;"/><text lineHeight="1.2" position="absolute" class="djs-labelNumber" style="font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; fill: black;"><tspan x="229" y="1201">11</tspan></text></g><path d="M236,1177L236,1351" class="djs-hit djs-hit-stroke" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;"/><rect x="231" y="1172" rx="4" width="10" height="184" class="djs-outline" style="fill: none;"/></g></g><g class="djs-group"><g class="djs-element djs-connection" data-element-id="connection_9650" style="display: block;"><g class="djs-visual"><path style="stroke: black; fill: none; stroke-width: 1.5px; stroke-linejoin: round; marker-end: url('#activity-black-black-67m5wavlok43roqcm06x94ncc');" d="M261,1176L447,1351"/><text lineHeight="1.2" wordWrap="break-word" overflowWrap="break-word" hyphens="auto" class="djs-label" style="font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; fill: black;"><tspan x="365.2091142083706" y="1258.3060761389138">atualiza</tspan></text><path d="
+      M 281 1190.4182284167412
+      m 11,0
+      a 11,11 0 1,0 -22,0
+      a 11,11 0 1,0 22,0
+      " style="fill: white; stroke: black;"/><text lineHeight="1.2" position="absolute" class="djs-labelNumber" style="font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; fill: black;"><tspan x="274" y="1194.4182284167412">12</tspan></text></g><path d="M261,1176L447,1351" class="djs-hit djs-hit-stroke" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;"/><rect x="256" y="1171" rx="4" width="196" height="185" class="djs-outline" style="fill: none;"/></g></g><g class="djs-group"><g class="djs-element djs-connection" data-element-id="connection_6357" style="display: block;"><g class="djs-visual"><path style="stroke: black; stroke-width: 1.5px; stroke-linejoin: round; stroke-dasharray: 5, 5;" d="M507,1371L574,1322"/></g><path d="M507,1371L574,1322" class="djs-hit djs-hit-stroke" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;"/><rect x="502" y="1317" rx="4" width="77" height="59" class="djs-outline" style="fill: none;"/></g></g><g class="djs-group"><g class="djs-element djs-connection" data-element-id="connection_3973" style="display: block;"><g class="djs-visual"><path style="stroke: black; fill: none; stroke-width: 1.5px; stroke-linejoin: round; marker-end: url('#activity-black-black-67m5wavlok43roqcm06x94ncc');" d="M526,1389L669,1389"/><text lineHeight="1.2" wordWrap="break-word" overflowWrap="break-word" hyphens="auto" class="djs-label" style="font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; fill: black;"><tspan x="586.4" y="1404">no</tspan></text></g><path d="M526,1389L669,1389" class="djs-hit djs-hit-stroke" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;"/><rect x="521" y="1384" rx="4" width="153" height="10" class="djs-outline" style="fill: none;"/></g></g><g class="djs-group"><g class="djs-element djs-connection" data-element-id="connection_2957" style="display: block;"><g class="djs-visual"><path style="stroke: black; fill: none; stroke-width: 1.5px; stroke-linejoin: round; marker-end: url('#activity-black-black-67m5wavlok43roqcm06x94ncc');" d="M279,1130L445,1130"/><text lineHeight="1.2" wordWrap="break-word" overflowWrap="break-word" hyphens="auto" class="djs-label" style="font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; fill: black;"><tspan x="335.6" y="1145">solicita</tspan></text><path d="
+      M 299 1130
+      m 11,0
+      a 11,11 0 1,0 -22,0
+      a 11,11 0 1,0 22,0
+      " style="fill: white; stroke: black;"/><text lineHeight="1.2" position="absolute" class="djs-labelNumber" style="font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; fill: black;"><tspan x="295" y="1134">8</tspan></text></g><path d="M279,1130L445,1130" class="djs-hit djs-hit-stroke" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;"/><rect x="274" y="1125" rx="4" width="176" height="10" class="djs-outline" style="fill: none;"/></g></g><g class="djs-group"><g class="djs-element djs-connection" data-element-id="connection_0903" style="display: block;"><g class="djs-visual"><path style="stroke: black; fill: none; stroke-width: 1.5px; stroke-linejoin: round; marker-end: url('#activity-black-black-67m5wavlok43roqcm06x94ncc');" d="M750,1389L919,1389"/><text lineHeight="1.2" wordWrap="break-word" overflowWrap="break-word" hyphens="auto" class="djs-label" style="font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; fill: black;"><tspan x="815.75" y="1404">envia</tspan></text><path d="
+      M 770 1389
+      m 11,0
+      a 11,11 0 1,0 -22,0
+      a 11,11 0 1,0 22,0
+      " style="fill: white; stroke: black;"/><text lineHeight="1.2" position="absolute" class="djs-labelNumber" style="font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; fill: black;"><tspan x="763" y="1393">13</tspan></text></g><path d="M750,1389L919,1389" class="djs-hit djs-hit-stroke" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;"/><rect x="745" y="1384" rx="4" width="179" height="10" class="djs-outline" style="fill: none;"/></g></g><g class="djs-group"><g class="djs-element djs-connection" data-element-id="connection_2531" style="display: block;"><g class="djs-visual"><path style="stroke: black; fill: none; stroke-width: 1.5px; stroke-linejoin: round; marker-end: url('#activity-black-black-67m5wavlok43roqcm06x94ncc');" d="M1000,1130L1128,1130"/><text lineHeight="1.2" wordWrap="break-word" overflowWrap="break-word" hyphens="auto" class="djs-label" style="font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; fill: black;"><tspan x="1052.9" y="1145">no</tspan></text></g><path d="M1000,1130L1128,1130" class="djs-hit djs-hit-stroke" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;"/><rect x="995" y="1125" rx="4" width="138" height="10" class="djs-outline" style="fill: none;"/></g></g><g class="djs-group"><g class="djs-element djs-connection" data-element-id="connection_2266" style="display: block;"><g class="djs-visual"><path style="stroke: black; fill: none; stroke-width: 1.5px; stroke-linejoin: round; marker-end: url('#activity-black-black-67m5wavlok43roqcm06x94ncc');" d="M1000,1389L1128,1389"/><text lineHeight="1.2" wordWrap="break-word" overflowWrap="break-word" hyphens="auto" class="djs-label" style="font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; fill: black;"><tspan x="1052.9" y="1404">ao</tspan></text></g><path d="M1000,1389L1128,1389" class="djs-hit djs-hit-stroke" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;"/><rect x="995" y="1384" rx="4" width="138" height="10" class="djs-outline" style="fill: none;"/></g></g><g class="djs-group"><g class="djs-element djs-connection" data-element-id="connection_7944" style="display: block;"><g class="djs-visual"><path style="stroke: black; fill: none; stroke-width: 1.5px; stroke-linejoin: round; marker-end: url('#activity-black-black-67m5wavlok43roqcm06x94ncc');" d="M526,1130L669,1130"/><text lineHeight="1.2" wordWrap="break-word" overflowWrap="break-word" hyphens="auto" class="djs-label" style="font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; fill: black;"><tspan x="586.4" y="1145">ao</tspan></text></g><path d="M526,1130L669,1130" class="djs-hit djs-hit-stroke" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;"/><rect x="521" y="1125" rx="4" width="153" height="10" class="djs-outline" style="fill: none;"/></g></g><g class="djs-group"><g class="djs-element djs-connection" data-element-id="connection_5548" style="display: block;"><g class="djs-visual"><path style="stroke: black; fill: none; stroke-width: 1.5px; stroke-linejoin: round; marker-end: url('#activity-black-black-67m5wavlok43roqcm06x94ncc');" d="M750,1130L919,1130"/><text lineHeight="1.2" wordWrap="break-word" overflowWrap="break-word" hyphens="auto" class="djs-label" style="font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; fill: black;"><tspan x="808.1" y="1145">consulta</tspan></text><path d="
+      M 770 1130
+      m 11,0
+      a 11,11 0 1,0 -22,0
+      a 11,11 0 1,0 22,0
+      " style="fill: white; stroke: black;"/><text lineHeight="1.2" position="absolute" class="djs-labelNumber" style="font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; fill: black;"><tspan x="766" y="1134">9</tspan></text></g><path d="M750,1130L919,1130" class="djs-hit djs-hit-stroke" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;"/><rect x="745" y="1125" rx="4" width="179" height="10" class="djs-outline" style="fill: none;"/></g></g><g class="djs-group"><g class="djs-element djs-connection" data-element-id="connection_9378" style="display: block;"><g class="djs-visual"><path style="stroke: black; fill: none; stroke-width: 1.5px; stroke-linejoin: round; marker-end: url('#activity-black-black-67m5wavlok43roqcm06x94ncc');" d="M741,1148L919,1241"/><text lineHeight="1.2" wordWrap="break-word" overflowWrap="break-word" hyphens="auto" class="djs-label" style="font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; fill: black;"><tspan x="838.5976338974485" y="1187.5650892649658">baixa</tspan></text><path d="
+      M 761 1157.195267794897
+      m 11,0
+      a 11,11 0 1,0 -22,0
+      a 11,11 0 1,0 22,0
+      " style="fill: white; stroke: black;"/><text lineHeight="1.2" position="absolute" class="djs-labelNumber" style="font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; fill: black;"><tspan x="754" y="1161.195267794897">10</tspan></text></g><path d="M741,1148L919,1241" class="djs-hit djs-hit-stroke" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;"/><rect x="736" y="1143" rx="4" width="188" height="103" class="djs-outline" style="fill: none;"/></g></g><g class="djs-group"><g class="djs-element djs-connection" data-element-id="connection_1397" style="display: block;"><g class="djs-visual"><path style="stroke: black; fill: none; stroke-width: 1.5px; stroke-linejoin: round; marker-end: url('#activity-black-black-67m5wavlok43roqcm06x94ncc');" d="M1000,1261L1128,1261"/><text lineHeight="1.2" wordWrap="break-word" overflowWrap="break-word" hyphens="auto" class="djs-label" style="font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; fill: black;"><tspan x="1052.9" y="1276">no</tspan></text></g><path d="M1000,1261L1128,1261" class="djs-hit djs-hit-stroke" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;"/><rect x="995" y="1256" rx="4" width="138" height="10" class="djs-outline" style="fill: none;"/></g></g><g class="djs-group"><g class="djs-element djs-shape" data-element-id="shape_7441" style="display: block;" transform="matrix(1 0 0 1 387 175)"><g class="djs-visual"><svg xmlns="http://www.w3.org/2000/svg" fill=" #000000" width="48.75" height="48.75" viewBox="0 0 24 26" x="12.5" y="12.5"><path fill="none" d="M0 0h24v24H0V0z"/><path d="M8 16h8v2H8zm0-4h8v2H8zm6-10H6c-1.1 0-2 .9-2 2v16c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/></svg><text lineHeight="1.2" class="djs-label" style="font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; fill: rgb(0, 0, 0);"><tspan x="9.7841796875" y="74.75">Ordem de </tspan><tspan x="17.58203125" y="88.75">serviço</tspan></text></g><rect class="djs-hit djs-hit-all" x="0" y="0" width="75" height="75" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;"/><rect x="-5" y="-5" rx="4" width="85" height="85" class="djs-outline" style="fill: none;"/></g></g><g class="djs-group"><g class="djs-element djs-shape" data-element-id="shape_6011" style="display: block;" transform="matrix(1 0 0 1 792 110)"><g class="djs-visual"><rect x="0" y="0" width="100" height="144" rx="0" ry="0" style="stroke: none; stroke-width: 2px; fill: none;"/><path d="m 0, 0 m 10,0 l -10,0 l 0,144 l 10,0" style="fill: none; stroke-width: 2px; stroke: black;"/><text lineHeight="1.2" class="djs-label" style="font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; fill: black;"><tspan x="5" y="15.799999999999999">Retorna a </tspan><tspan x="5" y="30.199999999999996">próxima ordem </tspan><tspan x="5" y="44.599999999999994">de seriço já </tspan><tspan x="5" y="58.99999999999999">autorizada ou a</tspan><tspan x="5" y="73.39999999999999">próxima para </tspan><tspan x="5" y="87.79999999999998">diagnóstico </tspan><tspan x="5" y="102.19999999999999">(respeitando </tspan><tspan x="5" y="116.6">ordem de </tspan><tspan x="5" y="131">priorização)</tspan></text></g><rect class="djs-hit djs-hit-all" x="0" y="0" width="100" height="144" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;"/><rect x="-5" y="-5" rx="4" width="110" height="154" class="djs-outline" style="fill: none;"/></g></g><g class="djs-group"><g class="djs-element djs-shape" data-element-id="shape_6010" style="display: block;" transform="matrix(1 0 0 1 616 175)"><g class="djs-visual"><svg xmlns="http://www.w3.org/2000/svg" fill=" #000000" viewBox="0 0 24 26" width="75" height="75"><path d="M20,18c1.1,0,2-0.9,2-2V6c0-1.1-0.9-2-2-2H4C2.9,4,2,4.9,2,6v10c0,1.1,0.9,2,2,2H0v2h24v-2H20z M4,6h16v10H4V6z"/></svg><text lineHeight="1.2" class="djs-label" style="font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; fill: rgb(0, 0, 0);"><tspan x="14.9130859375" y="75">Sistema</tspan></text></g><rect class="djs-hit djs-hit-all" x="0" y="0" width="75" height="75" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;"/><rect x="-5" y="-5" rx="4" width="85" height="85" class="djs-outline" style="fill: none;"/></g></g><g class="djs-group"><g class="djs-element djs-shape" data-element-id="shape_2278" style="display: block;" transform="matrix(1 0 0 1 175 175)"><g class="djs-visual"><svg xmlns="http://www.w3.org/2000/svg" fill=" #000000" viewBox="0 0 24 26" width="75" height="75"><path d="M12 5.9c1.16 0 2.1.94 2.1 2.1s-.94 2.1-2.1 2.1S9.9 9.16 9.9 8s.94-2.1 2.1-2.1m0 9c2.97 0 6.1 1.46 6.1 2.1v1.1H5.9V17c0-.64 3.13-2.1 6.1-2.1M12 4C9.79 4 8 5.79 8 8s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 9c-2.67 0-8 1.34-8 4v3h16v-3c0-2.66-5.33-4-8-4z"/><path d="M0 0h24v24H0z" fill="none"/></svg><text lineHeight="1.2" class="djs-label" style="font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; fill: rgb(0, 0, 0);"><tspan x="10.783203125" y="75">Mecânico</tspan></text></g><rect class="djs-hit djs-hit-all" x="0" y="0" width="75" height="75" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;"/><rect x="-5" y="-5" rx="4" width="85" height="85" class="djs-outline" style="fill: none;"/></g></g></svg>
+<!-- <DST>
+{
+  "domain": {
+    "name": "default",
+    "actors": {
+      "Person": "<svg viewBox=\"0 0 24 26\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M12 5.9c1.16 0 2.1.94 2.1 2.1s-.94 2.1-2.1 2.1S9.9 9.16 9.9 8s.94-2.1 2.1-2.1m0 9c2.97 0 6.1 1.46 6.1 2.1v1.1H5.9V17c0-.64 3.13-2.1 6.1-2.1M12 4C9.79 4 8 5.79 8 8s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 9c-2.67 0-8 1.34-8 4v3h16v-3c0-2.66-5.33-4-8-4z\"/><path d=\"M0 0h24v24H0z\" fill=\"none\"/></svg>",
+      "System": "<svg viewBox=\"0 0 24 26\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M20,18c1.1,0,2-0.9,2-2V6c0-1.1-0.9-2-2-2H4C2.9,4,2,4.9,2,6v10c0,1.1,0.9,2,2,2H0v2h24v-2H20z M4,6h16v10H4V6z\"/></svg>"
+    },
+    "workObjects": {
+      "Document": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 26\"><path fill=\"none\" d=\"M0 0h24v24H0V0z\"/><path d=\"M8 16h8v2H8zm0-4h8v2H8zm6-10H6c-1.1 0-2 .9-2 2v16c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z\"/></svg>",
+      "Email": "<svg viewBox=\"0 0 24 26\" xmlns=\"http://www.w3.org/2000/svg\"><path fill=\"none\" d=\"M0,0h24v24H0V0z\"/><path fill-opacity=\"0.9\" d=\"M12,1.95c-5.52,0-10,4.48-10,10s4.48,10,10,10h5v-2h-5c-4.34,0-8-3.66-8-8s3.66-8,8-8s8,3.66,8,8v1.43 c0,0.79-0.71,1.57-1.5,1.57S17,14.17,17,13.38v-1.43c0-2.76-2.24-5-5-5s-5,2.24-5,5s2.24,5,5,5c1.38,0,2.64-0.56,3.54-1.47 c0.65,0.89,1.77,1.47,2.96,1.47c1.97,0,3.5-1.6,3.5-3.57v-1.43C22,6.43,17.52,1.95,12,1.95z M12,14.95c-1.66,0-3-1.34-3-3 s1.34-3,3-3s3,1.34,3,3S13.66,14.95,12,14.95z\"/></svg>",
+      "Wrench": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 28\"><path fill=\"none\" d=\"M0 0h24v24H0V0z\"/><path d=\"M22.61 18.99l-9.08-9.08c.93-2.34.45-5.1-1.44-7C9.79.61 6.21.4 3.66 2.26L7.5 6.11 6.08 7.52 2.25 3.69C.39 6.23.6 9.82 2.9 12.11c1.86 1.86 4.57 2.35 6.89 1.48l9.11 9.11c.39.39 1.02.39 1.41 0l2.3-2.3c.4-.38.4-1.01 0-1.41zm-3 1.6l-9.46-9.46c-.61.45-1.29.72-2 .82-1.36.2-2.79-.21-3.83-1.25C3.37 9.76 2.93 8.5 3 7.26l3.09 3.09 4.24-4.24-3.09-3.09c1.24-.07 2.49.37 3.44 1.31 1.08 1.08 1.49 2.57 1.24 3.96-.12.71-.42 1.37-.88 1.96l9.45 9.45-.88.89z\"/></svg>",
+      "Car": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 26\"><path fill=\"none\" d=\"M0 0h24v24H0V0z\"/><path d=\"M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.85 7h10.29l1.08 3.11H5.77L6.85 7zM19 17H5v-5h14v5z\"/><circle cx=\"7.5\" cy=\"14.5\" r=\"1.5\"/><circle cx=\"16.5\" cy=\"14.5\" r=\"1.5\"/></svg>",
+      "Assignment": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24px\" height=\"24px\" viewBox=\"0 0 24 24\"><path d=\"M0 0h24v24H0V0z\" fill=\"none\"/><path d=\"M7 15h7v2H7zm0-4h10v2H7zm0-4h10v2H7zm12-4h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-.14 0-.27.01-.4.04-.39.08-.74.28-1.01.55-.18.18-.33.4-.43.64-.1.23-.16.49-.16.77v14c0 .27.06.54.16.78s.25.45.43.64c.27.27.62.47 1.01.55.13.02.26.03.4.03h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7-.25c.41 0 .75.34.75.75s-.34.75-.75.75-.75-.34-.75-.75.34-.75.75-.75zM19 19H5V5h14v14z\"/></svg>",
+      "Dollar": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 26\"><path fill=\"none\" d=\"M0 0h24v24H0V0z\"/><path d=\"M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z\"/></svg>",
+      "Store": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 26\"><path fill=\"none\" d=\"M0 0h24v24H0V0z\"/><path d=\"M18.36 9l.6 3H5.04l.6-3h12.72M20 4H4v2h16V4zm0 3H4l-1 5v2h1v6h10v-6h4v6h2v-6h1v-2l-1-5zM6 18v-4h6v4H6z\"/></svg>",
+      "Check-Circle": "<svg xmlns=\"http://www.w3.org/2000/svg\" height=\"24px\" viewBox=\"0 0 24 24\" width=\"24px\"><path d=\"M0 0h24v24H0V0z\" fill=\"none\"/><path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm4.59-12.42L10 14.17l-2.59-2.58L6 13l4 4 8-8z\"/></svg>",
+      "Update": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 26\"><path fill=\"none\" d=\"M0 0h24v24H0V0z\"/><path d=\"M11 8v5l4.25 2.52.77-1.28-3.52-2.09V8zm10 2V3l-2.64 2.64C16.74 4.01 14.49 3 12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9h-2c0 3.86-3.14 7-7 7s-7-3.14-7-7 3.14-7 7-7c1.93 0 3.68.79 4.95 2.05L14 10h7z\"/></svg>"
+    }
+  },
+  "dst": [
+    {
+      "type": "domainStory:activity",
+      "name": "no",
+      "id": "connection_0573",
+      "pickedColor": "black",
+      "number": null,
+      "waypoints": [
+        {
+          "original": {
+            "x": 474,
+            "y": 595
+          },
+          "x": 517,
+          "y": 595
+        },
+        {
+          "original": {
+            "x": 675,
+            "y": 595
+          },
+          "x": 637,
+          "y": 595
+        }
+      ],
+      "source": "shape_7154",
+      "target": "shape_0077",
+      "multipleNumberAllowed": false
+    },
+    {
+      "type": "domainStory:activity",
+      "name": "envia",
+      "id": "connection_0695",
+      "pickedColor": "black",
+      "number": 6,
+      "waypoints": [
+        {
+          "original": {
+            "x": 675,
+            "y": 733
+          },
+          "x": 675,
+          "y": 780
+        },
+        {
+          "original": {
+            "x": 675,
+            "y": 914
+          },
+          "x": 675,
+          "y": 876
+        }
+      ],
+      "source": "shape_5955",
+      "target": "shape_4168",
+      "multipleNumberAllowed": false
+    },
+    {
+      "type": "domainStory:activity",
+      "name": "envia",
+      "id": "connection_0903",
+      "pickedColor": "black",
+      "number": 13,
+      "waypoints": [
+        {
+          "original": {
+            "x": 707,
+            "y": 1389
+          },
+          "x": 750,
+          "y": 1389
+        },
+        {
+          "original": {
+            "x": 957,
+            "y": 1389
+          },
+          "x": 919,
+          "y": 1389
+        }
+      ],
+      "source": "shape_8611",
+      "target": "shape_5898",
+      "multipleNumberAllowed": false
+    },
+    {
+      "type": "domainStory:activity",
+      "name": "no",
+      "id": "connection_1397",
+      "pickedColor": "black",
+      "number": null,
+      "waypoints": [
+        {
+          "original": {
+            "x": 957,
+            "y": 1261
+          },
+          "x": 1000,
+          "y": 1261
+        },
+        {
+          "original": {
+            "x": 1166,
+            "y": 1261
+          },
+          "x": 1128,
+          "y": 1261
+        }
+      ],
+      "source": "shape_0464",
+      "target": "shape_4692",
+      "multipleNumberAllowed": false
+    },
+    {
+      "type": "domainStory:activity",
+      "name": "como",
+      "id": "connection_2196",
+      "pickedColor": "black",
+      "number": null,
+      "waypoints": [
+        {
+          "original": {
+            "x": 654,
+            "y": 388
+          },
+          "x": 616,
+          "y": 388
+        },
+        {
+          "original": {
+            "x": 426,
+            "y": 388
+          },
+          "x": 469,
+          "y": 388
+        }
+      ],
+      "source": "shape_7628",
+      "target": "shape_0608",
+      "multipleNumberAllowed": false
+    },
+    {
+      "type": "domainStory:activity",
+      "name": "ao",
+      "id": "connection_2266",
+      "pickedColor": "black",
+      "number": null,
+      "waypoints": [
+        {
+          "original": {
+            "x": 957,
+            "y": 1389
+          },
+          "x": 1000,
+          "y": 1389
+        },
+        {
+          "original": {
+            "x": 1166,
+            "y": 1389
+          },
+          "x": 1128,
+          "y": 1389
+        }
+      ],
+      "source": "shape_5898",
+      "target": "shape_5311",
+      "multipleNumberAllowed": false
+    },
+    {
+      "type": "domainStory:activity",
+      "name": "no",
+      "id": "connection_2383",
+      "pickedColor": "black",
+      "number": null,
+      "waypoints": [
+        {
+          "original": {
+            "x": 425,
+            "y": 213
+          },
+          "x": 468,
+          "y": 213
+        },
+        {
+          "original": {
+            "x": 654,
+            "y": 213
+          },
+          "x": 616,
+          "y": 213
+        }
+      ],
+      "source": "shape_7441",
+      "target": "shape_6010",
+      "multipleNumberAllowed": false
+    },
+    {
+      "type": "domainStory:activity",
+      "name": "no",
+      "id": "connection_2531",
+      "pickedColor": "black",
+      "number": null,
+      "waypoints": [
+        {
+          "original": {
+            "x": 957,
+            "y": 1130
+          },
+          "x": 1000,
+          "y": 1130
+        },
+        {
+          "original": {
+            "x": 1166,
+            "y": 1130
+          },
+          "x": 1128,
+          "y": 1130
+        }
+      ],
+      "source": "shape_1336",
+      "target": "shape_7465",
+      "multipleNumberAllowed": false
+    },
+    {
+      "type": "domainStory:activity",
+      "name": "atualiza",
+      "id": "connection_2727",
+      "pickedColor": "black",
+      "number": 2,
+      "waypoints": [
+        {
+          "original": {
+            "x": 654,
+            "y": 213
+          },
+          "x": 654,
+          "y": 260
+        },
+        {
+          "original": {
+            "x": 654,
+            "y": 388
+          },
+          "x": 654,
+          "y": 350
+        }
+      ],
+      "source": "shape_6010",
+      "target": "shape_7628",
+      "multipleNumberAllowed": false
+    },
+    {
+      "type": "domainStory:activity",
+      "name": "solicita",
+      "id": "connection_2957",
+      "pickedColor": "black",
+      "number": 8,
+      "waypoints": [
+        {
+          "original": {
+            "x": 236,
+            "y": 1130
+          },
+          "x": 279,
+          "y": 1130
+        },
+        {
+          "original": {
+            "x": 483,
+            "y": 1130
+          },
+          "x": 445,
+          "y": 1130
+        }
+      ],
+      "source": "shape_9219",
+      "target": "shape_0588",
+      "multipleNumberAllowed": false
+    },
+    {
+      "type": "domainStory:activity",
+      "name": "atualiza",
+      "id": "connection_3041",
+      "pickedColor": "black",
+      "number": 5,
+      "waypoints": [
+        {
+          "original": {
+            "x": 675,
+            "y": 733
+          },
+          "x": 718,
+          "y": 733
+        },
+        {
+          "original": {
+            "x": 893,
+            "y": 733
+          },
+          "x": 855,
+          "y": 733
+        }
+      ],
+      "source": "shape_5955",
+      "target": "shape_3517",
+      "multipleNumberAllowed": false
+    },
+    {
+      "type": "domainStory:activity",
+      "name": "no",
+      "id": "connection_3973",
+      "pickedColor": "black",
+      "number": null,
+      "waypoints": [
+        {
+          "original": {
+            "x": 483,
+            "y": 1389
+          },
+          "x": 526,
+          "y": 1389
+        },
+        {
+          "original": {
+            "x": 707,
+            "y": 1389
+          },
+          "x": 669,
+          "y": 1389
+        }
+      ],
+      "source": "shape_9242",
+      "target": "shape_8611",
+      "multipleNumberAllowed": false
+    },
+    {
+      "type": "domainStory:connection",
+      "name": "",
+      "id": "connection_4671",
+      "waypoints": [
+        {
+          "original": {
+            "x": 654,
+            "y": 213
+          },
+          "x": 687,
+          "y": 204
+        },
+        {
+          "original": {
+            "x": 842,
+            "y": 160
+          },
+          "x": 792,
+          "y": 174
+        }
+      ],
+      "source": "shape_6010",
+      "target": "shape_6011"
+    },
+    {
+      "type": "domainStory:activity",
+      "name": "consulta",
+      "id": "connection_5548",
+      "pickedColor": "black",
+      "number": 9,
+      "waypoints": [
+        {
+          "original": {
+            "x": 707,
+            "y": 1130
+          },
+          "x": 750,
+          "y": 1130
+        },
+        {
+          "original": {
+            "x": 957,
+            "y": 1130
+          },
+          "x": 919,
+          "y": 1130
+        }
+      ],
+      "source": "shape_5178",
+      "target": "shape_1336",
+      "multipleNumberAllowed": false
+    },
+    {
+      "type": "domainStory:activity",
+      "name": "atualiza",
+      "id": "connection_5853",
+      "pickedColor": "black",
+      "number": 14,
+      "waypoints": [
+        {
+          "original": {
+            "x": 707,
+            "y": 1389
+          },
+          "x": 707,
+          "y": 1436
+        },
+        {
+          "original": {
+            "x": 707,
+            "y": 1571
+          },
+          "x": 707,
+          "y": 1533
+        }
+      ],
+      "source": "shape_8611",
+      "target": "shape_1077",
+      "multipleNumberAllowed": false
+    },
+    {
+      "type": "domainStory:connection",
+      "name": "",
+      "id": "connection_6357",
+      "waypoints": [
+        {
+          "original": {
+            "x": 483,
+            "y": 1389
+          },
+          "x": 507,
+          "y": 1371
+        },
+        {
+          "original": {
+            "x": 624,
+            "y": 1285
+          },
+          "x": 574,
+          "y": 1322
+        }
+      ],
+      "source": "shape_9242",
+      "target": "shape_7556"
+    },
+    {
+      "type": "domainStory:activity",
+      "name": "para",
+      "id": "connection_6732",
+      "pickedColor": "black",
+      "number": null,
+      "waypoints": [
+        {
+          "original": {
+            "x": 675,
+            "y": 914
+          },
+          "x": 637,
+          "y": 914
+        },
+        {
+          "original": {
+            "x": 474,
+            "y": 914
+          },
+          "x": 517,
+          "y": 914
+        }
+      ],
+      "source": "shape_4168",
+      "target": "shape_5091",
+      "multipleNumberAllowed": false
+    },
+    {
+      "type": "domainStory:activity",
+      "name": "atualiza",
+      "id": "connection_6892",
+      "pickedColor": "black",
+      "number": 4,
+      "waypoints": [
+        {
+          "original": {
+            "x": 214,
+            "y": 595
+          },
+          "x": 248,
+          "y": 613
+        },
+        {
+          "original": {
+            "x": 474,
+            "y": 733
+          },
+          "x": 436,
+          "y": 713
+        }
+      ],
+      "source": "shape_5894",
+      "target": "shape_1457",
+      "multipleNumberAllowed": false
+    },
+    {
+      "type": "domainStory:activity",
+      "name": "trabalha",
+      "id": "connection_6955",
+      "pickedColor": "black",
+      "number": 11,
+      "waypoints": [
+        {
+          "original": {
+            "x": 236,
+            "y": 1130
+          },
+          "x": 236,
+          "y": 1177
+        },
+        {
+          "original": {
+            "x": 236,
+            "y": 1389
+          },
+          "x": 236,
+          "y": 1351
+        }
+      ],
+      "source": "shape_9219",
+      "target": "shape_9861",
+      "multipleNumberAllowed": false
+    },
+    {
+      "type": "domainStory:connection",
+      "name": "",
+      "id": "connection_7027",
+      "waypoints": [
+        {
+          "original": {
+            "x": 426,
+            "y": 388
+          },
+          "x": 388,
+          "y": 370
+        },
+        {
+          "original": {
+            "x": 282,
+            "y": 320
+          },
+          "x": 332,
+          "y": 344
+        }
+      ],
+      "source": "shape_0608",
+      "target": "shape_7822"
+    },
+    {
+      "type": "domainStory:activity",
+      "name": "realiza",
+      "id": "connection_7933",
+      "pickedColor": "black",
+      "number": 3,
+      "waypoints": [
+        {
+          "original": {
+            "x": 214,
+            "y": 595
+          },
+          "x": 257,
+          "y": 595
+        },
+        {
+          "original": {
+            "x": 474,
+            "y": 595
+          },
+          "x": 436,
+          "y": 595
+        }
+      ],
+      "source": "shape_5894",
+      "target": "shape_7154",
+      "multipleNumberAllowed": false
+    },
+    {
+      "type": "domainStory:activity",
+      "name": "ao",
+      "id": "connection_7944",
+      "pickedColor": "black",
+      "number": null,
+      "waypoints": [
+        {
+          "original": {
+            "x": 483,
+            "y": 1130
+          },
+          "x": 526,
+          "y": 1130
+        },
+        {
+          "original": {
+            "x": 707,
+            "y": 1130
+          },
+          "x": 669,
+          "y": 1130
+        }
+      ],
+      "source": "shape_0588",
+      "target": "shape_5178",
+      "multipleNumberAllowed": false
+    },
+    {
+      "type": "domainStory:activity",
+      "name": "como",
+      "id": "connection_8177",
+      "pickedColor": "black",
+      "number": null,
+      "waypoints": [
+        {
+          "original": {
+            "x": 707,
+            "y": 1571
+          },
+          "x": 750,
+          "y": 1571
+        },
+        {
+          "original": {
+            "x": 957,
+            "y": 1571
+          },
+          "x": 919,
+          "y": 1571
+        }
+      ],
+      "source": "shape_1077",
+      "target": "shape_9405",
+      "multipleNumberAllowed": false
+    },
+    {
+      "type": "domainStory:activity",
+      "name": "no",
+      "id": "connection_8331",
+      "pickedColor": "black",
+      "number": null,
+      "waypoints": [
+        {
+          "original": {
+            "x": 474,
+            "y": 733
+          },
+          "x": 517,
+          "y": 733
+        },
+        {
+          "original": {
+            "x": 675,
+            "y": 733
+          },
+          "x": 637,
+          "y": 733
+        }
+      ],
+      "source": "shape_1457",
+      "target": "shape_5955",
+      "multipleNumberAllowed": false
+    },
+    {
+      "type": "domainStory:activity",
+      "name": "como",
+      "id": "connection_8414",
+      "pickedColor": "black",
+      "number": null,
+      "waypoints": [
+        {
+          "original": {
+            "x": 893,
+            "y": 906
+          },
+          "x": 936,
+          "y": 906
+        },
+        {
+          "original": {
+            "x": 1093,
+            "y": 906
+          },
+          "x": 1055,
+          "y": 906
+        }
+      ],
+      "source": "shape_0420",
+      "target": "shape_4061",
+      "multipleNumberAllowed": false
+    },
+    {
+      "type": "domainStory:activity",
+      "name": "atualiza",
+      "id": "connection_8814",
+      "pickedColor": "black",
+      "number": 7,
+      "waypoints": [
+        {
+          "original": {
+            "x": 675,
+            "y": 733
+          },
+          "x": 704,
+          "y": 756
+        },
+        {
+          "original": {
+            "x": 893,
+            "y": 906
+          },
+          "x": 855,
+          "y": 876
+        }
+      ],
+      "source": "shape_5955",
+      "target": "shape_0420",
+      "multipleNumberAllowed": false
+    },
+    {
+      "type": "domainStory:activity",
+      "name": "solicita",
+      "id": "connection_9301",
+      "pickedColor": "black",
+      "number": 1,
+      "waypoints": [
+        {
+          "original": {
+            "x": 213,
+            "y": 213
+          },
+          "x": 256,
+          "y": 213
+        },
+        {
+          "original": {
+            "x": 425,
+            "y": 213
+          },
+          "x": 387,
+          "y": 213
+        }
+      ],
+      "source": "shape_2278",
+      "target": "shape_7441",
+      "multipleNumberAllowed": false
+    },
+    {
+      "type": "domainStory:activity",
+      "name": "baixa",
+      "id": "connection_9378",
+      "pickedColor": "black",
+      "number": 10,
+      "waypoints": [
+        {
+          "original": {
+            "x": 707,
+            "y": 1130
+          },
+          "x": 741,
+          "y": 1148
+        },
+        {
+          "original": {
+            "x": 957,
+            "y": 1261
+          },
+          "x": 919,
+          "y": 1241
+        }
+      ],
+      "source": "shape_5178",
+      "target": "shape_0464",
+      "multipleNumberAllowed": false
+    },
+    {
+      "type": "domainStory:activity",
+      "name": "atualiza",
+      "id": "connection_9650",
+      "pickedColor": "black",
+      "number": 12,
+      "waypoints": [
+        {
+          "original": {
+            "x": 236,
+            "y": 1130
+          },
+          "x": 261,
+          "y": 1176
+        },
+        {
+          "original": {
+            "x": 483,
+            "y": 1389
+          },
+          "x": 447,
+          "y": 1351
+        }
+      ],
+      "source": "shape_9219",
+      "target": "shape_9242",
+      "multipleNumberAllowed": false
+    },
+    {
+      "type": "domainStory:workObjectCar",
+      "name": "Veículo",
+      "id": "shape_0077",
+      "x": 637,
+      "y": 557
+    },
+    {
+      "type": "domainStory:workObjectDocument",
+      "name": "Ordem de serviço",
+      "id": "shape_0420",
+      "x": 855,
+      "y": 868,
+      "parent": "shape_1135"
+    },
+    {
+      "type": "domainStory:workObjectStore",
+      "name": "Estoque",
+      "id": "shape_0464",
+      "x": 919,
+      "y": 1223,
+      "parent": "shape_4096"
+    },
+    {
+      "type": "domainStory:workObjectWrench",
+      "name": "Peças necessárias",
+      "id": "shape_0588",
+      "x": 445,
+      "y": 1092,
+      "parent": "shape_4096"
+    },
+    {
+      "type": "domainStory:workObjectUpdate",
+      "name": "Em diagnóstico ou em andamento",
+      "id": "shape_0608",
+      "x": 388,
+      "y": 350,
+      "parent": "shape_1037"
+    },
+    {
+      "type": "domainStory:group",
+      "name": "Solicitar ordem de serviço para trabalhar",
+      "id": "shape_1037",
+      "pickedColor": "#000000",
+      "x": 155,
+      "y": 80,
+      "height": 411,
+      "width": 763
+    },
+    {
+      "type": "domainStory:workObjectDocument",
+      "name": "Ordem de serviço",
+      "id": "shape_1077",
+      "x": 669,
+      "y": 1533,
+      "parent": "shape_4096"
+    },
+    {
+      "type": "domainStory:group",
+      "name": "Ordem de serviço em aberto (pendente de diagnóstico)",
+      "id": "shape_1135",
+      "pickedColor": "#000000",
+      "x": 156,
+      "y": 517,
+      "height": 481,
+      "width": 1011
+    },
+    {
+      "type": "domainStory:workObjectStore",
+      "name": "Estoque",
+      "id": "shape_1336",
+      "x": 919,
+      "y": 1092,
+      "parent": "shape_4096"
+    },
+    {
+      "type": "domainStory:workObjectDocument",
+      "name": "Ordem de serviço",
+      "id": "shape_1457",
+      "x": 436,
+      "y": 695
+    },
+    {
+      "name": "Mecânico",
+      "id": "shape_2278",
+      "type": "domainStory:actorPerson",
+      "x": 175,
+      "y": 175
+    },
+    {
+      "type": "domainStory:workObjectDollar",
+      "name": "Orçamento",
+      "id": "shape_3517",
+      "x": 855,
+      "y": 695
+    },
+    {
+      "type": "domainStory:workObjectUpdate",
+      "name": "Aguardando aprovação",
+      "id": "shape_4061",
+      "x": 1055,
+      "y": 868,
+      "parent": "shape_1135"
+    },
+    {
+      "type": "domainStory:group",
+      "name": "Ordem de serviço aprovada para execução",
+      "id": "shape_4096",
+      "pickedColor": "#000000",
+      "x": 158,
+      "y": 1028,
+      "height": 622,
+      "width": 1081
+    },
+    {
+      "type": "domainStory:workObjectEmail",
+      "name": "Email de aprovação",
+      "id": "shape_4168",
+      "x": 637,
+      "y": 876,
+      "parent": "shape_1135"
+    },
+    {
+      "type": "domainStory:actorSystem",
+      "name": "Sistema",
+      "id": "shape_4692",
+      "x": 1128,
+      "y": 1223,
+      "parent": "shape_4096"
+    },
+    {
+      "type": "domainStory:actorPerson",
+      "name": "Cliente",
+      "id": "shape_5091",
+      "x": 436,
+      "y": 876,
+      "parent": "shape_1135"
+    },
+    {
+      "type": "domainStory:actorPerson",
+      "name": "Almoxarife",
+      "id": "shape_5178",
+      "x": 669,
+      "y": 1092,
+      "parent": "shape_4096"
+    },
+    {
+      "type": "domainStory:actorPerson",
+      "name": "Cliente",
+      "id": "shape_5311",
+      "x": 1128,
+      "y": 1351,
+      "parent": "shape_4096"
+    },
+    {
+      "name": "Mecânico",
+      "id": "shape_5894",
+      "type": "domainStory:actorPerson",
+      "x": 176,
+      "y": 557
+    },
+    {
+      "type": "domainStory:workObjectEmail",
+      "name": "Email de finalização da OS",
+      "id": "shape_5898",
+      "x": 919,
+      "y": 1351,
+      "parent": "shape_4096"
+    },
+    {
+      "type": "domainStory:actorSystem",
+      "name": "Sistema",
+      "id": "shape_5955",
+      "x": 637,
+      "y": 695
+    },
+    {
+      "type": "domainStory:actorSystem",
+      "name": "Sistema",
+      "id": "shape_6010",
+      "x": 616,
+      "y": 175
+    },
+    {
+      "type": "domainStory:textAnnotation",
+      "name": "",
+      "id": "shape_6011",
+      "x": 792,
+      "y": 110,
+      "text": "Retorna a próxima ordem de seriço já autorizada ou a próxima para diagnóstico (respeitando ordem de priorização)",
+      "number": 144,
+      "height": 144,
+      "width": 100
+    },
+    {
+      "type": "domainStory:workObjectAssignment",
+      "name": "Diagnóstico",
+      "id": "shape_7154",
+      "x": 436,
+      "y": 557
+    },
+    {
+      "type": "domainStory:workObjectDocument",
+      "name": "Ordem de serviço",
+      "id": "shape_7441",
+      "x": 387,
+      "y": 175
+    },
+    {
+      "type": "domainStory:actorSystem",
+      "name": "Sistema",
+      "id": "shape_7465",
+      "x": 1128,
+      "y": 1092,
+      "parent": "shape_4096"
+    },
+    {
+      "type": "domainStory:textAnnotation",
+      "name": "",
+      "id": "shape_7556",
+      "x": 574,
+      "y": 1270,
+      "text": "Atualiza com horas trabalhadas, serviços, peças e insumos adicionais",
+      "number": 100,
+      "height": 100,
+      "width": 100,
+      "parent": "shape_4096"
+    },
+    {
+      "type": "domainStory:workObjectDocument",
+      "name": "Ordem de serviço",
+      "id": "shape_7628",
+      "x": 616,
+      "y": 350
+    },
+    {
+      "type": "domainStory:textAnnotation",
+      "name": "",
+      "id": "shape_7822",
+      "x": 232,
+      "y": 305,
+      "parent": "shape_1037",
+      "text": "Se estava pendente fica como em diagnóstico. Se estava como aprovada, fica como em execução",
+      "number": 129,
+      "height": 129,
+      "width": 100
+    },
+    {
+      "type": "domainStory:actorSystem",
+      "name": "Sistema",
+      "id": "shape_8611",
+      "x": 669,
+      "y": 1351,
+      "parent": "shape_4096"
+    },
+    {
+      "name": "Mecânico",
+      "id": "shape_9219",
+      "type": "domainStory:actorPerson",
+      "x": 198,
+      "y": 1092,
+      "parent": "shape_4096"
+    },
+    {
+      "type": "domainStory:workObjectDocument",
+      "name": "Ordem de serviço",
+      "id": "shape_9242",
+      "x": 445,
+      "y": 1351,
+      "parent": "shape_4096"
+    },
+    {
+      "type": "domainStory:workObjectCheck-Circle",
+      "name": "Finalizada",
+      "id": "shape_9405",
+      "x": 919,
+      "y": 1533,
+      "parent": "shape_4096"
+    },
+    {
+      "type": "domainStory:workObjectCar",
+      "name": "Veículo",
+      "id": "shape_9861",
+      "x": 198,
+      "y": 1351,
+      "parent": "shape_4096"
+    },
+    {
+      "info": ""
+    },
+    {
+      "version": "3.1.0"
+    }
+  ]
+}
+ </DST> -->
