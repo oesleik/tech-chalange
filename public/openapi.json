@@ -215,7 +215,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/EntradaEstoqueRequest"
+                                "$ref": "#/components/schemas/LancamentoEstoqueRequest"
                             }
                         }
                     }
@@ -226,7 +226,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/EntradaEstoqueResponse"
+                                    "$ref": "#/components/schemas/LancamentoEstoqueResponse"
                                 }
                             }
                         }
@@ -252,7 +252,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/BaixaEstoqueRequest"
+                                "$ref": "#/components/schemas/LancamentoEstoqueRequest"
                             }
                         }
                     }
@@ -263,7 +263,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/BaixaEstoqueResponse"
+                                    "$ref": "#/components/schemas/LancamentoEstoqueResponse"
                                 }
                             }
                         }
@@ -304,7 +304,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ConsultaEstoqueResponse"
+                                    "$ref": "#/components/schemas/EstoquePecaResponse"
                                 }
                             }
                         }
@@ -1640,57 +1640,11 @@
                 },
                 "type": "object"
             },
-            "EntradaEstoqueRequest": {
+            "EstoquePecaResponse": {
                 "properties": {
                     "id_peca": {
                         "type": "integer",
-                        "example": 1
-                    },
-                    "quantidade": {
-                        "type": "integer",
-                        "example": 10
-                    }
-                },
-                "type": "object"
-            },
-            "EntradaEstoqueResponse": {
-                "properties": {
-                    "id": {
-                        "type": "integer",
-                        "example": 1
-                    },
-                    "id_peca": {
-                        "type": "integer",
-                        "example": 1
-                    },
-                    "peca": {
-                        "type": "string",
-                        "example": "Filtro de óleo"
-                    },
-                    "quantidade": {
-                        "type": "integer",
-                        "example": 10
-                    },
-                    "tipo_lancamento": {
-                        "type": "string",
-                        "example": "entrada"
-                    }
-                },
-                "type": "object"
-            },
-            "ConsultaEstoqueResponse": {
-                "properties": {
-                    "id_peca": {
-                        "type": "integer",
-                        "example": 1
-                    },
-                    "descricao": {
-                        "type": "string",
-                        "example": "Filtro de óleo"
-                    },
-                    "valor_unitario": {
-                        "type": "number",
-                        "example": 29.9
+                        "example": 123
                     },
                     "estoque_atual": {
                         "type": "integer",
@@ -1699,44 +1653,35 @@
                 },
                 "type": "object"
             },
-            "BaixaEstoqueRequest": {
+            "LancamentoEstoqueRequest": {
                 "properties": {
                     "id_peca": {
                         "type": "integer",
-                        "example": 1
+                        "example": 123
                     },
                     "quantidade": {
                         "type": "integer",
-                        "example": 5
+                        "example": 1
                     }
                 },
                 "type": "object"
             },
-            "BaixaEstoqueResponse": {
+            "LancamentoEstoqueResponse": {
                 "properties": {
                     "id": {
                         "type": "integer",
-                        "example": 2
+                        "example": 456
                     },
                     "id_peca": {
                         "type": "integer",
-                        "example": 1
-                    },
-                    "peca": {
-                        "type": "string",
-                        "example": "Filtro de óleo"
+                        "example": 123
                     },
                     "quantidade": {
                         "type": "integer",
-                        "example": 5
+                        "example": 1
                     },
                     "tipo_lancamento": {
-                        "type": "string",
                         "example": "baixa"
-                    },
-                    "estoque_atual": {
-                        "type": "integer",
-                        "example": 5
                     }
                 },
                 "type": "object"

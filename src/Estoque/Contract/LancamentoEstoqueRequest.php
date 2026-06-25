@@ -6,10 +6,14 @@ namespace App\Estoque\Contract;
 
 use App\Core\Contract\AbstractContract;
 use Symfony\Component\Validator\Constraints as Assert;
+use OpenApi\Attributes as OA;
 
-readonly class EntradaEstoqueContract extends AbstractContract {
+#[OA\Schema]
+readonly class LancamentoEstoqueRequest extends AbstractContract {
     public function __construct(
+        #[OA\Property(example: 123)]
         public int $id_peca,
+        #[OA\Property(example: 1)]
         public int $quantidade,
     ) {}
 

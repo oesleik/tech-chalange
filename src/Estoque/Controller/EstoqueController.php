@@ -6,16 +6,20 @@ namespace App\Estoque\Controller;
 
 use App\Core\Contract\ContractResolver;
 use App\Core\Contract\InvalidContractException;
-use App\Estoque\Contract\BaixaEstoqueContract;
-use App\Estoque\Contract\EntradaEstoqueContract;
-use App\Estoque\Repository\EstoqueRepository;
+use App\Core\Contract\ValidationErrorResponse;
+use App\Estoque\Contract\EstoquePecaResponse;
+use App\Estoque\Contract\LancamentoEstoqueRequest;
+use App\Estoque\Contract\LancamentoEstoqueResponse;
+use App\Estoque\Service\EstoqueInsuficienteException;
+use App\Estoque\Service\EstoqueService;
+use App\Estoque\Service\PecaNaoEncontradaException;
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 class EstoqueController {
     public function __construct(
-        private readonly EstoqueRepository $repository,
+        private readonly EstoqueService $service,
         private readonly ContractResolver  $contractResolver,
     ) {}
 
@@ -24,14 +28,14 @@ class EstoqueController {
         summary: 'Registrar entrada de peças no estoque',
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(ref: '#/components/schemas/EntradaEstoqueRequest')
+            content: new OA\JsonContent(ref: '#/components/schemas/LancamentoEstoqueRequest')
         ),
         tags: ['Estoque'],
         responses: [
             new OA\Response(
                 response: 201,
                 description: 'Entrada registrada com sucesso',
-                content: new OA\JsonContent(ref: '#/components/schemas/EntradaEstoqueResponse')
+                content: new OA\JsonContent(ref: '#/components/schemas/LancamentoEstoqueResponse')
             ),
             new OA\Response(response: 404, description: 'Peça não encontrada'),
             new OA\Response(response: 422, description: 'Dados inválidos'),
@@ -42,16 +46,18 @@ class EstoqueController {
         ResponseInterface $response,
     ): ResponseInterface {
         try {
-            $body     = (array) $request->getParsedBody();
-            $contract = $this->contractResolver->fromArray($body, EntradaEstoqueContract::class);
-            $entrada  = $this->repository->registrarEntrada($contract->id_peca, $contract->quantidade);
+            $payload = json_decode($request->getBody()->getContents(), true);
+            $contract = $this->contractResolver->fromArray($payload, LancamentoEstoqueRequest::class);
+            $entrada  = $this->service->registrarEntrada($contract->id_peca, $contract->quantidade);
+            $res = LancamentoEstoqueResponse::fromLancamentoModel($entrada);
 
-            return $this->jsonResponse($response, $entrada, 201);
-
+            $response->getBody()->write($this->contractResolver->toJson($res));
+            return $response->withHeader('Content-Type', 'application/json');
         } catch (InvalidContractException $e) {
-            return $this->validationErrorResponse($response, $e);
-        } catch (\RuntimeException $e) {
-            return $this->runtimeErrorResponse($response, $e);
+            $response->getBody()->write($this->contractResolver->toJson(ValidationErrorResponse::from($e->getViolations())));
+            return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
+        } catch (PecaNaoEncontradaException $e) {
+            return $response->withStatus(404, "Peça não encontrada");
         }
     }
 
@@ -60,14 +66,14 @@ class EstoqueController {
         summary: 'Registrar baixa de peças no estoque',
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(ref: '#/components/schemas/BaixaEstoqueRequest')
+            content: new OA\JsonContent(ref: '#/components/schemas/LancamentoEstoqueRequest')
         ),
         tags: ['Estoque'],
         responses: [
             new OA\Response(
                 response: 201,
                 description: 'Baixa registrada com sucesso',
-                content: new OA\JsonContent(ref: '#/components/schemas/BaixaEstoqueResponse')
+                content: new OA\JsonContent(ref: '#/components/schemas/LancamentoEstoqueResponse')
             ),
             new OA\Response(response: 404, description: 'Peça não encontrada'),
             new OA\Response(response: 409, description: 'Estoque insuficiente'),
@@ -79,16 +85,20 @@ class EstoqueController {
         ResponseInterface $response,
     ): ResponseInterface {
         try {
-            $body     = (array) $request->getParsedBody();
-            $contract = $this->contractResolver->fromArray($body, BaixaEstoqueContract::class);
-            $baixa    = $this->repository->registrarBaixa($contract->id_peca, $contract->quantidade);
+            $payload = json_decode($request->getBody()->getContents(), true);
+            $contract = $this->contractResolver->fromArray($payload, LancamentoEstoqueRequest::class);
+            $baixa    = $this->service->registrarBaixa($contract->id_peca, $contract->quantidade);
+            $res = LancamentoEstoqueResponse::fromLancamentoModel($baixa);
 
-            return $this->jsonResponse($response, $baixa, 201);
-
+            $response->getBody()->write($this->contractResolver->toJson($res));
+            return $response->withHeader('Content-Type', 'application/json');
         } catch (InvalidContractException $e) {
-            return $this->validationErrorResponse($response, $e);
-        } catch (\RuntimeException $e) {
-            return $this->runtimeErrorResponse($response, $e);
+            $response->getBody()->write($this->contractResolver->toJson(ValidationErrorResponse::from($e->getViolations())));
+            return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
+        } catch (PecaNaoEncontradaException $e) {
+            return $response->withStatus(404, "Peça não encontrada");
+        } catch (EstoqueInsuficienteException $e) {
+            return $response->withStatus(422, "Estoque insuficiente");
         }
     }
 
@@ -108,51 +118,24 @@ class EstoqueController {
             new OA\Response(
                 response: 200,
                 description: 'Estoque atual da peça',
-                content: new OA\JsonContent(ref: '#/components/schemas/ConsultaEstoqueResponse')
+                content: new OA\JsonContent(ref: '#/components/schemas/EstoquePecaResponse')
             ),
             new OA\Response(response: 404, description: 'Peça não encontrada'),
         ]
     )]
     public function consultarEstoque(
-        ServerRequestInterface $request,
+        int $id,
         ResponseInterface $response,
     ): ResponseInterface {
         try {
-            $id_peca = (int) $request->getAttribute('id');
-            $estoque = $this->repository->consultarEstoquePorPeca($id_peca);
+            $estoque = $this->service->consultarEstoquePorPeca($id);
+            $res = EstoquePecaResponse::fromLancamentoModel($estoque);
 
-            return $this->jsonResponse($response, $estoque, 200);
-
-        } catch (\RuntimeException $e) {
-            return $this->runtimeErrorResponse($response, $e);
+            $response->getBody()->write($this->contractResolver->toJson($res));
+            return $response->withHeader('Content-Type', 'application/json');
+        } catch (PecaNaoEncontradaException $e) {
+            return $response->withStatus(404, "Peça não encontrada");
         }
     }
 
-    private function jsonResponse(ResponseInterface $response, array $data, int $status): ResponseInterface {
-        $response->getBody()->write(json_encode($data));
-        return $response->withHeader('Content-Type', 'application/json')->withStatus($status);
-    }
-
-    private function validationErrorResponse(
-        ResponseInterface $response,
-        InvalidContractException $e,
-    ): ResponseInterface {
-        $errors = [];
-        foreach ($e->getViolations() as $violation) {
-            $field          = trim($violation->getPropertyPath(), '[]');
-            $errors[$field] = $violation->getMessage();
-        }
-
-        return $this->jsonResponse($response, ['errors' => $errors], 422);
-    }
-
-    private function runtimeErrorResponse(ResponseInterface $response, \RuntimeException $e): ResponseInterface {
-        $status = match ($e->getCode()) {
-            404     => 404,
-            409     => 409,
-            default => 400,
-        };
-
-        return $this->jsonResponse($response, ['error' => $e->getMessage()], $status);
-    }
 }
