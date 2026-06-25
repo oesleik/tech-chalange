@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace App\Peca\Contract;
 
-use App\Peca\Model\PecaModel;
-use App\Peca\ValueObject\DescricaoValue;
-use App\Peca\ValueObject\ValorUnitarioValue;
 use App\Core\Contract\AbstractContract;
 use Symfony\Component\Validator\Constraints as Assert;
 use OpenApi\Attributes as OA;
@@ -36,11 +33,4 @@ readonly class EditarPecaRequest extends AbstractContract {
         ]);
     }
 
-    public function toPecaModel(): PecaModel {
-        return new PecaModel(
-            id: 0,
-            descricao: new DescricaoValue($this->descricao),
-            valorUnitario: new ValorUnitarioValue($this->valor_unitario),
-        );
-    }
 }

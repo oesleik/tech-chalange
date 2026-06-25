@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace App\Peca\Service;
 
 use App\Peca\Model\PecaModel;
-use App\Peca\ValueObject\DescricaoValue;
-use App\Peca\ValueObject\ValorUnitarioValue;
 use App\Core\AppDatabase;
 use PDO;
 
@@ -38,8 +36,8 @@ class PecaService {
         $stmt = $this->pdo->prepare("INSERT INTO pecas (descricao, valor_unitario) VALUES (?, ?)");
 
         $stmt->execute([
-            $peca->getDescricao()->getValue(),
-            $peca->getValorUnitario()->getValue(),
+            $peca->getDescricao(),
+            $peca->getValorUnitario(),
         ]);
 
         $id = intval($this->pdo->lastInsertId());
@@ -51,8 +49,8 @@ class PecaService {
         $valores = [];
 
         $valoresModel = [
-            "descricao"      => $peca->getDescricao()->getValue(),
-            "valor_unitario" => $peca->getValorUnitario()->getValue(),
+            "descricao"      => $peca->getDescricao(),
+            "valor_unitario" => $peca->getValorUnitario(),
         ];
 
         foreach ($valoresModel as $campo => $valor) {
@@ -70,8 +68,8 @@ class PecaService {
     private function gerarModelPorRow(object $row): PecaModel {
         return new PecaModel(
             id: $row->id,
-            descricao: new DescricaoValue($row->descricao),
-            valorUnitario: new ValorUnitarioValue(floatval($row->valor_unitario)),
+            descricao: $row->descricao,
+            valorUnitario: floatval($row->valor_unitario),
         );
     }
 }
