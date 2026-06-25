@@ -4,25 +4,22 @@ declare(strict_types=1);
 
 namespace App\Peca\Model;
 
-use App\Peca\ValueObject\DescricaoValue;
-use App\Peca\ValueObject\ValorUnitarioValue;
-
 class PecaModel {
     public function __construct(
         private int $id,
-        private DescricaoValue $descricao,
-        private ValorUnitarioValue $valorUnitario,
+        private string $descricao,
+        private float $valorUnitario,
     ) {}
 
     public function getId(): int {
         return $this->id;
     }
 
-    public function getDescricao(): DescricaoValue {
+    public function getDescricao(): string {
         return $this->descricao;
     }
 
-    public function getValorUnitario(): ValorUnitarioValue {
+    public function getValorUnitario(): float {
         return $this->valorUnitario;
     }
 
@@ -32,13 +29,13 @@ class PecaModel {
         return $new;
     }
 
-    public function withDescricao(DescricaoValue $descricao): self {
+    public function withDescricao(string $descricao): self {
         $new = clone $this;
         $new->descricao = $descricao;
         return $new;
     }
 
-    public function withValorUnitario(ValorUnitarioValue $valorUnitario): self {
+    public function withValorUnitario(float $valorUnitario): self {
         $new = clone $this;
         $new->valorUnitario = $valorUnitario;
         return $new;

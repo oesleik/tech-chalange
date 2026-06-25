@@ -22,8 +22,8 @@ readonly class PecaResponse extends AbstractContract {
     public static function fromPecaModel(PecaModel $peca): self {
         return new self(
             id: $peca->getId(),
-            descricao: $peca->getDescricao()->getValue(),
-            valor_unitario: $peca->getValorUnitario()->getFormattedValue(),
+            descricao: $peca->getDescricao(),
+            valor_unitario: number_format($peca->getValorUnitario(), 2, ',', '.'),
         );
     }
 }

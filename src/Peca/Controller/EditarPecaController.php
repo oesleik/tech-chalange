@@ -8,8 +8,6 @@ use App\Peca\Contract\PecaResponse;
 use App\Peca\Contract\EditarPecaRequest;
 use App\Peca\Model\PecaModel;
 use App\Peca\Service\PecaService;
-use App\Peca\ValueObject\DescricaoValue;
-use App\Peca\ValueObject\ValorUnitarioValue;
 use App\Core\Contract\ContractResolver;
 use App\Core\Contract\InvalidContractException;
 use App\Core\Contract\ValidationErrorResponse;
@@ -69,8 +67,8 @@ class EditarPecaController {
 
             $pecaAtualizar = new PecaModel(
                 id: $peca->getId(),
-                descricao: new DescricaoValue($req->descricao ?? $peca->getDescricao()->getValue()),
-                valorUnitario: new ValorUnitarioValue($req->valor_unitario ?? $peca->getValorUnitario()->getValue()),
+                descricao: $req->descricao ?? $peca->getDescricao(),
+                valorUnitario: floatval($req->valor_unitario ?? $peca->getValorUnitario()),
             );
 
             $service->atualizarPeca($pecaAtualizar);
