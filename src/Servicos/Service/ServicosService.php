@@ -67,7 +67,7 @@ class ServicosService {
 
     private function gerarModelPorRow(object $row): ServicoModel {
         return new ServicoModel(
-            id: $row->id,
+            id: intval($row->id),
             descricao: $row->descricao,
             valorUnitario: floatval($row->valor_unitario),
         );

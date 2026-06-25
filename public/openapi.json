@@ -2099,7 +2099,8 @@
                         "example": "Filtro de óleo"
                     },
                     "valor_unitario": {
-                        "type": "string",
+                        "type": "number",
+                        "format": "float",
                         "example": "49,90"
                     }
                 },

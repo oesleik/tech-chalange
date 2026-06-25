@@ -16,14 +16,14 @@ readonly class PecaResponse extends AbstractContract {
         #[OA\Property(example: "Filtro de óleo")]
         public string $descricao,
         #[OA\Property(example: "49,90")]
-        public string $valor_unitario,
+        public float $valor_unitario,
     ) {}
 
     public static function fromPecaModel(PecaModel $peca): self {
         return new self(
             id: $peca->getId(),
             descricao: $peca->getDescricao(),
-            valor_unitario: number_format($peca->getValorUnitario(), 2, ',', '.'),
+            valor_unitario: $peca->getValorUnitario(),
         );
     }
 }

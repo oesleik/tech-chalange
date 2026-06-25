@@ -2,27 +2,27 @@
 
 declare(strict_types=1);
 
-use App\Peca\Controller\ListarPecasController;
-use App\Peca\Model\PecaModel;
-use App\Peca\Service\PecaService;
+use App\Servicos\Controller\ListarServicosController;
+use App\Servicos\Model\ServicoModel;
+use App\Servicos\Service\ServicosService;
 use App\Core\Contract\ContractResolver;
 use App\Core\ServiceContainerBuilder;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 
-class ListarPecasControllerTest extends TestCase {
-    public function testListarPecasController(): void {
+class ListarServicosControllerTest extends TestCase {
+    public function testListarServicosController(): void {
         $containerBuilder = new ServiceContainerBuilder();
         $container = $containerBuilder->forTesting()->build();
 
-        $controller = new ListarPecasController();
-        $serviceMock = $this->createMock(PecaService::class);
+        $controller = new ListarServicosController();
+        $serviceMock = $this->createMock(ServicosService::class);
 
-        $serviceMock->expects($this->exactly(1))->method("listarPecas")->willReturn([
-            new PecaModel(
+        $serviceMock->expects($this->exactly(1))->method("listarServicos")->willReturn([
+            new ServicoModel(
                 id: 123,
-                descricao: "Vela",
-                valorUnitario: 22.45
+                descricao: "Revisão",
+                valorUnitario: 150,
             ),
         ]);
 
@@ -36,12 +36,12 @@ class ListarPecasControllerTest extends TestCase {
 
         $response->getBody()->rewind();
         $res = json_decode($response->getBody()->getContents());
-        $this->assertCount(1, $res->pecas);
+        $this->assertCount(1, $res->servicos);
 
-        $res = $res->pecas[0];
+        $res = $res->servicos[0];
         $this->assertEquals(123, $res->id);
-        $this->assertEquals("Vela", $res->descricao);
-        $this->assertEquals(22.45, $res->valor_unitario);
+        $this->assertEquals("Revisão", $res->descricao);
+        $this->assertEquals(150, $res->valor_unitario);
     }
 
 }
