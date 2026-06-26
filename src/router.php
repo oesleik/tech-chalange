@@ -69,7 +69,6 @@ $app->group('', function (RouteCollectorProxy $group): void {
     $group->group("/ordens-servico", function (RouteCollectorProxy $group): void {
         $group->get("/", App\OrdemServico\Controller\ListarOrdensServicoController::class);
         $group->post("/", App\OrdemServico\Controller\CriarOrdemServicoController::class);
-        $group->post("/filtrar", App\OrdemServico\Controller\FiltrarOrdensServicoController::class);
         $group->get("/{id:[0-9]+}", App\OrdemServico\Controller\ObterOrdemServicoController::class);
 
         $group->get("/proxima", App\OrdemServico\Controller\ObterProximaOrdemServicoController::class);

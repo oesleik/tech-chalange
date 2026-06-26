@@ -8,9 +8,11 @@ use App\Clientes\Service\ClienteService;
 use App\Clientes\ValueObject\CpfOrCnpjValueFactory;
 use App\Core\Contract\ContractResolver;
 use App\Core\Contract\InvalidContractException;
+use App\Core\Contract\ValidationErrorResponse;
 use App\OrdemServico\Contract\ConsultarOrdemServicoPorVeiculoEClienteRequest;
 use App\OrdemServico\Contract\ConsultarOrdemServicoPorVeiculoRequest;
 use App\OrdemServico\Contract\OrdemServicoCompletaResponse;
+use App\OrdemServico\Model\FiltroOrdemServico;
 use App\OrdemServico\Service\ItensOrdemServicoService;
 use App\OrdemServico\Service\OrdemServicoService;
 use App\Veiculos\Service\VeiculoService;
@@ -63,32 +65,32 @@ class ConsultarOrdemServicoPorVeiculoEClienteController {
                 ConsultarOrdemServicoPorVeiculoEClienteRequest::class,
             );
         } catch (InvalidContractException $e) {
-            return $this->erro($response, $e->getViolations(), 400);
+            $response->getBody()->write($this->contractResolver->toJson(ValidationErrorResponse::from($e->getViolations())));
+            return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
         }
 
         $clientes = $this->clienteService->listarClientes(CpfOrCnpjValueFactory::make($input->cpf_cnpj));
         $cliente = $clientes[0] ?? null;
 
-        if ($cliente === null) {
-            return $this->erroSimples($response, 'Cliente não encontrado para o CPF/CNPJ informado.', 404);
+        if ($cliente === null || empty($cliente->getId())) {
+            return $response->withStatus(404, "Cliente não encontrado para o CPF/CNPJ informado");
         }
 
         $veiculo = $this->veiculoService->obterVeiculoPorPlaca($input->placa);
-        if ($veiculo === null) {
-            return $this->erroSimples($response, 'Veículo não encontrado para a placa informada.', 404);
+        if ($veiculo === null || empty($veiculo->getId())) {
+            return $response->withStatus(404, "Veículo não encontrado para a placa informada");
         }
 
-        $ordemServico = $this->ordemServicoService->obterOrdemServicoPorClienteEVeiculo(
-            $cliente->getId(),
-            $veiculo->getId(),
+        $filtros = new FiltroOrdemServico(
+            idCliente: $cliente->getId(),
+            idVeiculo: $veiculo->getId(),
+            limit: 1,
         );
 
+        $ordemServico = $this->ordemServicoService->listarOrdensServico($filtros)[0] ?? null;
+
         if ($ordemServico === null) {
-            return $this->erroSimples(
-                $response,
-                'Nenhuma Ordem de Serviço encontrada para este cliente e veículo.',
-                404,
-            );
+            return $response->withStatus(404, "Ordem de Serviço não encontrada para este cliente e veículo");
         }
 
         $pecas    = $this->itensOrdemServicoService->obterPecasPorIdOrdemServico($ordemServico->getId());
@@ -100,23 +102,4 @@ class ConsultarOrdemServicoPorVeiculoEClienteController {
         return $response->withHeader('Content-Type', 'application/json');
     }
 
-    private function erro(ResponseInterface $response, iterable $violations, int $status): ResponseInterface {
-        $erros = [];
-        foreach ($violations as $violation) {
-            $campo = trim($violation->getPropertyPath(), '[]');
-            $erros[$campo][] = $violation->getMessage();
-        }
-
-        $response->getBody()->write(json_encode(['erros' => $erros]));
-        return $response
-            ->withHeader('Content-Type', 'application/json')
-            ->withStatus($status);
-    }
-
-    private function erroSimples(ResponseInterface $response, string $mensagem, int $status): ResponseInterface {
-        $response->getBody()->write(json_encode(['erro' => $mensagem]));
-        return $response
-            ->withHeader('Content-Type', 'application/json')
-            ->withStatus($status);
-    }
 }

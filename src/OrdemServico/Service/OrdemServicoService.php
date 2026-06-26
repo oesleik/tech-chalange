@@ -10,7 +10,6 @@ use App\Core\AppDatabase;
 use App\OrdemServico\Model\SituacaoOrdemServicoEnum;
 use DateTime;
 use InvalidArgumentException;
-use PDO;
 
 class OrdemServicoService {
     public function __construct(
@@ -18,35 +17,55 @@ class OrdemServicoService {
     ) {}
 
     /** @return OrdemServicoModel[] */
-    public function listarOrdensServico(): array {
-        $result = $this->pdo->query(
-            "SELECT * FROM ordens_servico ORDER BY data_solicitacao DESC",
-            PDO::FETCH_OBJ
-        );
-        $ordensServico = [];
+    public function listarOrdensServico(FiltroOrdemServico $filtros): array {
+        [$queryFilters, $params] = $this->makeQueryFilters($filtros);
 
-        foreach ($result as $row) {
+        if (count($params)) {
+            $queryFilters = "WHERE $queryFilters";
+        }
+
+        $query = "SELECT * FROM ordens_servico $queryFilters ORDER BY data_solicitacao DESC";
+
+        if ($filtros->getLimit() > 0) {
+            $query .= "LIMIT " . $filtros->getLimit();
+        }
+
+        $stmt = $this->pdo->prepare($query);
+        $stmt->execute($params);
+
+        $ordensServico = [];
+        while ($row = $stmt->fetchObject()) {
             $ordensServico[] = $this->gerarModelPorRow($row);
         }
 
         return $ordensServico;
     }
 
+    /** @return array{string,mixed} [$query, $params] */
+    private function makeQueryFilters(FiltroOrdemServico $filtros): array {
+        $filters = $params = [];
+
+        if ($filtros->getSituacao() !== null) {
+            $filters[] = "AND situacao = ? ";
+            $params[] = $filtros->getSituacao()->value;
+        }
+
+        if ($filtros->getIdCliente() !== null) {
+            $filters[] = "AND id_cliente = ? ";
+            $params[] = $filtros->getIdCliente();
+        }
+
+        if ($filtros->getIdVeiculo() !== null) {
+            $filters[] = "AND id_veiculo = ? ";
+            $params[] = $filtros->getIdVeiculo();
+        }
+
+        return [implode(" AND ", $filters), $params];
+    }
+
     public function obterOrdemServicoPorId(int $id): ?OrdemServicoModel {
         $stmt = $this->pdo->prepare("SELECT * FROM ordens_servico WHERE id = ?");
         $stmt->execute([$id]);
-        $result = $stmt->fetchObject();
-        return $result ? $this->gerarModelPorRow($result) : null;
-    }
-
-    public function obterOrdemServicoPorClienteEVeiculo(int $idCliente, int $idVeiculo): ?OrdemServicoModel {
-        $stmt = $this->pdo->prepare(
-            "SELECT * FROM ordens_servico
-             WHERE id_cliente = ? AND id_veiculo = ?
-             ORDER BY data_solicitacao DESC
-             LIMIT 1"
-        );
-        $stmt->execute([$idCliente, $idVeiculo]);
         $result = $stmt->fetchObject();
         return $result ? $this->gerarModelPorRow($result) : null;
     }
@@ -63,74 +82,6 @@ class OrdemServicoService {
         }
 
         return $result ? $this->gerarModelPorRow($result) : null;
-    }
-
-    /** @return OrdemServicoModel[] */
-    public function listarOrdensServicoPorStatus(string $status): array {
-        $stmt = $this->pdo->prepare(
-            "SELECT * FROM ordens_servico WHERE situacao = ? ORDER BY data_solicitacao DESC"
-        );
-        $stmt->execute([$status]);
-
-        $ordensServico = [];
-        while ($row = $stmt->fetchObject()) {
-            $ordensServico[] = $this->gerarModelPorRow($row);
-        }
-
-        return $ordensServico;
-    }
-
-    /** @return OrdemServicoModel[] */
-    public function listarOrdensServicoPorCliente(int $idCliente): array {
-        $stmt = $this->pdo->prepare(
-            "SELECT * FROM ordens_servico WHERE id_cliente = ? ORDER BY data_solicitacao DESC"
-        );
-        $stmt->execute([$idCliente]);
-
-        $ordensServico = [];
-        while ($row = $stmt->fetchObject()) {
-            $ordensServico[] = $this->gerarModelPorRow($row);
-        }
-
-        return $ordensServico;
-    }
-
-    /** @return OrdemServicoModel[] */
-    public function filtrarOrdensServico(FiltroOrdemServico $filtro): array {
-        $sql = "SELECT * FROM ordens_servico WHERE 1=1";
-        $params = [];
-
-        if ($filtro->getSituacao() !== null) {
-            $sql .= " AND situacao = ?";
-            $params[] = $filtro->getSituacao()->value;
-        }
-
-        if ($filtro->getIdCliente() !== null) {
-            $sql .= " AND id_cliente = ?";
-            $params[] = $filtro->getIdCliente();
-        }
-
-        if ($filtro->getIdVeiculo() !== null) {
-            $sql .= " AND id_veiculo = ?";
-            $params[] = $filtro->getIdVeiculo();
-        }
-
-        if ($filtro->getIdOrdem() !== null) {
-            $sql .= " AND id = ?";
-            $params[] = $filtro->getIdOrdem();
-        }
-
-        $sql .= " ORDER BY data_solicitacao DESC";
-
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute($params);
-
-        $ordensServico = [];
-        while ($row = $stmt->fetchObject()) {
-            $ordensServico[] = $this->gerarModelPorRow($row);
-        }
-
-        return $ordensServico;
     }
 
     public function criarOrdemServico(OrdemServicoModel $ordemServico): OrdemServicoModel {
