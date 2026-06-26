@@ -44,9 +44,7 @@ class EnviarOrcamentoOrdemServicoEmailService {
         $urlRejeitada = "{$baseUrl}/email/ordens-servico/rejeitada?token={$token}";
 
         $valorTotal = $ordemServico->getValorTotal();
-        $valorFormatado = $valorTotal !== null
-            ? 'R$ ' . number_format($valorTotal->getValue(), 2, ',', '.')
-            : 'R$ 0,00';
+        $valorFormatado = 'R$ ' . number_format($valorTotal, 2, ',', '.');
 
         $html = $this->montarHtmlEmail(
             nomeCliente: $cliente->getNome(),

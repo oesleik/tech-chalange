@@ -32,10 +32,10 @@ readonly class ProximaOrdemServicoResponse extends AbstractContract {
         $idOS = $model->getId();
 
         $linksExecucao = [
-            // new ApiLinkSchema("adicionar_pecas", "", "POST"),
-            // new ApiLinkSchema("adicionar_servicos", "", "POST"),
-            // new ApiLinkSchema("atualizar_pecas", "", "POST"),
-            // new ApiLinkSchema("atualizar_servicos", "", "POST"),
+            new ApiLinkSchema("adicionar_pecas", $baseUrl . "ordens-servico/$idOS/pecas", "POST"),
+            new ApiLinkSchema("adicionar_servicos", $baseUrl . "ordens-servico/$idOS/servicos", "POST"),
+            new ApiLinkSchema("atualizar_pecas", $baseUrl . "ordens-servico/$idOS/pecas", "PUT"),
+            new ApiLinkSchema("atualizar_servicos", $baseUrl . "ordens-servico/$idOS/servicos", "PUT"),
         ];
 
         if ($model->getSituacao() == SituacaoOrdemServicoEnum::RECEBIDA) {

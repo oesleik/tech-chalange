@@ -5,17 +5,16 @@ declare(strict_types=1);
 namespace App\OrdemServico\Contract;
 
 use App\Core\Contract\AbstractContract;
-use App\OrdemServico\ValueObject\FiltroOrdemServico;
+use App\OrdemServico\Model\FiltroOrdemServico;
+use App\OrdemServico\Model\SituacaoOrdemServicoEnum;
 use Symfony\Component\Validator\Constraints as Assert;
 use OpenApi\Attributes as OA;
 
 #[OA\Schema]
-readonly class FiltrarOrdensServicoRequest extends AbstractContract {
+readonly class OrdensServicoFiltros extends AbstractContract {
     public function __construct(
         #[OA\Property(description: 'Situação da Ordem de Serviço', example: 'Aprovada', nullable: true)]
-        public ?string $situacao = null,
-        #[OA\Property(description: 'ID da Ordem de Serviço', example: 100, nullable: true)]
-        public ?int $id = null,
+        public ?SituacaoOrdemServicoEnum $situacao = null,
         #[OA\Property(description: 'ID do Cliente', example: 123, nullable: true)]
         public ?int $id_cliente = null,
         #[OA\Property(description: 'ID do Veículo', example: 456, nullable: true)]
@@ -26,16 +25,10 @@ readonly class FiltrarOrdensServicoRequest extends AbstractContract {
         return new Assert\Collection([
             'situacao' => [
                 new Assert\Optional([
-                    new Assert\Type('string'),
+                    new Assert\Type(SituacaoOrdemServicoEnum::class),
                 ]),
             ],
             'id_cliente' => [
-                new Assert\Optional([
-                    new Assert\Type('integer'),
-                    new Assert\Positive(),
-                ]),
-            ],
-            'id' => [
                 new Assert\Optional([
                     new Assert\Type('integer'),
                     new Assert\Positive(),
@@ -50,12 +43,11 @@ readonly class FiltrarOrdensServicoRequest extends AbstractContract {
         ]);
     }
 
-    public function toFiltroOrdemServico(): FiltroOrdemServico {
-        return FiltroOrdemServico::fromArray([
-            'situacao' => $this->situacao,
-            'id' => $this->id,
-            'id_cliente' => $this->id_cliente,
-            'id_veiculo' => $this->id_veiculo,
-        ]);
+    public function toFiltroModel(): FiltroOrdemServico {
+        return new FiltroOrdemServico(
+            situacao: $this->situacao,
+            idCliente: $this->id_cliente,
+            idVeiculo: $this->id_veiculo,
+        );
     }
 }

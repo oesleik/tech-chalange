@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\OrdemServico\Service;
 
 use App\Core\AppDatabase;
-use App\OrdemServico\ValueObject\ValorTotalValue;
 use PDO;
 
 class CalculoValorTotalOrdemServicoService {
@@ -14,11 +13,10 @@ class CalculoValorTotalOrdemServicoService {
         private OrdemServicoService $ordemServicoService
     ) {}
 
-    public function calcularEAtualizar(int $idOrdemServico): ValorTotalValue {
+    public function calcularEAtualizar(int $idOrdemServico): float {
         $totalPecas = $this->calcularTotalPecas($idOrdemServico);
         $totalServicos = $this->calcularTotalServicos($idOrdemServico);
-
-        $valorTotal = new ValorTotalValue($totalPecas + $totalServicos);
+        $valorTotal = $totalPecas + $totalServicos;
 
         $this->ordemServicoService->atualizarValorTotal($idOrdemServico, $valorTotal);
 

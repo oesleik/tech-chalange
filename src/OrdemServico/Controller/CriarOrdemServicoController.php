@@ -8,6 +8,8 @@ use App\OrdemServico\Contract\CriarOrdemServicoRequest;
 use App\OrdemServico\Contract\OrdemServicoResumidaResponse;
 use App\OrdemServico\Service\OrdemServicoService;
 use App\Core\Contract\ContractResolver;
+use App\Core\Contract\InvalidContractException;
+use App\Core\Contract\ValidationErrorResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use OpenApi\Attributes as OA;
@@ -54,11 +56,9 @@ class CriarOrdemServicoController {
             return $response
                 ->withHeader('Content-Type', 'application/json')
                 ->withStatus(201);
-        } catch (\Throwable $e) {
-            $response->getBody()->write(json_encode(['erro' => $e->getMessage()]));
-            return $response
-                ->withHeader('Content-Type', 'application/json')
-                ->withStatus(400);
+        } catch (InvalidContractException $e) {
+            $response->getBody()->write($contractResolver->toJson(ValidationErrorResponse::from($e->getViolations())));
+            return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
         }
     }
 }

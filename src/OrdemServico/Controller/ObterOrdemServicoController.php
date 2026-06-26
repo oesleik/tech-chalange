@@ -35,34 +35,27 @@ class ObterOrdemServicoController {
         description: 'Ordem de Serviço não encontrada'
     )]
     public function __invoke(
+        int $id,
         ServerRequestInterface $request,
         ResponseInterface $response,
         ContractResolver $contractResolver,
         OrdemServicoService $service,
         ItensOrdemServicoService $itensService,
     ): ResponseInterface {
-        try {
-            $id = (int) $request->getAttribute('id');
-            $ordemServico = $service->obterOrdemServicoPorId($id);
+        $ordemServico = $service->obterOrdemServicoPorId($id);
 
-            if (!$ordemServico) {
-                $response->getBody()->write(json_encode(['erro' => 'Ordem de Serviço não encontrada']));
-                return $response
-                    ->withHeader('Content-Type', 'application/json')
-                    ->withStatus(404);
-            }
-
-            $pecas = $itensService->obterPecasPorIdOrdemServico($ordemServico->getId());
-            $servicos = $itensService->obterServicosPorIdOrdemServico($ordemServico->getId());
-
-            $output = OrdemServicoCompletaResponse::fromModel($ordemServico, $pecas, $servicos);
-            $response->getBody()->write($contractResolver->toJson($output));
-            return $response->withHeader('Content-Type', 'application/json');
-        } catch (\Throwable $e) {
-            $response->getBody()->write(json_encode(['erro' => $e->getMessage()]));
+        if (!$ordemServico) {
+            $response->getBody()->write(json_encode(['erro' => 'Ordem de Serviço não encontrada']));
             return $response
                 ->withHeader('Content-Type', 'application/json')
-                ->withStatus(500);
+                ->withStatus(404);
         }
+
+        $pecas = $itensService->obterPecasPorIdOrdemServico($ordemServico->getId());
+        $servicos = $itensService->obterServicosPorIdOrdemServico($ordemServico->getId());
+
+        $output = OrdemServicoCompletaResponse::fromModel($ordemServico, $pecas, $servicos);
+        $response->getBody()->write($contractResolver->toJson($output));
+        return $response->withHeader('Content-Type', 'application/json');
     }
 }

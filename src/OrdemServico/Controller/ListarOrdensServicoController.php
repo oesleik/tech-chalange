@@ -7,7 +7,10 @@ namespace App\OrdemServico\Controller;
 use App\OrdemServico\Contract\ListarOrdensServicoResponse;
 use App\OrdemServico\Service\OrdemServicoService;
 use App\Core\Contract\ContractResolver;
+use App\Core\Contract\InvalidContractException;
+use App\Core\Contract\ValidationErrorResponse;
 use App\OrdemServico\Contract\OrdemServicoResumidaResponse;
+use App\OrdemServico\Contract\OrdensServicoFiltros;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use OpenApi\Attributes as OA;
@@ -27,6 +30,10 @@ class ListarOrdensServicoController {
             items: new OA\Items(ref: '#/components/schemas/OrdemServicoResumidaResponse')
         )
     )]
+    #[OA\Response(
+        response: 400,
+        description: 'Filtros inválidos'
+    )]
     public function __invoke(
         ServerRequestInterface $request,
         ResponseInterface $response,
@@ -34,18 +41,20 @@ class ListarOrdensServicoController {
         OrdemServicoService $service,
     ): ResponseInterface {
         try {
-            $ordensServico = $service->listarOrdensServico();
+            $queryParams = $request->getQueryParams() ?? [];
+            $filtros = $contractResolver->fromArray($queryParams, OrdensServicoFiltros::class);
+
+            $ordensServico = $service->listarOrdensServico($filtros->toFiltroModel());
+
             $output = new ListarOrdensServicoResponse(
                 ordensServico: array_map(fn($os) => OrdemServicoResumidaResponse::fromModel($os), $ordensServico)
             );
 
             $response->getBody()->write($contractResolver->toJson($output));
             return $response->withHeader('Content-Type', 'application/json');
-        } catch (\Throwable $e) {
-            $response->getBody()->write(json_encode(['erro' => $e->getMessage()]));
-            return $response
-                ->withHeader('Content-Type', 'application/json')
-                ->withStatus(500);
+        } catch (InvalidContractException $e) {
+            $response->getBody()->write($contractResolver->toJson(ValidationErrorResponse::from($e->getViolations())));
+            return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
         }
     }
 }

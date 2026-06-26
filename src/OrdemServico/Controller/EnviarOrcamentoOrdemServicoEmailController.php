@@ -7,7 +7,6 @@ namespace App\OrdemServico\Controller;
 use App\OrdemServico\Service\EnviarOrcamentoOrdemServicoEmailService;
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
 
 #[OA\Post(
     path: '/ordens-servico/{id}/enviar-orcamento',
@@ -24,9 +23,10 @@ class EnviarOrcamentoOrdemServicoEmailController {
         private EnviarOrcamentoOrdemServicoEmailService $service,
     ) {}
 
-    public function __invoke(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface {
-        $id = intval($request->getAttribute('id'));
-
+    public function __invoke(
+        int $id,
+        ResponseInterface $response,
+    ): ResponseInterface {
         if ($id <= 0) {
             $response->getBody()->write(json_encode(['erro' => 'ID da Ordem de Serviço inválido.']));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
@@ -43,9 +43,6 @@ class EnviarOrcamentoOrdemServicoEmailController {
         } catch (\RuntimeException $e) {
             $response->getBody()->write(json_encode(['erro' => $e->getMessage()]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
-        } catch (\Throwable $e) {
-            $response->getBody()->write(json_encode(['erro' => 'Falha ao enviar o e-mail: ' . $e->getMessage()]));
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }
     }
 }
