@@ -41,11 +41,11 @@ class RelatorioMediaTempoServicosService {
         /** @var ServicoRelatorioMediaTempoServicosResponse[] */
         $servicos = [];
 
-        while ($row = $stmt->fetch(PDO::FETCH_OBJ)) {
+        while ($row = $stmt->fetchObject()) {
             $servicos[] = new ServicoRelatorioMediaTempoServicosResponse(
-                id_servico: $row->id_servico,
+                id_servico: intval($row->id_servico),
                 descricao: $row->descricao,
-                valor_unitario: intval($row->valor_unitario),
+                valor_unitario: floatval($row->valor_unitario),
                 media_tempo: round($row->total_tempo_executando / $row->quantidade_execucoes, 2),
                 quantidade_execucoes: intval($row->quantidade_execucoes),
                 total_tempo_executando: floatval($row->total_tempo_executando),

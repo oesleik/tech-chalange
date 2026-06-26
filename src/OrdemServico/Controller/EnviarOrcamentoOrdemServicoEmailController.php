@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\OrdemServico\Controller;
 
+use App\Clientes\Service\ClienteService;
 use App\OrdemServico\Service\EnviarOrcamentoOrdemServicoEmailService;
+use App\OrdemServico\Service\OrdemServicoService;
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface;
 
@@ -21,28 +23,32 @@ use Psr\Http\Message\ResponseInterface;
 class EnviarOrcamentoOrdemServicoEmailController {
     public function __construct(
         private EnviarOrcamentoOrdemServicoEmailService $service,
+        private OrdemServicoService $ordemServicoService,
+        private ClienteService $clienteService,
     ) {}
 
     public function __invoke(
         int $id,
         ResponseInterface $response,
     ): ResponseInterface {
-        if ($id <= 0) {
-            $response->getBody()->write(json_encode(['erro' => 'ID da Ordem de Serviço inválido.']));
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+        $ordemServico = $this->ordemServicoService->obterOrdemServicoPorId($id);
+
+        if ($ordemServico === null) {
+            return $response->withStatus(404, "Ordem de serviço não encontrada");
         }
 
-        try {
-            $this->service->enviar($id);
+        $cliente = $this->clienteService->obterClientePorId($ordemServico->getIdCliente());
 
-            $response->getBody()->write(json_encode([
-                'mensagem' => "Orçamento da Ordem de Serviço #{$id} enviado com sucesso.",
-            ]));
-
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
-        } catch (\RuntimeException $e) {
-            $response->getBody()->write(json_encode(['erro' => $e->getMessage()]));
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
+        if ($cliente === null) {
+            return $response->withStatus(404, "Cliente não encontrado");
         }
+
+        $this->service->enviar($ordemServico, $cliente);
+
+        $response->getBody()->write(json_encode([
+            'mensagem' => "Orçamento da Ordem de Serviço #{$id} enviado com sucesso.",
+        ]));
+
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 }

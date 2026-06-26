@@ -630,6 +630,9 @@
                                 }
                             }
                         }
+                    },
+                    "400": {
+                        "description": "Filtros inválidos"
                     }
                 }
             },
@@ -923,68 +926,6 @@
                     },
                     "500": {
                         "description": "Falha ao enviar o e-mail"
-                    }
-                }
-            }
-        },
-        "/ordens-servico/filtrar": {
-            "get": {
-                "tags": [
-                    "Ordens de Serviço"
-                ],
-                "summary": "Filtrar Ordens de Serviço",
-                "description": "Filtra ordens de serviço por situação, cliente e/ou veículo",
-                "operationId": "filtrarOrdensServico",
-                "parameters": [
-                    {
-                        "name": "situacao",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "clienteId",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    },
-                    {
-                        "name": "veiculoId",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    },
-                    {
-                        "name": "id",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Lista de Ordens de Serviço filtradas",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/OrdemServicoResponse"
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Dados inválidos"
                     }
                 }
             }
@@ -1712,35 +1653,6 @@
                 },
                 "type": "object"
             },
-            "FiltrarOrdensServicoRequest": {
-                "properties": {
-                    "situacao": {
-                        "description": "Situação da Ordem de Serviço",
-                        "type": "string",
-                        "example": "Aprovada",
-                        "nullable": true
-                    },
-                    "id": {
-                        "description": "ID da Ordem de Serviço",
-                        "type": "integer",
-                        "example": 100,
-                        "nullable": true
-                    },
-                    "id_cliente": {
-                        "description": "ID do Cliente",
-                        "type": "integer",
-                        "example": 123,
-                        "nullable": true
-                    },
-                    "id_veiculo": {
-                        "description": "ID do Veículo",
-                        "type": "integer",
-                        "example": 456,
-                        "nullable": true
-                    }
-                },
-                "type": "object"
-            },
             "ListarOrdensServicoResponse": {
                 "properties": {
                     "ordensServico": {
@@ -1851,6 +1763,28 @@
                         "type": "string",
                         "format": "date-time",
                         "example": "2026-06-14 11:00:00",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "OrdensServicoFiltros": {
+                "properties": {
+                    "situacao": {
+                        "description": "Situação da Ordem de Serviço",
+                        "example": "Aprovada",
+                        "nullable": true
+                    },
+                    "id_cliente": {
+                        "description": "ID do Cliente",
+                        "type": "integer",
+                        "example": 123,
+                        "nullable": true
+                    },
+                    "id_veiculo": {
+                        "description": "ID do Veículo",
+                        "type": "integer",
+                        "example": 456,
                         "nullable": true
                     }
                 },

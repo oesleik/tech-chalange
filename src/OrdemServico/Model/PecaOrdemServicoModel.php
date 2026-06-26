@@ -8,7 +8,7 @@ class PecaOrdemServicoModel {
     public function __construct(
         private int $idPeca,
         private int $quantidade,
-        private ?float $valorUnitario = null,
+        private float $valorUnitario,
     ) {}
 
     public function getIdPeca(): int {
@@ -19,7 +19,11 @@ class PecaOrdemServicoModel {
         return $this->quantidade;
     }
 
-    public function getValorUnitario(): ?float {
+    public function getValorUnitario(): float {
         return $this->valorUnitario;
+    }
+
+    public function getSubtotal(): float {
+        return round($this->quantidade * $this->valorUnitario, 2);
     }
 }

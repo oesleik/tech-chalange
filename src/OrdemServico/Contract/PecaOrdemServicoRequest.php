@@ -37,6 +37,7 @@ readonly class PecaOrdemServicoRequest extends AbstractContract {
         return new PecaOrdemServicoModel(
             idPeca: $this->id_peca,
             quantidade: $this->quantidade,
+            valorUnitario: 0,
         );
     }
 }
