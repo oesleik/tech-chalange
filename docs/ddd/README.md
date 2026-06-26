@@ -42,9 +42,9 @@ políticas nos principais fluxos do sistema.
 
 ![Event Storming — Linhas do Tempo](./event-storming-linhas-do-tempo.jpg)
 
-### Contextos Delimitados
+### Agregados
 
-![Event Storming — Contextos Delimitados](./event-storming-contextos-delimitados.jpg)
+![Event Storming — Agregados](./event-storming-agregados.jpg)
 
 > Board completo no Miro:
 > [Abrir no Miro](https://miro.com/app/board/uXjVHaErvBw=/)
@@ -59,6 +59,10 @@ Classificação dos subdomínios (Principal, Suporte, Genérico).
 
 > Board no Excalidraw:
 > [Abrir no Excalidraw](https://excalidraw.com/#room=61a5deb68a5644639fe3,-UGs5VigxN_metUxdaeihg)
+
+### Mapa de Contexto
+
+![Mapa de Contexto](./mapa-de-contexto.png)
 
 ---
 
@@ -194,21 +198,3 @@ Classificação dos subdomínios (Principal, Suporte, Genérico).
 | Consulta Pública de OS | Acesso do cliente ao status da OS via API, sem autenticação administrativa |
 | Token para Aprovação de Orçamento | Token temporário enviado no e-mail para aprovação do orçamento |
 | Chave de Consulta | Identificador (ex: número da OS + CPF/CNPJ) que o cliente usa para acessar sua OS |
-
----
-
-## Contextos Delimitados (Bounded Contexts)
-
-Mapa de contextos com os padrões de integração entre domínios
-(ACL, OHS, Conformist).
-
-### Mapa de Contexto
-
-![Mapa de Contexto](./mapa-de-contexto.png)
-
-### Diagrama de Contextos Delimitados
-
-![Contextos Delimitados](./event-storming-contextos-delimitados.jpg)
-
-> Board no Excalidraw:
-> [Abrir no Excalidraw](https://miro.com/app/board/uXjVHaErvBw=/)
