@@ -44,7 +44,7 @@ readonly class OrdemServicoCompletaResponse extends AbstractContract {
             id_cliente: $model->getIdCliente(),
             id_veiculo: $model->getIdVeiculo(),
             situacao: $model->getSituacao()->value,
-            valor_total: $model->getValorTotal()->getValue(),
+            valor_total: $model->getValorTotal(),
             data_solicitacao: $model->getDataSolicitacao()->format('Y-m-d H:i:s'),
             data_aprovacao: $model->getDataAprovacao()?->format('Y-m-d H:i:s'),
             pecas: array_map(fn(PecaOrdemServicoModel $peca) => PecaOrdemServicoResponse::fromModel($peca), $pecas),

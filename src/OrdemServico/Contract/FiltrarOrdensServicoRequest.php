@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\OrdemServico\Contract;
 
 use App\Core\Contract\AbstractContract;
-use App\OrdemServico\ValueObject\FiltroOrdemServico;
+use App\OrdemServico\Model\FiltroOrdemServico;
 use Symfony\Component\Validator\Constraints as Assert;
 use OpenApi\Attributes as OA;
 

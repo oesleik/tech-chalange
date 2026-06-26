@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\OrdemServico\ValueObject;
+namespace App\OrdemServico\Model;
 
 use App\OrdemServico\Model\SituacaoOrdemServicoEnum;
 

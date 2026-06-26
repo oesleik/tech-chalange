@@ -7,7 +7,6 @@ namespace App\OrdemServico\Contract;
 use App\Core\Contract\AbstractContract;
 use App\OrdemServico\Model\OrdemServicoModel;
 use App\OrdemServico\Model\SituacaoOrdemServicoEnum;
-use App\OrdemServico\ValueObject\ValorTotalValue;
 use Symfony\Component\Validator\Constraints as Assert;
 use OpenApi\Attributes as OA;
 use DateTime;
@@ -41,7 +40,7 @@ readonly class CriarOrdemServicoRequest extends AbstractContract {
             idCliente: $this->id_cliente,
             idVeiculo: $this->id_veiculo,
             situacao: SituacaoOrdemServicoEnum::RECEBIDA,
-            valorTotal: new ValorTotalValue(0),
+            valorTotal: 0,
             dataSolicitacao: new DateTime(),
         );
     }

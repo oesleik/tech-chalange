@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\OrdemServico\Model;
 
-use App\OrdemServico\ValueObject\ValorTotalValue;
 use DateTime;
 
 class OrdemServicoModel {
@@ -13,7 +12,7 @@ class OrdemServicoModel {
         private int $idCliente,
         private int $idVeiculo,
         private SituacaoOrdemServicoEnum $situacao,
-        private ValorTotalValue $valorTotal,
+        private float $valorTotal,
         private DateTime $dataSolicitacao,
         private ?DateTime $dataAprovacao = null,
     ) {}
@@ -34,7 +33,7 @@ class OrdemServicoModel {
         return $this->situacao;
     }
 
-    public function getValorTotal(): ValorTotalValue {
+    public function getValorTotal(): float {
         return $this->valorTotal;
     }
 
@@ -58,7 +57,7 @@ class OrdemServicoModel {
         return $new;
     }
 
-    public function withValorTotal(ValorTotalValue $valorTotal): self {
+    public function withValorTotal(float $valorTotal): self {
         $new = clone $this;
         $new->valorTotal = $valorTotal;
         return $new;

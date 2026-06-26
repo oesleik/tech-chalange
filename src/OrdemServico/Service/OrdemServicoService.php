@@ -5,8 +5,7 @@ declare(strict_types=1);
 namespace App\OrdemServico\Service;
 
 use App\OrdemServico\Model\OrdemServicoModel;
-use App\OrdemServico\ValueObject\ValorTotalValue;
-use App\OrdemServico\ValueObject\FiltroOrdemServico;
+use App\OrdemServico\Model\FiltroOrdemServico;
 use App\Core\AppDatabase;
 use App\OrdemServico\Model\SituacaoOrdemServicoEnum;
 use DateTime;
@@ -144,7 +143,7 @@ class OrdemServicoService {
             $ordemServico->getIdCliente(),
             $ordemServico->getIdVeiculo(),
             $ordemServico->getSituacao()->value,
-            $ordemServico->getValorTotal()->getValue(),
+            $ordemServico->getValorTotal(),
             $ordemServico->getDataSolicitacao()->format('Y-m-d H:i:s'),
         ]);
 
@@ -186,21 +185,18 @@ class OrdemServicoService {
         return $ordemServico->withSituacao($novaSituacao);
     }
 
-    public function atualizarValorTotal(int $id, ValorTotalValue $valorTotal): bool {
+    public function atualizarValorTotal(int $id, float $valorTotal): bool {
         $stmt = $this->pdo->prepare("UPDATE ordens_servico SET valor_total = ? WHERE id = ?");
-        return $stmt->execute([$valorTotal->getValue(), $id]);
+        return $stmt->execute([$valorTotal, $id]);
     }
 
     private function gerarModelPorRow(object $row): OrdemServicoModel {
-        // Garantir que sempre exista um ValorTotalValue (usar 0 quando nulo no banco)
-        $valorTotalValue = new ValorTotalValue(floatval($row->valor_total ?? 0));
-
         return new OrdemServicoModel(
             id: intval($row->id),
             idCliente: intval($row->id_cliente),
             idVeiculo: intval($row->id_veiculo),
             situacao: SituacaoOrdemServicoEnum::from($row->situacao),
-            valorTotal: $valorTotalValue,
+            valorTotal: floatval($row->valor_total ?? 0),
             dataSolicitacao: new DateTime($row->data_solicitacao),
             dataAprovacao: $row->data_aprovacao !== null ? new DateTime($row->data_aprovacao) : null,
         );
