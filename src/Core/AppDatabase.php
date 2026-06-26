@@ -27,12 +27,16 @@ class AppDatabase extends PDO {
         );
     }
 
-	protected function startPdo(
-		#[SensitiveParameter] string $dsn,
-		#[SensitiveParameter] ?string $username,
-		#[SensitiveParameter] ?string $password,
-		#[SensitiveParameter] ?array $options,
-	): void {
-		parent::__construct($dsn, $username, $password, $options);
-	}
+    protected function startPdo(
+        #[SensitiveParameter]
+        string $dsn,
+        #[SensitiveParameter]
+        ?string $username,
+        #[SensitiveParameter]
+        ?string $password,
+        #[SensitiveParameter]
+        ?array $options,
+    ): void {
+        parent::__construct($dsn, $username, $password, $options);
+    }
 }
