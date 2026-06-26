@@ -158,14 +158,14 @@ class ItensOrdemServicoServiceTest extends TestCase {
             idCliente: 456,
             idVeiculo: 789,
             situacao: SituacaoOrdemServicoEnum::EM_DIAGNOSTICO,
-            valorTotal: 126.42,
+            valorTotal: 171.94,
             dataSolicitacao: new DateTime(),
         );
 
         $servicos = [
             new ServicoOrdemServicoModel(
                 idServico: 111,
-                quantidade: 10,
+                quantidade: 1,
                 valorUnitario: 80.90,
             ),
             new ServicoOrdemServicoModel(

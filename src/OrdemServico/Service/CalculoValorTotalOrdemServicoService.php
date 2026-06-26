@@ -35,7 +35,7 @@ class CalculoValorTotalOrdemServicoService {
 
         $total = 0;
         foreach ($itens as $item) {
-            $total += $this->safeMultiplicacaoQuantidadePorValor(intval($item->quantidade), floatval($item->valor_unitario));
+            $total += $this->makeSubtotal(intval($item->quantidade), floatval($item->valor_unitario));
         }
 
         return $total;
@@ -53,24 +53,13 @@ class CalculoValorTotalOrdemServicoService {
 
         $total = 0;
         foreach ($itens as $item) {
-            $total += $this->safeMultiplicacaoQuantidadePorValor(intval($item->quantidade), floatval($item->valor_unitario));
+            $total += $this->makeSubtotal(intval($item->quantidade), floatval($item->valor_unitario));
         }
 
         return $total;
     }
 
-    private function safeMultiplicacaoQuantidadePorValor(int $quantidade, float $valorUnitario): float {
-        $quantidade = intval($quantidade);
-        $valor = floatval($valorUnitario);
-
-        if ($quantidade < 0) {
-            throw new \InvalidArgumentException("Quantidade não pode ser negativa");
-        }
-
-        if ($valor < 0) {
-            throw new \InvalidArgumentException("Valor unitário não pode ser negativo");
-        }
-
-        return round($quantidade * $valor, 2);
+    private function makeSubtotal(int $quantidade, float $valorUnitario): float {
+        return round($quantidade * $valorUnitario, 2);
     }
 }
