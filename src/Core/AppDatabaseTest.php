@@ -9,6 +9,16 @@ use PHPUnit\Framework\TestCase;
 class AppDatabaseTest extends TestCase {
     public function testInstance(): void {
         $this->expectNotToPerformAssertions();
-        $pdo = new AppDatabase(new DatabaseConfig());
+
+		new class (new DatabaseConfig()) extends AppDatabase {
+			protected function startPdo(
+				#[SensitiveParameter] string $dsn,
+				#[SensitiveParameter] ?string $username,
+				#[SensitiveParameter] ?string $password,
+				#[SensitiveParameter] ?array $options,
+			): void {
+				// Do nothing...
+			}
+		};
     }
 }
