@@ -123,8 +123,10 @@ class OrdemServicoService {
         $params = [$novaSituacao->value];
 
         if ($novaSituacao->deveModificarDataAprovacao()) {
+            $dataAprovacao = new DateTime();
             $sql .= ", data_aprovacao = ?";
-            $params[] = new DateTime()->format('Y-m-d H:i:s');
+            $params[] = $dataAprovacao->format('Y-m-d H:i:s');
+            $ordemServico = $ordemServico->withDataAprovacao($dataAprovacao);
         }
 
         $sql .= " WHERE id = ?";
