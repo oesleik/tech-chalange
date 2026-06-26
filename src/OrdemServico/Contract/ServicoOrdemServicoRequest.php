@@ -37,6 +37,7 @@ readonly class ServicoOrdemServicoRequest extends AbstractContract {
         return new ServicoOrdemServicoModel(
             idServico: $this->id_servico,
             quantidade: $this->quantidade,
+            valorUnitario: 0,
         );
     }
 }

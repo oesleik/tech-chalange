@@ -33,7 +33,7 @@ class ItensOrdemServicoService {
             $pecas[] = new PecaOrdemServicoModel(
                 idPeca: $row->id_peca,
                 quantidade: $row->quantidade,
-                valorUnitario: isset($row->valor_unitario) ? floatval($row->valor_unitario) : null,
+                valorUnitario: floatval($row->valor_unitario),
             );
         }
 
@@ -85,7 +85,7 @@ class ItensOrdemServicoService {
             $servicos[] = new ServicoOrdemServicoModel(
                 idServico: $row->id_servico,
                 quantidade: $row->quantidade,
-                valorUnitario: isset($row->valor_unitario) ? floatval($row->valor_unitario) : null,
+                valorUnitario: floatval($row->valor_unitario),
             );
         }
 

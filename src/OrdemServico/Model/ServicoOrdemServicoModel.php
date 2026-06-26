@@ -8,7 +8,7 @@ class ServicoOrdemServicoModel {
     public function __construct(
         private int $idServico,
         private int $quantidade,
-        private ?float $valorUnitario = null,
+        private float $valorUnitario,
     ) {}
 
     public function getIdServico(): int {
@@ -19,14 +19,11 @@ class ServicoOrdemServicoModel {
         return $this->quantidade;
     }
 
-    public function getValorUnitario(): ?float {
+    public function getValorUnitario(): float {
         return $this->valorUnitario;
     }
 
     public function getSubtotal(): float {
-        if ($this->valorUnitario === null) {
-            return 0.0;
-        }
         return round($this->quantidade * $this->valorUnitario, 2);
     }
 }

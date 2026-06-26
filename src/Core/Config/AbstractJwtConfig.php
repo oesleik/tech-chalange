@@ -10,8 +10,7 @@ abstract class AbstractJwtConfig extends AbstractConfig {
     abstract protected function getIssuerKey(): string;
 
     public function getSecret(): string {
-        return $this->getStringEnv($this->getSecretKey())
-            ?? throw MissingConfigException::make($this->getSecretKey());
+        return $this->getStringEnv($this->getSecretKey()) ?: throw MissingConfigException::make($this->getSecretKey());
     }
 
     public function getTtl(): int {

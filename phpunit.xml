@@ -26,5 +26,8 @@
 
 	<php>
 		<env name="APP_ENV" value="testing" />
+
+		<!-- JWT para email -->
+		<env name="OS_EMAIL_ACTION_TOKEN_SECRET" value="76e6b65cb21af891fa8dbb9cde79c8d5a5e87070d3f5532687f670fd658237d8" force="true" />
 	</php>
 </phpunit>

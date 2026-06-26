@@ -4,34 +4,22 @@ declare(strict_types=1);
 
 namespace App\OrdemServico\Service;
 
-use App\Clientes\Service\ClienteService;
+use App\Clientes\Model\ClienteModel;
 use App\Core\Auth\OrdemServico\JwtOrdemServicoService;
 use App\Core\Config\AppConfig;
 use App\Core\Email\EmailService;
+use App\OrdemServico\Model\OrdemServicoModel;
 
 class EnviarOrcamentoOrdemServicoEmailService {
     public function __construct(
-        private OrdemServicoService $ordemServicoService,
         private ItensOrdemServicoService $itensOrdemServicoService,
-        private ClienteService $clienteService,
         private JwtOrdemServicoService $jwtOrdemServicoService,
         private EmailService $emailService,
         private AppConfig $appConfig,
     ) {}
 
-    public function enviar(int $idOrdemServico): void {
-        $ordemServico = $this->ordemServicoService->obterOrdemServicoPorId($idOrdemServico);
-
-        if ($ordemServico === null) {
-            throw new \RuntimeException("Ordem de Serviço #{$idOrdemServico} não encontrada.");
-        }
-
-        $cliente = $this->clienteService->obterClientePorId($ordemServico->getIdCliente());
-
-        if ($cliente === null) {
-            throw new \RuntimeException("Cliente da Ordem de Serviço não encontrado.");
-        }
-
+    public function enviar(OrdemServicoModel $ordemServico, ClienteModel $cliente): void {
+        $idOrdemServico = $ordemServico->getId();
         $pecas    = $this->itensOrdemServicoService->obterPecasPorIdOrdemServico($idOrdemServico);
         $servicos = $this->itensOrdemServicoService->obterServicosPorIdOrdemServico($idOrdemServico);
 
@@ -84,13 +72,8 @@ class EnviarOrcamentoOrdemServicoEmailService {
     ): string {
         $linhasPecas = '';
         foreach ($pecas as $peca) {
-            $valorUnitario = $peca->getValorUnitario();
-            $valorUnitarioFormatado = $valorUnitario !== null
-                ? $this->formatarMoeda($valorUnitario)
-                : '—';
-            $subtotalFormatado = $valorUnitario !== null
-                ? $this->formatarMoeda($valorUnitario * $peca->getQuantidade())
-                : '—';
+            $valorUnitarioFormatado = $this->formatarMoeda($peca->getValorUnitario());
+            $subtotalFormatado = $this->formatarMoeda($peca->getSubtotal());
 
             $linhasPecas .= sprintf(
                 '<tr>
@@ -108,13 +91,8 @@ class EnviarOrcamentoOrdemServicoEmailService {
 
         $linhasServicos = '';
         foreach ($servicos as $servico) {
-            $valorUnitario = $servico->getValorUnitario();
-            $valorUnitarioFormatado = $valorUnitario !== null
-                ? $this->formatarMoeda($valorUnitario)
-                : '—';
-            $subtotalFormatado = $valorUnitario !== null
-                ? $this->formatarMoeda($servico->getSubtotal())
-                : '—';
+            $valorUnitarioFormatado = $this->formatarMoeda($servico->getValorUnitario());
+            $subtotalFormatado = $this->formatarMoeda($servico->getSubtotal());
 
             $linhasServicos .= sprintf(
                 '<tr>
