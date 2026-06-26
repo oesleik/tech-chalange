@@ -29,10 +29,10 @@ class ItensOrdemServicoService {
         $stmt->execute([$idOrdemServico]);
         $pecas = [];
 
-        while ($row = $stmt->fetch(PDO::FETCH_OBJ)) {
+        while ($row = $stmt->fetchObject()) {
             $pecas[] = new PecaOrdemServicoModel(
-                idPeca: $row->id_peca,
-                quantidade: $row->quantidade,
+                idPeca: intval($row->id_peca),
+                quantidade: intval($row->quantidade),
                 valorUnitario: floatval($row->valor_unitario),
             );
         }
@@ -81,10 +81,10 @@ class ItensOrdemServicoService {
         $stmt->execute([$idOrdemServico]);
         $servicos = [];
 
-        while ($row = $stmt->fetch(PDO::FETCH_OBJ)) {
+        while ($row = $stmt->fetchObject()) {
             $servicos[] = new ServicoOrdemServicoModel(
-                idServico: $row->id_servico,
-                quantidade: $row->quantidade,
+                idServico: intval($row->id_servico),
+                quantidade: intval($row->quantidade),
                 valorUnitario: floatval($row->valor_unitario),
             );
         }
