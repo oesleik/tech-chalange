@@ -52,10 +52,10 @@ down: ## Interrompe os containers
 destroy: ## Interrompe os containers e remove os volumes (inclusive o banco de dados)
 	docker compose down -v
 
-generate-jwt-secret: ## Gerar chave JWT
+jwt-token: ## Gerar chave JWT
 	docker compose exec --user "$(shell id -u):$(shell id -g)" php php src/cmd/generate-token.php
 
-generate-jwt-secret-ordem-servico: ## Gerar chave JWT para Ordem de Serviço
+jwt-token-email: ## Gerar chave JWT para aprovação da Ordem de Serviço
 	docker compose exec php php src/cmd/generate-token-ordem-servico.php
 
 security-scan: ## Rodar scan de vulnerabilidades (OWASP ZAP)

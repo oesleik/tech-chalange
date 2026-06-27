@@ -144,12 +144,18 @@ make help
 As rotas administrativas são protegidas por JWT. Gere um token manualmente:
 
 ```bash
-make generate-jwt-secret
+make jwt-token
 ```
 
 No Swagger UI (`/docs`), clique em **Authorize** 🔓 no topo da página e cole o token.
 
 > ⚠️ O token expira conforme `JWT_TTL` no `.env` (padrão: 3600 segundos / 1 hora). Gere um novo quando expirar.
+
+Rota de aprovação da ordem de serviço (token enviado via email):
+
+```bash
+make jwt-token-email
+```
 
 ## 🛡️ Análise de Vulnerabilidades (OWASP ZAP)
 
