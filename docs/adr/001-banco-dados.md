@@ -1,8 +1,8 @@
-# ADR-001 - Escolha do MySQL como banco de dados
+# ADR-001 - MySQL como banco de dados
 
-**Data:** 20/06/2026
-
-**Status:** Aceita
+**Status:** Aceita  
+**Data:** 20/06/2026  
+**Participantes:** Augusto, Claudio, Daniel, Fernando, Oeslei  
 
 ## Contexto
 
@@ -13,6 +13,8 @@ Além disso, o banco deve ser simples de configurar em ambiente Docker, possuir 
 ## Decisão
 
 A equipe decidiu utilizar o **MySQL** como banco de dados da aplicação.
+
+## Motivação
 
 A escolha foi motivada por ser um banco de dados relacional consolidado, que atende às necessidades do projeto. O MySQL oferece suporte a relacionamentos entre tabelas, transações, chaves estrangeiras e consultas SQL, garantindo a consistência das informações da oficina.
 
