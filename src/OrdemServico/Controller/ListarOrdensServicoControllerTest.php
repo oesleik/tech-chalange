@@ -20,35 +20,35 @@ class ListarOrdensServicoControllerTest extends TestCase {
         $controller = new ListarOrdensServicoController();
         $serviceMock = $this->createMock(OrdemServicoService::class);
 
-		$date1 = new DateTime("2026-06-02 12:45:23");
-		$date2 = new DateTime("2026-06-03 13:45:23");
-		$date3 = new DateTime("2026-06-04 14:45:23");
+        $date1 = new DateTime("2026-06-02 12:45:23");
+        $date2 = new DateTime("2026-06-03 13:45:23");
+        $date3 = new DateTime("2026-06-04 14:45:23");
 
         $serviceMock->expects($this->exactly(1))->method("listarOrdensServico")->willReturn([
             new OrdemServicoModel(
                 id: 123,
-				idCliente: 456,
-				idVeiculo: 789,
-				situacao: SituacaoOrdemServicoEnum::RECEBIDA,
-				valorTotal: 45.85,
-				dataSolicitacao: $date1,
+                idCliente: 456,
+                idVeiculo: 789,
+                situacao: SituacaoOrdemServicoEnum::RECEBIDA,
+                valorTotal: 45.85,
+                dataSolicitacao: $date1,
             ),
             new OrdemServicoModel(
                 id: 234,
-				idCliente: 456,
-				idVeiculo: 789,
-				situacao: SituacaoOrdemServicoEnum::APROVADA,
-				valorTotal: 45.85,
-				dataSolicitacao: $date2,
-				dataAprovacao: $date3,
+                idCliente: 456,
+                idVeiculo: 789,
+                situacao: SituacaoOrdemServicoEnum::APROVADA,
+                valorTotal: 45.85,
+                dataSolicitacao: $date2,
+                dataAprovacao: $date3,
             ),
         ]);
 
-		$requestFactory = new ServerRequestFactory();
+        $requestFactory = new ServerRequestFactory();
         $request = $requestFactory->createServerRequest("POST", "/ordens-servico/");
 
         $response = $controller->__invoke(
-			request: $request,
+            request: $request,
             response: $container->get(ResponseInterface::class),
             contractResolver: $container->get(ContractResolver::class),
             service: $serviceMock,
@@ -80,17 +80,17 @@ class ListarOrdensServicoControllerTest extends TestCase {
 
         $controller = new ListarOrdensServicoController();
 
-		$requestFactory = new ServerRequestFactory();
+        $requestFactory = new ServerRequestFactory();
         $request = $requestFactory->createServerRequest("POST", "/ordens-servico/");
 
-		$request = $request->withQueryParams([
-			"situacao" => "invalid_value",
-			"id_cliente" => -1,
-			"id_veiculo" => -1,
-		]);
+        $request = $request->withQueryParams([
+            "situacao" => "invalid_value",
+            "id_cliente" => -1,
+            "id_veiculo" => -1,
+        ]);
 
         $response = $controller->__invoke(
-			request: $request,
+            request: $request,
             response: $container->get(ResponseInterface::class),
             contractResolver: $container->get(ContractResolver::class),
             service: $container->get(OrdemServicoService::class),

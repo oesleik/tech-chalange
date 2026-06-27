@@ -11,8 +11,8 @@ class VeiculoModel {
         private string $marca,
         private string $modelo,
     ) {
-		$this->placa = preg_replace("/(.{3})(.{4})/", "$1-$2", str_replace([" ", "-"], "", $this->placa));
-	}
+        $this->placa = preg_replace("/(.{3})(.{4})/", "$1-$2", str_replace([" ", "-"], "", $this->placa));
+    }
 
     public function getId(): int {
         return $this->id;

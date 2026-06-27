@@ -513,7 +513,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/OrdemServicoResponse"
+                                    "$ref": "#/components/schemas/OrdemServicoResumidaResponse"
                                 }
                             }
                         }
@@ -543,7 +543,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/OrdemServicoResponse"
+                                    "$ref": "#/components/schemas/OrdemServicoResumidaResponse"
                                 }
                             }
                         }
@@ -1655,7 +1655,7 @@
             },
             "ListarOrdensServicoResponse": {
                 "properties": {
-                    "ordensServico": {
+                    "ordens_servico": {
                         "type": "array",
                         "items": {
                             "$ref": "#/components/schemas/OrdemServicoResumidaResponse"

@@ -27,7 +27,7 @@ use OpenApi\Attributes as OA;
 #[OA\Response(
     response: 200,
     description: 'Ordem de Serviço atualizada com sucesso',
-    content: new OA\JsonContent(ref: '#/components/schemas/OrdemServicoResponse')
+    content: new OA\JsonContent(ref: '#/components/schemas/OrdemServicoResumidaResponse')
 )]
 #[OA\Response(response: 400, description: 'ID da Ordem de Serviço inválido')]
 #[OA\Response(response: 404, description: 'Ordem de Serviço não encontrada')]
