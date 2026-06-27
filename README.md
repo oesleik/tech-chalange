@@ -84,6 +84,7 @@ As rotas de aprovação e rejeição da ordem de serviço são protegidas por ou
 ```bash
 make jwt-token-email
 ```
+> Este token contem o id da ordem de serviço nos claims, o comando irá solicitar o id para a geração
 
 ## 🛡️ Análise de vulnerabilidades (OWASP ZAP)
 
