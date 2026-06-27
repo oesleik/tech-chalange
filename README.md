@@ -174,3 +174,8 @@ xdg-open docs/security/zap-baseline-report.html
 ```
 
 > ℹ️ Esse scan é uma atividade pontual para gerar o relatório de vulnerabilidades. Rode novamente apenas se quiser comparar resultados após correções de segurança.
+
+## 📐 Documentação DDD
+
+Os artefatos de modelagem do domínio (Domain Storytelling, Event Storming,
+Domínios e Contextos Delimitados) estão em [`docs/ddd/`](./docs/ddd/README.md).
