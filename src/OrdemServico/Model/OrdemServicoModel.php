@@ -57,6 +57,12 @@ class OrdemServicoModel {
         return $new;
     }
 
+    public function withValorTotal(float $valorTotal): self {
+        $new = clone $this;
+        $new->valorTotal = $valorTotal;
+        return $new;
+    }
+
     public function withDataAprovacao(?DateTime $dataAprovacao): self {
         $new = clone $this;
         $new->dataAprovacao = $dataAprovacao;
