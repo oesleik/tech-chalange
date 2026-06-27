@@ -93,7 +93,7 @@ class ListarOrdensServicoControllerTest extends TestCase {
             request: $request,
             response: $container->get(ResponseInterface::class),
             contractResolver: $container->get(ContractResolver::class),
-            service: $container->get(OrdemServicoService::class),
+            service: $this->createStub(OrdemServicoService::class),
         );
 
         $this->assertEquals($response->getStatusCode(), 400);

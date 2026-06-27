@@ -21,7 +21,7 @@ class ItensOrdemServicoServiceTest extends TestCase {
     ): ItensOrdemServicoService {
         $containerBuilder = new ServiceContainerBuilder();
         $container = $containerBuilder->forTesting()->build();
-        $attValorService ??= $container->get(CalculoValorTotalOrdemServicoService::class);
+        $attValorService ??= $this->createStub(CalculoValorTotalOrdemServicoService::class);
 
         $tsxStub = $this->createStub(TransactionHandler::class);
         $tsxStub->method("beginTransaction")->willReturn(new FakeTransaction());
