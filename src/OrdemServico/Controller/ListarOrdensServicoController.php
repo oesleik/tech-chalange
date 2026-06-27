@@ -47,7 +47,7 @@ class ListarOrdensServicoController {
             $ordensServico = $service->listarOrdensServico($filtros->toFiltroModel());
 
             $output = new ListarOrdensServicoResponse(
-                ordensServico: array_map(fn($os) => OrdemServicoResumidaResponse::fromModel($os), $ordensServico)
+                ordens_servico: array_map(fn($os) => OrdemServicoResumidaResponse::fromModel($os), $ordensServico)
             );
 
             $response->getBody()->write($contractResolver->toJson($output));

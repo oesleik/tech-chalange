@@ -11,6 +11,6 @@ use OpenApi\Attributes as OA;
 readonly class ListarOrdensServicoResponse extends AbstractContract {
     public function __construct(
         #[OA\Property(type: 'array', items: new OA\Items(ref: '#/components/schemas/OrdemServicoResumidaResponse'))]
-        public array $ordensServico
+        public array $ordens_servico
     ) {}
 }
