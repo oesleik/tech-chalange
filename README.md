@@ -1,5 +1,8 @@
 # FIAP Software Architecture Tech Challenge
 
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=oesleik_tech-chalange&metric=alert_status&token=2c46cc11128f8457c02888b5bc7957e75c88d680)](https://sonarcloud.io/summary/new_code?id=oesleik_tech-chalange)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=oesleik_tech-chalange&metric=coverage&token=2c46cc11128f8457c02888b5bc7957e75c88d680)](https://sonarcloud.io/summary/new_code?id=oesleik_tech-chalange)
+
 Stack completa containerizada pronta para desenvolvimento com:
 
 - PHP 8.4 FPM
