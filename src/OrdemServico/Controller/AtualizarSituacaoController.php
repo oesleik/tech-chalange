@@ -87,7 +87,7 @@ class AtualizarSituacaoController {
         return $this->alterarSituacao($id, SituacaoOrdemServicoEnum::ENTREGUE, $response);
     }
 
-    private function alterarSituacao(
+    public function alterarSituacao(
         int $id,
         SituacaoOrdemServicoEnum $novaSituacao,
         ResponseInterface $response

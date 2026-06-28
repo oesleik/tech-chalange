@@ -518,14 +518,14 @@
                             }
                         }
                     },
-                    "400": {
-                        "description": "ID da Ordem de Serviço inválido"
-                    },
                     "404": {
                         "description": "Ordem de Serviço não encontrada"
                     },
                     "409": {
                         "description": "Situação atual da Ordem de Serviço não permite aprovação"
+                    },
+                    "422": {
+                        "description": "Ordem de serviço não identificada"
                     }
                 }
             }
@@ -548,14 +548,14 @@
                             }
                         }
                     },
-                    "400": {
-                        "description": "ID da Ordem de Serviço inválido"
-                    },
                     "404": {
                         "description": "Ordem de Serviço não encontrada"
                     },
                     "409": {
                         "description": "Situação atual da Ordem de Serviço não permite aprovação"
+                    },
+                    "422": {
+                        "description": "Ordem de serviço não identificada"
                     }
                 }
             }
