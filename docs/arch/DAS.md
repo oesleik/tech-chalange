@@ -184,51 +184,48 @@ Deve ser gerado e entregue um relatório com os resultados do scan de vulnerabil
 
 ---
 
-### Estrutura da arquitetura
-#### C1 — Diagrama de Contexto
+### Estrutura da arquitetura - C4 model
+
+#### C1 - Diagrama de contexto
 ```mermaid
 C4Context
-  title Diagrama de Contexto — tech-chalange
+  Person(funcionario, "Funcionário", "Gerencia ordens de serviço autenticado via JWT")
+  Person(cliente, "Cliente", "Aprova ou rejeita OS via link recebido por e-mail")
 
-  Person(admin, "Administrador", "Gerencia ordens de serviço autenticado via JWT")
-  Person(aprovador, "Aprovador", "Aprova ou rejeita OS via link recebido por e-mail")
+  System(api, "API Server", "API REST para gestão de ordens de serviço. PHP 8.4 + Slim 4.")
 
-  System(api, "tech-chalange", "API REST para gestão de ordens de serviço. PHP 8.4 + Slim 4.")
+  System_Ext(email, "Serviço de E-mail", "Envia link de aprovação com JWT ao cliente")
 
-  System_Ext(email, "Serviço de E-mail", "Envia link de aprovação com JWT ao aprovador")
-
-  Rel(admin, api, "Gerencia OS", "HTTP / JWT admin")
-  Rel(aprovador, api, "Aprova ou rejeita OS", "HTTP / JWT e-mail")
+  Rel(funcionario, api, "Gerencia OS", "HTTP / JWT admin")
+  Rel(cliente, api, "Aprova ou rejeita OS", "HTTP / JWT e-mail")
   Rel(api, email, "Solicita envio de link", "Chamada interna")
 ```
-#### C2 — Diagrama de Containers
+
+#### C2 - Diagrama de containers - API Server
 ```mermaid
 C4Container
-  title Diagrama de Containers — tech-chalange
+  Person(funcionario, "Funcionário", "Gerencia ordens de serviço")
+  Person(cliente, "Cliente", "Aprova ou rejeita OS via e-mail")
 
-  Person(admin, "Administrador", "Gerencia ordens de serviço")
-  Person(aprovador, "Aprovador", "Aprova ou rejeita OS via e-mail")
-
-  System_Ext(email, "Serviço de E-mail", "Envia link com JWT ao aprovador")
+  System_Ext(email, "Serviço de E-mail", "Envia link com JWT ao cliente")
 
   System_Boundary(docker, "Docker / Docker Compose") {
     Container(nginx, "Nginx", "Nginx", "Reverse proxy. Roteia requisições HTTP")
     Container(php, "PHP-FPM", "PHP 8.4 FPM + Slim 4", "Processa regras de negócio, valida JWT e expõe a API REST")
-    ContainerDb(db, "MySQL", "MySQL 9", "Persiste dados das ordens de serviço e usuários")
+    ContainerDb(db, "MySQL", "MySQL 9", "Persiste dados das ordens de serviço e clientes")
   }
 
-  Rel(admin, nginx, "Requisições autenticadas", "HTTP :80 / JWT admin")
-  Rel(aprovador, nginx, "Aprovação via link", "HTTP :80 / JWT e-mail")
+  Rel(funcionario, nginx, "Requisições autenticadas", "HTTP :80 / JWT admin")
+  Rel(cliente, nginx, "Aprovação via link", "HTTP :80 / JWT e-mail")
 
   Rel(nginx, php, "Repassa requisições", "FastCGI")
   Rel(php, db, "Lê e grava dados", "SQL :3306")
   Rel(php, email, "Solicita envio de link", "Chamada de serviço")
 ```
-#### C3 — Diagrama de Componentes (PHP-FPM / Slim 4)
+
+#### C3 - Diagrama de componentes - PHP FPM (Slim 4)
 ```mermaid
 C4Component
-  title Diagrama de Componentes — PHP-FPM (Slim 4)
-
   Container_Ext(nginx, "Nginx", "Reverse proxy", "Encaminha requisições via FastCGI")
   ContainerDb_Ext(db, "MySQL 9", "Banco de dados", "Persistência")
   System_Ext(email, "Serviço de E-mail", "Envio de link JWT")
@@ -238,8 +235,9 @@ C4Component
     Component(router, "Router / Middleware", "Slim 4 Routing", "Mapeia rotas e aplica middlewares globais")
     Component(auth_mw, "JWT Middleware", "Middleware", "Valida assinatura, claims e expiração do token JWT")
     Component(controllers, "Controllers", "Classes PHP", "Recebem a requisição e delegam para os casos de uso")
-    Component(usecases, "Use Cases", "Classes PHP", "Implementam regras de negócio (criar OS, aprovar, rejeitar)")
-    Component(repositories, "Repositories", "Classes PHP", "Abstraem acesso ao banco via PDO / Query Builder")
+    Component(contract_resolver, "Contract Resolver", "Classes PHP", "Validação e normalização de contratos (request / response)")
+    Component(services, "Services", "Classes PHP", "Implementam regras de negócio (criar OS, aprovar, rejeitar)")
+    Component(pdo, "PDO", "Nativo PHP", "Acesso ao banco de dados")
     Component(jwt_service, "JWT Service", "Classes PHP", "Gera e valida tokens JWT (admin e aprovação)")
     Component(email_service, "E-mail Service", "Classes PHP", "Monta e dispara o envio do link de aprovação")
   }
@@ -249,11 +247,12 @@ C4Component
   Rel(router, auth_mw, "Aplica em rotas protegidas")
   Rel(auth_mw, jwt_service, "Valida token")
   Rel(router, controllers, "Despacha requisição")
-  Rel(controllers, usecases, "Delega lógica")
-  Rel(usecases, repositories, "Acessa dados")
-  Rel(usecases, jwt_service, "Gera token de aprovação")
-  Rel(usecases, email_service, "Solicita envio de link")
-  Rel(repositories, db, "SQL queries")
+  Rel(controllers, services, "Delega lógica")
+  Rel(controllers, contract_resolver, "Valida e normaliza contratos")
+  Rel(services, pdo, "Acessa dados")
+  Rel(services, jwt_service, "Gera token de aprovação")
+  Rel(services, email_service, "Solicita envio de link")
+  Rel(pdo, db, "SQL queries")
   Rel(email_service, email, "Envia e-mail")
 ```
 
