@@ -29,7 +29,7 @@ try {
         $versionsExecuted[] = $row["version"];
     }
 } catch (PDOException $e) {
-    if (DatabaseErrorEnum::fromPdoException($e) == DatabaseErrorEnum::TABLE_DOES_NOT_EXIST) {
+    if (DatabaseErrorEnum::fromPdoException($e) != DatabaseErrorEnum::TABLE_DOES_NOT_EXIST) {
         throw $e;
     }
 }
