@@ -6,19 +6,20 @@ use App\Core\AppDatabase;
 use App\Core\Contract\ContractResolver;
 use App\Core\ServiceContainerBuilder;
 use App\OrdemServico\Controller\AtualizarSituacaoController;
-use App\OrdemServico\Model\OrdemServicoModel;
+use App\OrdemServico\Controller\AtualizarSituacaoEmailController;
 use App\OrdemServico\Model\SituacaoOrdemServicoEnum;
 use App\OrdemServico\Service\OrdemServicoService;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\MockObject\Stub;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
+use Slim\Psr7\Factory\ServerRequestFactory;
 
 class AtualizarSituacaoControllerTest extends TestCase {
     private ResponseInterface $response;
     private OrdemServicoService $service;
     private PDOStatement&Stub $stmtStub;
     private AtualizarSituacaoController $controller;
+    private AtualizarSituacaoEmailController $controllerEmail;
 
     protected function setUp(): void {
         parent::setUp();
@@ -37,6 +38,10 @@ class AtualizarSituacaoControllerTest extends TestCase {
         $this->controller = new AtualizarSituacaoController(
             contractResolver: $container->get(ContractResolver::class),
             service: $this->service,
+        );
+
+        $this->controllerEmail = new AtualizarSituacaoEmailController(
+            attSituacaoController: $this->controller,
         );
     }
 
@@ -87,6 +92,60 @@ class AtualizarSituacaoControllerTest extends TestCase {
         $this->assertEquals(45.85, $res->valor_total);
         $this->assertEquals("2026-06-02 12:45:23", $res->data_solicitacao);
         $this->assertEquals(null, $res->data_aprovacao);
+    }
+
+    public function testAtualizarParaAprovada(): void {
+        $this->addStubFor(SituacaoOrdemServicoEnum::AGUARDANDO_APROVACAO);
+
+        $requestFactory = new ServerRequestFactory();
+        $request = $requestFactory->createServerRequest("POST", "/ordens-servico/");
+
+        $request = $request->withAttribute("jwt_claims", [
+            "id_ordem_servico" => 123,
+        ]);
+
+        $dataBase = new DateTime();
+        $response = $this->controllerEmail->atualizarParaAprovada($request, $this->response);
+
+        $this->assertEquals($response->getStatusCode(), 200);
+
+        $response->getBody()->rewind();
+        $res = json_decode($response->getBody()->getContents());
+
+        $this->assertEquals(123, $res->id);
+        $this->assertEquals(456, $res->id_cliente);
+        $this->assertEquals(789, $res->id_veiculo);
+        $this->assertEquals(SituacaoOrdemServicoEnum::APROVADA->value, $res->situacao);
+        $this->assertEquals(45.85, $res->valor_total);
+        $this->assertEquals("2026-06-02 12:45:23", $res->data_solicitacao);
+        $this->assertGreaterThanOrEqual($dataBase->getTimestamp(), strtotime($res->data_aprovacao));
+    }
+
+    public function testAtualizarParaRejeitada(): void {
+        $this->addStubFor(SituacaoOrdemServicoEnum::AGUARDANDO_APROVACAO);
+
+        $requestFactory = new ServerRequestFactory();
+        $request = $requestFactory->createServerRequest("POST", "/ordens-servico/");
+
+        $request = $request->withAttribute("jwt_claims", [
+            "id_ordem_servico" => 123,
+        ]);
+
+        $dataBase = new DateTime();
+        $response = $this->controllerEmail->atualizarParaRejeitada($request, $this->response);
+
+        $this->assertEquals($response->getStatusCode(), 200);
+
+        $response->getBody()->rewind();
+        $res = json_decode($response->getBody()->getContents());
+
+        $this->assertEquals(123, $res->id);
+        $this->assertEquals(456, $res->id_cliente);
+        $this->assertEquals(789, $res->id_veiculo);
+        $this->assertEquals(SituacaoOrdemServicoEnum::REJEITADA->value, $res->situacao);
+        $this->assertEquals(45.85, $res->valor_total);
+        $this->assertEquals("2026-06-02 12:45:23", $res->data_solicitacao);
+        $this->assertGreaterThanOrEqual($dataBase->getTimestamp(), strtotime($res->data_aprovacao));
     }
 
     public function testAtualizarParaEmExecucao(): void {
@@ -157,5 +216,15 @@ class AtualizarSituacaoControllerTest extends TestCase {
         $response = $this->controller->atualizarParaEmExecucao(123, $this->response);
         $this->assertEquals($response->getStatusCode(), 409);
     }
+
+    public function testSemIdOrdemServicoNoTokenEmail(): void {
+        $requestFactory = new ServerRequestFactory();
+        $request = $requestFactory->createServerRequest("POST", "/ordens-servico/");
+        $request = $request->withAttribute("jwt_claims", []);
+
+        $response = $this->controllerEmail->atualizarParaRejeitada($request, $this->response);
+        $this->assertEquals($response->getStatusCode(), 422);
+    }
+
 
 }
