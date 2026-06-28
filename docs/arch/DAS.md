@@ -184,26 +184,51 @@ Deve ser gerado e entregue um relatório com os resultados do scan de vulnerabil
 
 ---
 
-## Estrutura da arquitetura - C4 model
+## Estrutura da arquitetura
 
-### C1 - Diagrama de contexto
+### C4 model
+
+#### C1 - Diagrama de contexto
 [plantuml](https://www.plantuml.com/plantuml/uml/RP3FRjD048VlVeeXfrGG-v83ujGgDGce4Ai9wZ6Qs4Coi7-izMueZuCuz47oOimuhX4gjvrPVT_CRwwxY24cQx9Nx6gJ6ah1m376jdjN505_v0UEnxHF7ONQkqWkvhMtHMlGAJRhOcDuNopciqfRNpxT5HQxI45QkuKIZp5lTK0MEHg2eGUtZ8U05cPmKts0Xc19NJp_zlfSXuPSfwyDXHEVdtoMLHGwxwPVawlPEmpity3a_QKw_v9o8lMI0aa7mO-6RZ009jsUQsmyd1ZXuyDsSlMihGtB9ubYSNcfxQOD_YIk186-4KU4zQP73Rllqgjfpo9hVG2QMMGZlcppKzBRARQi1ecc4IXCXkg-t6oXnO1m6FF-PziSgbK5R_Cvl8QDOGlp_AzyLpx6AUb0aJvVIEdoieLqIpVkANtiWvoVT5pjhKO7z324Ll4zcNzFg_kFzzJWQbrjjnKK5xonx8HKSF0CqCkplQJ7SodUKsCSRxXMXYI1Xkf3ABuueiK6WMLKSDYVOxL-sDsLo_BpxVGgkoRN96l-0000)
 
 ![C1 - Diagrama de contexto](C4_C1-contexto.png)
 
 ---
 
-### C2 - Diagrama de containers - API Server
+#### C2 - Diagrama de containers - API Server
 [plantuml](https://www.plantuml.com/plantuml/uml/PLF1RjD04BtxAuQSN47YIgrGwQabTPAYj3MsgufJjF4EoTBrhjbTcqI8Zq4SaBWYlY0_ncmSLscQIsP6-zxCl7c-i8uPLvSoU2LK8MkEi7IkikTHPDYtmKAuPJslBPf2AuVA3GfTHfLaocFwrd4fvj7mj9_uqltDD2gPTMYeD1iIWWc5Pb1v_c1w-UdkFfzDur4-Iw_7apmy2e84ZTKg_5ohGcZ5ZD1le3TgiyrFIdkKZz4WLHXemr5Pu0WqKICsltNlgACefA3va9uFsyWZBokZ6yBLOF0B2iVWBeE6cB1VCY497MHh6hYSnIiNegyHAjkH-qPn-v2giV90ATGZa0ZmuI47fc7NTe_flQuLPsOTSbqyeY7arJQ027R1K9ULjeI1xm7GxqcfK2s4MX7Yrl_tzeCK6zeJWHPQhGUGQeSqZS6ljR0qw-OVMfZaUKA3FAUibXN1aqdI7oKtlJQ4iy4fK0gl8PEYXDDjtUW2hVMa2yEsAYjSRFuM_YODauApxT88kAge7p2uJAuXZRFyiEdLFEHpehnPPn-dlIw0Tpxqvn8a5736DNMXJY_F2jW9QudxHn2aA9-Rf5CgVQO0gxr9HS68rZVpYi3vsJ54xRruAHGH4bldbuwfymeH_TBGNVebnvvpFCiEt8gSOiMiFRYAfnWnwuRZwxPpUv6jFjFD7q0WjHlMok4VUwNEJqwEt-u_VxAcbgBmFaPoepVeqvZ39IjfxOEF8yWcTm_qpOtZswkGqWjKl2xbVm00)
 
 ![C2 - Diagrama de containers - API Server](C4_C2-container-api-server.png)
 
 ---
 
-### C3 - Diagrama de componentes - PHP FPM (Slim 4)
+#### C3 - Diagrama de componentes - PHP FPM (Slim 4)
 [plantuml](https://www.plantuml.com/plantuml/uml/VLNDRYD54BxFKnG-EL92BhaW8RGRExi4uTqGe-LebQTBazhjdw6xnx51I3m4Ry01YMl44_XDU1AgfsVyCpPxYEAkgVg-gkhlctaL8lhO65rymRRKZIBuUd9pFRbPJ9ofdIKRlocAo54Jx28mPQmy6hY2XsyVhjuyp62ksS1DKKoSZSYM_E9k7SUsOhk-XD6xz7yaFnvfHJuGrDwjDobmPqiqR9yGFFtSSE3jNzj_AC2A4TvWY9EtzwEBFUfqsUAgfPJEDlCVleUl4iejsjA18b2eN4YH1w7X4BT_sv9H4EQR4CcqnMIGjQJCoQ-4hgsxkqh1tD2Asv1c-mc---b7AJwOwjOrLg7VZEkdMhBxyV_z_Ozk1QCB-BKe062_hh7y-Ktjs4OfgPkbvlAQhQBrbuAIIIK1senqlBSiNMl-1S51sNF3z1v80bZNEwuXatTD99yMtVw0QvYnKfgUqLD2pdMGdhAjKcI6DJ62Tn43a81BSmXcLnMWqcw974x9i8bF2_Ci8BAc0T7nwOCCen0m1BOO6u-NK6faanXfNRD7kVO_7IW7qNqYc_S-v4kRy4vhya4m9_lJA1sre5D8Win2Asb91Wvr9GG4YZHLQA16Z-02b1XSa2WqmVqF9PPnuIauBThjYIK6Zrti37qUkEUqpfjqdVsK11at2lCuzKSXobK9Xz06kZZj8oIjbXHwsShFCwptfjPa91yDUAeyjeDPghOl9JiObvxHm_lv9M3jtGfb6ayVYIFwCvorSadXq_S9-Xr6NhcUwBNm1mVeO7dil1EGZyznqJNVwQJh_qpxRyaZ4ApQtMKX14WbOrI6BL1kEs_njE5ix0EsREhF4CwIjP8cE6Gv06Ntk-n-TSGeXByLnIFf_hLsPElzoofb73xQUVBMkHYYnpfqMVsJlP5UP_kHwGmfx94gLjYNx5AF5_lXO6S3y6FNJ4b6BP-ERT5L76KUA6xQMWRqzgMIviubdxD9RkbG_NlLTnXx3j5QBolCKXgc30PEMidZ3czfM3TKnTp9YZdT--6RFfTbpRTVb_Hj4MDwfhwL0L1xx3uO2DHgJJ9VaLMDqVy1)
 
 ![C3 - Diagrama de componentes - PHP FPM (Slim 4)](C4_C3-componente-php-fpm.png)
+
+---
+
+### HLD
+
+[Excalidraw](./HLD.excalidraw)
+
+![HLD](./HLD.png)
+
+### LLDs
+
+#### Criação de Ordem de Serviço
+
+![Criação de Ordem de Serviço](./LLD_criacao_ordem_servico.png)
+
+---
+
+#### Alterar situação da Ordem de Serviço
+
+[Excalidraw](./LLD_alterar_ordem_servico.excalidraw)
+
+![Alterar situação da Ordem de Serviço](./LLD-alterar-situacao-ordem-servico.png)
+
 
 ---
 
