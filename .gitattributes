@@ -1,0 +1,5 @@
+# Collapse specific generated files
+public/openapi.json linguist-generated=true
+
+# Prevent text diffs for specific files or folders
+*.excalidraw -diff
