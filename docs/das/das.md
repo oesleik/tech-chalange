@@ -160,12 +160,20 @@ Deve ser gerado e entregue um relatório com os resultados do scan de vulnerabil
 
 ### Arquitetura e tecnologias
 
-| Componente | Tecnologia |
-|------------|------------|
-| Back-end | PHP |
-| Frameworks | Slim, Symfony Validator |
-| Banco de Dados | MySQL |
-| Infraestrutura | Docker |
+| Componente          | Tecnologia                         |
+|---------------------|------------------------------------|
+| Linguagem           | PHP 8.4                            |
+| Framework Web       | Slim Framework 4.x                 |
+| Validação           | Symfony Validator                  |
+| Banco de Dados      | MySQL 9                            |
+| Servidor Web        | Nginx Alpine (latest)              |
+| Infraestrutura      | Docker / Docker Compose            |
+| Autenticação        | JWT (firebase/php-jwt)             |
+| Testes              | PHPUnit                            |
+| Análise de Código   | SonarCloud                         |
+| CI/CD               | GitHub Actions                     |
+| E-mail              | PHPMailer (SMTP)                   |
+| Segurança (DAST)    | OWASP ZAP                          |
 
 ---
 
@@ -287,6 +295,19 @@ C4Component
 ---
 
 ### Plano de testes e monitoramento
+#### PHPUnit
+Testes unitários e de integração executados automaticamente pelo pipeline de CI/CD a cada commit via GitHub Actions. A cobertura de código é reportada ao SonarCloud para acompanhamento contínuo.
 #### SonarQube
+Análise estática contínua do código-fonte, atuando como Quality Gate automatizado. Monitora:
+
+
+Bugs e vulnerabilidades de segurança (security hotspots)
+Code smells e duplicações de código
+Cobertura de testes (integrada ao PHPUnit)
+Métricas de manutenibilidade e débito técnico
+
+
+O pipeline bloqueia o merge caso o Quality Gate falhe, garantindo que apenas código dentro dos padrões de qualidade definidos chegue à branch principal.
 #### OWASP ZAP
+Varredura de segurança dinâmica (DAST) executada em modo passivo via container Docker, seguindo as diretrizes do OWASP Top 10. Integrada ao pipeline de CI/CD, analisa a superfície de ataque da API em execução. Complementa os controles estáticos do SonarCloud com uma perspectiva de segurança em tempo de execução.
 
