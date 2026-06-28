@@ -9,7 +9,6 @@ use App\OrdemServico\Service\OrdemServicoService;
 use App\Core\Contract\ContractResolver;
 use App\OrdemServico\Service\ItensOrdemServicoService;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
 use OpenApi\Attributes as OA;
 
 class ObterOrdemServicoController {
@@ -36,7 +35,6 @@ class ObterOrdemServicoController {
     )]
     public function __invoke(
         int $id,
-        ServerRequestInterface $request,
         ResponseInterface $response,
         ContractResolver $contractResolver,
         OrdemServicoService $service,
