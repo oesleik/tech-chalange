@@ -187,74 +187,21 @@ Deve ser gerado e entregue um relatório com os resultados do scan de vulnerabil
 ### Estrutura da arquitetura - C4 model
 
 #### C1 - Diagrama de contexto
-```mermaid
-C4Context
-  Person(funcionario, "Funcionário", "Gerencia ordens de serviço autenticado via JWT")
-  Person(cliente, "Cliente", "Aprova ou rejeita OS via link recebido por e-mail")
+[plantuml](https://www.plantuml.com/plantuml/uml/RP3FRjD048VlVeeXfrGG-v83ujGgDGce4Ai9wZ6Qs4Coi7-izMueZuCuz47oOimuhX4gjvrPVT_CRwwxY24cQx9Nx6gJ6ah1m376jdjN505_v0UEnxHF7ONQkqWkvhMtHMlGAJRhOcDuNopciqfRNpxT5HQxI45QkuKIZp5lTK0MEHg2eGUtZ8U05cPmKts0Xc19NJp_zlfSXuPSfwyDXHEVdtoMLHGwxwPVawlPEmpity3a_QKw_v9o8lMI0aa7mO-6RZ009jsUQsmyd1ZXuyDsSlMihGtB9ubYSNcfxQOD_YIk186-4KU4zQP73Rllqgjfpo9hVG2QMMGZlcppKzBRARQi1ecc4IXCXkg-t6oXnO1m6FF-PziSgbK5R_Cvl8QDOGlp_AzyLpx6AUb0aJvVIEdoieLqIpVkANtiWvoVT5pjhKO7z324Ll4zcNzFg_kFzzJWQbrjjnKK5xonx8HKSF0CqCkplQJ7SodUKsCSRxXMXYI1Xkf3ABuueiK6WMLKSDYVOxL-sDsLo_BpxVGgkoRN96l-0000)
 
-  System(api, "API Server", "API REST para gestão de ordens de serviço. PHP 8.4 + Slim 4.")
+![C1 - Diagrama de contexto](C4_C1-contexto.png)
 
-  System_Ext(email, "Serviço de E-mail", "Envia link de aprovação com JWT ao cliente")
-
-  Rel(funcionario, api, "Gerencia OS", "HTTP / JWT admin")
-  Rel(cliente, api, "Aprova ou rejeita OS", "HTTP / JWT e-mail")
-  Rel(api, email, "Solicita envio de link", "Chamada interna")
-```
 
 #### C2 - Diagrama de containers - API Server
-```mermaid
-C4Container
-  Person(funcionario, "Funcionário", "Gerencia ordens de serviço")
-  Person(cliente, "Cliente", "Aprova ou rejeita OS via e-mail")
+[plantuml](https://www.plantuml.com/plantuml/uml/PLF1RjD04BtxAuQSN47YIgrGwQabTPAYj3MsgufJjF4EoTBrhjbTcqI8Zq4SaBWYlY0_ncmSLscQIsP6-zxCl7c-i8uPLvSoU2LK8MkEi7IkikTHPDYtmKAuPJslBPf2AuVA3GfTHfLaocFwrd4fvj7mj9_uqltDD2gPTMYeD1iIWWc5Pb1v_c1w-UdkFfzDur4-Iw_7apmy2e84ZTKg_5ohGcZ5ZD1le3TgiyrFIdkKZz4WLHXemr5Pu0WqKICsltNlgACefA3va9uFsyWZBokZ6yBLOF0B2iVWBeE6cB1VCY497MHh6hYSnIiNegyHAjkH-qPn-v2giV90ATGZa0ZmuI47fc7NTe_flQuLPsOTSbqyeY7arJQ027R1K9ULjeI1xm7GxqcfK2s4MX7Yrl_tzeCK6zeJWHPQhGUGQeSqZS6ljR0qw-OVMfZaUKA3FAUibXN1aqdI7oKtlJQ4iy4fK0gl8PEYXDDjtUW2hVMa2yEsAYjSRFuM_YODauApxT88kAge7p2uJAuXZRFyiEdLFEHpehnPPn-dlIw0Tpxqvn8a5736DNMXJY_F2jW9QudxHn2aA9-Rf5CgVQO0gxr9HS68rZVpYi3vsJ54xRruAHGH4bldbuwfymeH_TBGNVebnvvpFCiEt8gSOiMiFRYAfnWnwuRZwxPpUv6jFjFD7q0WjHlMok4VUwNEJqwEt-u_VxAcbgBmFaPoepVeqvZ39IjfxOEF8yWcTm_qpOtZswkGqWjKl2xbVm00)
 
-  System_Ext(email, "Serviço de E-mail", "Envia link com JWT ao cliente")
+![C2 - Diagrama de containers - API Server](C4_C2-container-api-server.png)
 
-  System_Boundary(docker, "Docker / Docker Compose") {
-    Container(nginx, "Nginx", "Nginx", "Reverse proxy. Roteia requisições HTTP")
-    Container(php, "PHP-FPM", "PHP 8.4 FPM + Slim 4", "Processa regras de negócio, valida JWT e expõe a API REST")
-    ContainerDb(db, "MySQL", "MySQL 9", "Persiste dados das ordens de serviço e clientes")
-  }
-
-  Rel(funcionario, nginx, "Requisições autenticadas", "HTTP :80 / JWT admin")
-  Rel(cliente, nginx, "Aprovação via link", "HTTP :80 / JWT e-mail")
-
-  Rel(nginx, php, "Repassa requisições", "FastCGI")
-  Rel(php, db, "Lê e grava dados", "SQL :3306")
-  Rel(php, email, "Solicita envio de link", "Chamada de serviço")
-```
 
 #### C3 - Diagrama de componentes - PHP FPM (Slim 4)
-```mermaid
-C4Component
-  Container_Ext(nginx, "Nginx", "Reverse proxy", "Encaminha requisições via FastCGI")
-  ContainerDb_Ext(db, "MySQL 9", "Banco de dados", "Persistência")
-  System_Ext(email, "Serviço de E-mail", "Envio de link JWT")
+[plantuml](https://www.plantuml.com/plantuml/uml/VLNDRYD54BxFKnG-EL92BhaW8RGRExi4uTqGe-LebQTBazhjdw6xnx51I3m4Ry01YMl44_XDU1AgfsVyCpPxYEAkgVg-gkhlctaL8lhO65rymRRKZIBuUd9pFRbPJ9ofdIKRlocAo54Jx28mPQmy6hY2XsyVhjuyp62ksS1DKKoSZSYM_E9k7SUsOhk-XD6xz7yaFnvfHJuGrDwjDobmPqiqR9yGFFtSSE3jNzj_AC2A4TvWY9EtzwEBFUfqsUAgfPJEDlCVleUl4iejsjA18b2eN4YH1w7X4BT_sv9H4EQR4CcqnMIGjQJCoQ-4hgsxkqh1tD2Asv1c-mc---b7AJwOwjOrLg7VZEkdMhBxyV_z_Ozk1QCB-BKe062_hh7y-Ktjs4OfgPkbvlAQhQBrbuAIIIK1senqlBSiNMl-1S51sNF3z1v80bZNEwuXatTD99yMtVw0QvYnKfgUqLD2pdMGdhAjKcI6DJ62Tn43a81BSmXcLnMWqcw974x9i8bF2_Ci8BAc0T7nwOCCen0m1BOO6u-NK6faanXfNRD7kVO_7IW7qNqYc_S-v4kRy4vhya4m9_lJA1sre5D8Win2Asb91Wvr9GG4YZHLQA16Z-02b1XSa2WqmVqF9PPnuIauBThjYIK6Zrti37qUkEUqpfjqdVsK11at2lCuzKSXobK9Xz06kZZj8oIjbXHwsShFCwptfjPa91yDUAeyjeDPghOl9JiObvxHm_lv9M3jtGfb6ayVYIFwCvorSadXq_S9-Xr6NhcUwBNm1mVeO7dil1EGZyznqJNVwQJh_qpxRyaZ4ApQtMKX14WbOrI6BL1kEs_njE5ix0EsREhF4CwIjP8cE6Gv06Ntk-n-TSGeXByLnIFf_hLsPElzoofb73xQUVBMkHYYnpfqMVsJlP5UP_kHwGmfx94gLjYNx5AF5_lXO6S3y6FNJ4b6BP-ERT5L76KUA6xQMWRqzgMIviubdxD9RkbG_NlLTnXx3j5QBolCKXgc30PEMidZ3czfM3TKnTp9YZdT--6RFfTbpRTVb_Hj4MDwfhwL0L1xx3uO2DHgJJ9VaLMDqVy1)
 
-  Container_Boundary(php, "PHP-FPM — Slim 4") {
-    Component(entrypoint, "public/index.php", "Entry point", "Inicializa o container DI e o app Slim 4")
-    Component(router, "Router / Middleware", "Slim 4 Routing", "Mapeia rotas e aplica middlewares globais")
-    Component(auth_mw, "JWT Middleware", "Middleware", "Valida assinatura, claims e expiração do token JWT")
-    Component(controllers, "Controllers", "Classes PHP", "Recebem a requisição e delegam para os casos de uso")
-    Component(contract_resolver, "Contract Resolver", "Classes PHP", "Validação e normalização de contratos (request / response)")
-    Component(services, "Services", "Classes PHP", "Implementam regras de negócio (criar OS, aprovar, rejeitar)")
-    Component(pdo, "PDO", "Nativo PHP", "Acesso ao banco de dados")
-    Component(jwt_service, "JWT Service", "Classes PHP", "Gera e valida tokens JWT (admin e aprovação)")
-    Component(email_service, "E-mail Service", "Classes PHP", "Monta e dispara o envio do link de aprovação")
-  }
-
-  Rel(nginx, entrypoint, "FastCGI")
-  Rel(entrypoint, router, "Bootstraps")
-  Rel(router, auth_mw, "Aplica em rotas protegidas")
-  Rel(auth_mw, jwt_service, "Valida token")
-  Rel(router, controllers, "Despacha requisição")
-  Rel(controllers, services, "Delega lógica")
-  Rel(controllers, contract_resolver, "Valida e normaliza contratos")
-  Rel(services, pdo, "Acessa dados")
-  Rel(services, jwt_service, "Gera token de aprovação")
-  Rel(services, email_service, "Solicita envio de link")
-  Rel(pdo, db, "SQL queries")
-  Rel(email_service, email, "Envia e-mail")
-```
+![C3 - Diagrama de componentes - PHP FPM (Slim 4)](C4_C3-componente-php-fpm.png)
 
 ---
 
