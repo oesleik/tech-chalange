@@ -265,7 +265,7 @@ C4Component
 
 ### Modelo de dados
 #### Diagrama de entidade-relacionamento (DER)
-![Diagrama de entidade-relacionamento](../db/dbml.png)
+![Diagrama de entidade-relacionamento](./dbml.png)
 
 ---
 

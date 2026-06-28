@@ -114,6 +114,7 @@ xdg-open docs/security/zap-baseline-report.html
 Os artefatos de modelagem do domínio (Domain Storytelling, Event Storming,
 Domínios e Contextos Delimitados) estão em [`docs/ddd/`](./docs/ddd/README.md).
 
-## 📐 Documentação ADRs
+## 📐 Documentação sobre arquitetura
 
-As documentações sobre decisões de arquitetura estão em [`docs/adr/`](./docs/adr/README.md).
+- **ADRs:** [`docs/adr/`](./docs/adr/README.md)
+- **DAS:** [`docs/arch/DAS.md`](./docs/arch/DAS.md)
