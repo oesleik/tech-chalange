@@ -271,7 +271,7 @@ C4Component
 
 ### Documentação da API
 #### Swagger
-- [Open API](../../public/docs/index.html)
+- [Open API](../../public/openapi.json)
 
 ---
 
