@@ -190,25 +190,16 @@ Deve ser gerado e entregue um relatório com os resultados do scan de vulnerabil
 C4Context
   title Diagrama de Contexto — tech-chalange
 
-  Person(admin, "Administrador", "Gerencia ordens de serviço via JWT admin")
+  Person(admin, "Administrador", "Gerencia ordens de serviço autenticado via JWT")
   Person(aprovador, "Aprovador", "Aprova ou rejeita OS via link recebido por e-mail")
-  Person(dev, "Desenvolvedor", "Testa a API via Swagger UI")
 
   System(api, "tech-chalange", "API REST para gestão de ordens de serviço. PHP 8.4 + Slim 4.")
 
   System_Ext(email, "Serviço de E-mail", "Envia link de aprovação com JWT ao aprovador")
-  System_Ext(sonar, "SonarCloud", "Analisa qualidade de código e cobertura de testes")
-  System_Ext(zap, "OWASP ZAP", "Executa scan passivo de segurança via Docker")
-  System_Ext(ci, "GitHub Actions", "Orquestra pipeline de CI/CD")
 
   Rel(admin, api, "Gerencia OS", "HTTP / JWT admin")
   Rel(aprovador, api, "Aprova ou rejeita OS", "HTTP / JWT e-mail")
-  Rel(dev, api, "Testa endpoints", "HTTP / Swagger UI")
-
   Rel(api, email, "Solicita envio de link", "Chamada interna")
-  Rel(ci, api, "Build e deploy", "GitHub Actions")
-  Rel(ci, sonar, "Envia análise de qualidade", "SonarCloud API")
-  Rel(zap, api, "Scan passivo de segurança", "HTTP")
 ```
 #### C2 — Diagrama de Containers
 ```mermaid
@@ -217,30 +208,21 @@ C4Container
 
   Person(admin, "Administrador", "Gerencia ordens de serviço")
   Person(aprovador, "Aprovador", "Aprova ou rejeita OS via e-mail")
-  Person(dev, "Desenvolvedor", "Testa via Swagger UI")
 
   System_Ext(email, "Serviço de E-mail", "Envia link com JWT ao aprovador")
-  System_Ext(sonar, "SonarCloud", "Quality Gate e cobertura")
-  System_Ext(zap, "OWASP ZAP", "Scan passivo de segurança")
 
   System_Boundary(docker, "Docker / Docker Compose") {
-    Container(nginx, "Nginx", "Nginx", "Reverse proxy. Roteia requisições HTTP e serve a documentação Swagger")
+    Container(nginx, "Nginx", "Nginx", "Reverse proxy. Roteia requisições HTTP")
     Container(php, "PHP-FPM", "PHP 8.4 FPM + Slim 4", "Processa regras de negócio, valida JWT e expõe a API REST")
     ContainerDb(db, "MySQL", "MySQL 9", "Persiste dados das ordens de serviço e usuários")
-    Container(pma, "phpMyAdmin", "phpMyAdmin", "Interface visual de administração do banco de dados")
   }
 
   Rel(admin, nginx, "Requisições autenticadas", "HTTP :80 / JWT admin")
   Rel(aprovador, nginx, "Aprovação via link", "HTTP :80 / JWT e-mail")
-  Rel(dev, nginx, "Testa endpoints", "HTTP :80 / Swagger")
 
   Rel(nginx, php, "Repassa requisições", "FastCGI")
   Rel(php, db, "Lê e grava dados", "SQL :3306")
   Rel(php, email, "Solicita envio de link", "Chamada de serviço")
-  Rel(pma, db, "Administração visual", "SQL :3306")
-
-  Rel(zap, nginx, "Scan passivo", "HTTP :80")
-  Rel(sonar, php, "Análise estática e cobertura", "CI/CD")
 ```
 #### C3 — Diagrama de Componentes (PHP-FPM / Slim 4)
 ```mermaid
@@ -260,7 +242,6 @@ C4Component
     Component(repositories, "Repositories", "Classes PHP", "Abstraem acesso ao banco via PDO / Query Builder")
     Component(jwt_service, "JWT Service", "Classes PHP", "Gera e valida tokens JWT (admin e aprovação)")
     Component(email_service, "E-mail Service", "Classes PHP", "Monta e dispara o envio do link de aprovação")
-    Component(swagger, "Swagger / OpenAPI", "Documentação", "Especificação OpenAPI servida em /docs/index.html")
   }
 
   Rel(nginx, entrypoint, "FastCGI")
@@ -290,7 +271,7 @@ C4Component
 
 ### Documentação da API
 #### Swagger
-- [Open API - MarkDown](../../public/docs/openapi.md)
+- [Open API](../../public/docs/index.html)
 
 ---
 
