@@ -168,7 +168,7 @@ Deve ser gerado e entregue um relatório com os resultados do scan de vulnerabil
 | Banco de Dados      | MySQL 9                            |
 | Servidor Web        | Nginx Alpine (latest)              |
 | Infraestrutura      | Docker / Docker Compose            |
-| Autenticação        | JWT (firebase/php-jwt)             |
+| Autenticação        | JWT (lcobucci/jwt)             |
 | Testes              | PHPUnit                            |
 | Análise de Código   | SonarCloud                         |
 | CI/CD               | GitHub Actions                     |
