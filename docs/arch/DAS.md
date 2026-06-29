@@ -5,7 +5,7 @@
 | Revisor | Status |
 |------------|------------|
 | Augusto Bortoncello | Aprovado |
-| Claudio Kosooski | Pendente |
+| Claudio Kosooski | Aprovado |
 | Daniel Alferes | Pendente |
 | Fernando Oliveira | Aprovado |
 | Oeslei Kuhn | Aprovado |
