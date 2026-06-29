@@ -167,7 +167,7 @@ class ObterProximaOrdemServicoControllerTest extends TestCase {
             response: $container->get(ResponseInterface::class),
             contractResolver: $container->get(ContractResolver::class),
             service: $serviceMock,
-            itensService: $container->get(ItensOrdemServicoService::class),
+            itensService: $this->createStub(ItensOrdemServicoService::class),
             appConfig: $this->createStub(AppConfig::class),
         );
 

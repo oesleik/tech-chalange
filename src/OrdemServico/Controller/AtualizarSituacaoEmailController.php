@@ -9,13 +9,13 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use OpenApi\Attributes as OA;
 
-#[OA\Put(
+#[OA\Get(
     path: '/email/ordens-servico/aprovada',
     operationId: 'atualizarParaAprovada',
     summary: 'Atualizar ordem de serviço para aprovada',
     tags: ['Ordens de Serviço - Situação']
 )]
-#[OA\Put(
+#[OA\Get(
     path: '/email/ordens-servico/rejeitada',
     operationId: 'atualizarParaRejeitada',
     summary: 'Atualizar ordem de serviço para rejeitada',
