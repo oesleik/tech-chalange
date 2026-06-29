@@ -6,7 +6,7 @@
 |------------|------------|
 | Augusto Bortoncello | Aprovado |
 | Claudio Kosooski | Aprovado |
-| Daniel Alferes | Pendente |
+| Daniel Alferes | Aprovado |
 | Fernando Oliveira | Aprovado |
 | Oeslei Kuhn | Aprovado |
 
