@@ -13,13 +13,21 @@ use OpenApi\Attributes as OA;
     path: '/email/ordens-servico/aprovada',
     operationId: 'atualizarParaAprovada',
     summary: 'Atualizar ordem de serviço para aprovada',
-    tags: ['Ordens de Serviço - Situação']
+    tags: ['Ordens de Serviço - Situação'],
+    security: [],
 )]
 #[OA\Get(
     path: '/email/ordens-servico/rejeitada',
     operationId: 'atualizarParaRejeitada',
     summary: 'Atualizar ordem de serviço para rejeitada',
-    tags: ['Ordens de Serviço - Situação']
+    tags: ['Ordens de Serviço - Situação'],
+    security: [],
+)]
+#[OA\Parameter(
+    name: 'token',
+    in: 'path',
+    required: true,
+    schema: new OA\Schema(type: 'string')
 )]
 #[OA\Response(
     response: 200,

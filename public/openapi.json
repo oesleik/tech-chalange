@@ -507,6 +507,16 @@
                 ],
                 "summary": "Atualizar ordem de serviço para aprovada",
                 "operationId": "atualizarParaAprovada",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Ordem de Serviço atualizada com sucesso",
@@ -527,7 +537,8 @@
                     "422": {
                         "description": "Ordem de serviço não identificada"
                     }
-                }
+                },
+                "security": []
             }
         },
         "/email/ordens-servico/rejeitada": {
@@ -537,6 +548,16 @@
                 ],
                 "summary": "Atualizar ordem de serviço para rejeitada",
                 "operationId": "atualizarParaRejeitada",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Ordem de Serviço atualizada com sucesso",
@@ -557,7 +578,8 @@
                     "422": {
                         "description": "Ordem de serviço não identificada"
                     }
-                }
+                },
+                "security": []
             }
         },
         "/consulta/ordem-servico": {
