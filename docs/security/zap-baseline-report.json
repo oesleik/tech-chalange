@@ -1,8 +1,8 @@
 {
 	"@programName": "ZAP",
 	"@version": "2.17.0",
-	"@generated": "Mon, 29 Jun 2026 17:05:16",
-	"created": "2026-06-29T17:05:16.915925145Z",
+	"@generated": "Mon, 29 Jun 2026 23:48:43",
+	"created": "2026-06-29T23:48:43.407478783Z",
 	"site":[ 
 		{
 			"@name": "http://localhost",
@@ -10,46 +10,6 @@
 			"@port": "80",
 			"@ssl": "false",
 			"alerts": [ 
-				{
-					"pluginid": "10109",
-					"alertRef": "10109",
-					"alert": "Modern Web Application",
-					"name": "Modern Web Application",
-					"riskcode": "0",
-					"confidence": "2",
-					"riskdesc": "Informational (Medium)",
-					"desc": "<p>The application appears to be a modern web application. If you need to explore it automatically then the Ajax Spider may well be more effective than the standard one.</p>",
-					"instances":[ 
-						{
-							"id": "5",
-							"uri": "http://localhost/robots.txt",
-							"nodeName": "http:\/\/localhost\/robots.txt",
-							"method": "GET",
-							"param": "",
-							"attack": "",
-							"evidence": "<a href=\"#\" onclick=\"window.history.go(-1)\">Go Back</a>",
-							"otherinfo": "Links have been found that do not have traditional href attributes, which is an indication that this is a modern web application."
-						},
-						{
-							"id": "3",
-							"uri": "http://localhost/sitemap.xml",
-							"nodeName": "http:\/\/localhost\/sitemap.xml",
-							"method": "GET",
-							"param": "",
-							"attack": "",
-							"evidence": "<a href=\"#\" onclick=\"window.history.go(-1)\">Go Back</a>",
-							"otherinfo": "Links have been found that do not have traditional href attributes, which is an indication that this is a modern web application."
-						}
-					],
-					"count": "2",
-					"systemic": false,
-					"solution": "<p>This is an informational alert and so no changes are required.</p>",
-					"otherinfo": "<p>Links have been found that do not have traditional href attributes, which is an indication that this is a modern web application.</p>",
-					"reference": "",
-					"cweid": "-1",
-					"wascid": "-1",
-					"sourceid": "8"
-				},
 				{
 					"pluginid": "10049",
 					"alertRef": "10049-3",
@@ -61,7 +21,7 @@
 					"desc": "<p>The response contents are storable by caching components such as proxy servers, and may be retrieved directly from the cache, rather than from the origin server by the caching servers, in response to similar requests from other users. If the response data is sensitive, personal or user-specific, this may result in sensitive information being leaked. In some cases, this may even result in a user gaining complete control of the session of another user, depending on the configuration of the caching components in use in their environment. This is primarily an issue where \"shared\" caching servers such as \"proxy\" caches are configured on the local network. This configuration is typically found in corporate or educational environments, for instance.</p>",
 					"instances":[ 
 						{
-							"id": "1",
+							"id": "2",
 							"uri": "http://localhost/",
 							"nodeName": "http:\/\/localhost\/",
 							"method": "GET",
@@ -71,7 +31,7 @@
 							"otherinfo": "In the absence of an explicitly specified caching lifetime directive in the response, a liberal lifetime heuristic of 1 year was assumed. This is permitted by rfc7234."
 						},
 						{
-							"id": "4",
+							"id": "1",
 							"uri": "http://localhost/robots.txt",
 							"nodeName": "http:\/\/localhost\/robots.txt",
 							"method": "GET",
