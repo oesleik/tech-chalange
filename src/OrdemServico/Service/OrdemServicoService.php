@@ -46,17 +46,17 @@ class OrdemServicoService {
         $filters = $params = [];
 
         if ($filtros->getSituacao() !== null) {
-            $filters[] = "AND situacao = ? ";
+            $filters[] = "situacao = ?";
             $params[] = $filtros->getSituacao()->value;
         }
 
         if ($filtros->getIdCliente() !== null) {
-            $filters[] = "AND id_cliente = ? ";
+            $filters[] = "id_cliente = ?";
             $params[] = $filtros->getIdCliente();
         }
 
         if ($filtros->getIdVeiculo() !== null) {
-            $filters[] = "AND id_veiculo = ? ";
+            $filters[] = "id_veiculo = ?";
             $params[] = $filtros->getIdVeiculo();
         }
 

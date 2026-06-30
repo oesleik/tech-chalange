@@ -25,7 +25,8 @@ readonly class OrdensServicoFiltros extends AbstractContract {
         return new Assert\Collection([
             'situacao' => [
                 new Assert\Optional([
-                    new Assert\Type(SituacaoOrdemServicoEnum::class),
+                    new Assert\Type("string"),
+                    new Assert\Choice(callback: [SituacaoOrdemServicoEnum::class, "values"]),
                 ]),
             ],
             'id_cliente' => [
