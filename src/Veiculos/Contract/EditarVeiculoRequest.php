@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Veiculos\Contract;
 
-use App\Veiculos\Model\VeiculoModel;
 use App\Core\Contract\AbstractContract;
 use App\Veiculos\Validator\Placa;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -24,7 +23,9 @@ readonly class EditarVeiculoRequest extends AbstractContract {
     public static function getConstraints(): Assert\Collection {
         return new Assert\Collection([
             'placa' => [
-                new Placa(),
+                new Assert\Optional(
+                    new Placa(),
+                ),
             ],
             'marca' => [
                 new Assert\Optional(
