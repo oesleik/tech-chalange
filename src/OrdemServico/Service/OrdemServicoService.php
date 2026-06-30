@@ -24,7 +24,7 @@ class OrdemServicoService {
             $queryFilters = "WHERE $queryFilters";
         }
 
-        $query = "SELECT * FROM ordens_servico $queryFilters ORDER BY data_solicitacao DESC";
+        $query = "SELECT * FROM ordens_servico $queryFilters ORDER BY data_solicitacao DESC ";
 
         if ($filtros->getLimit() > 0) {
             $query .= "LIMIT " . $filtros->getLimit();

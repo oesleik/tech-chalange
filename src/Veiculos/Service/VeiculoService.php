@@ -33,6 +33,7 @@ class VeiculoService {
     }
 
     public function obterVeiculoPorPlaca(string $placa): ?VeiculoModel {
+        $placa = str_replace(["-", " "], "", $placa);
         $stmt = $this->pdo->prepare("SELECT * FROM veiculos WHERE UPPER(REPLACE(placa, '-', '')) = ?");
         $stmt->execute([$placa]);
         $result = $stmt->fetchObject();
