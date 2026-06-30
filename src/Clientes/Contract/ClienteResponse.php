@@ -23,13 +23,13 @@ readonly class ClienteResponse extends AbstractContract {
         public string $telefone,
     ) {}
 
-    public static function fromClienteModel(ClienteModel $cliente): self {
+    public static function fromClienteModel(ClienteModel $cliente, bool $masked = true): self {
         return new self(
             id: $cliente->getId(),
             nome: $cliente->getNome(),
-            cpf_cnpj: $cliente->getCpfCnpj()->getMaskedValue(),
-            email: $cliente->getEmail()->getMaskedValue(),
-            telefone: $cliente->getTelefone()->getMaskedValue(),
+            cpf_cnpj: $masked ? $cliente->getCpfCnpj()->getMaskedValue() : $cliente->getCpfCnpj()->getFormattedValue(),
+            email: $masked ? $cliente->getEmail()->getMaskedValue() : $cliente->getEmail()->getValue(),
+            telefone: $masked ? $cliente->getTelefone()->getMaskedValue() : $cliente->getTelefone()->getValue(),
         );
     }
 

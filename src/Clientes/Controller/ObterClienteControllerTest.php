@@ -45,9 +45,9 @@ class ObterClienteControllerTest extends TestCase {
 
         $this->assertEquals(123, $res->id);
         $this->assertEquals("Fulano de Tal", $res->nome);
-        $this->assertEquals("52*.***.***-25", $res->cpf_cnpj);
-        $this->assertEquals("fu****@gmail.com", $res->email);
-        $this->assertEquals("*********99", $res->telefone);
+        $this->assertEquals("529.982.247-25", $res->cpf_cnpj);
+        $this->assertEquals("fulano@gmail.com", $res->email);
+        $this->assertEquals("54999999999", $res->telefone);
     }
 
     public function testObterClienteControllerNotFound(): void {
