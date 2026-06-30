@@ -44,7 +44,7 @@ class ObterClienteController {
             return $response->withStatus(404, "Cliente não encontrado");
         }
 
-        $output = ClienteResponse::fromClienteModel($cliente);
+        $output = ClienteResponse::fromClienteModel($cliente, false);
         $response->getBody()->write($contractResolver->toJson($output));
         return $response->withHeader('Content-Type', 'application/json');
     }

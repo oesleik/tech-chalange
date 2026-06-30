@@ -58,7 +58,7 @@ class CriarClienteController {
             $cliente = $req->toClienteModel();
             $clienteCriado = $service->criarCliente($cliente);
 
-            $output = ClienteResponse::fromClienteModel($clienteCriado);
+            $output = ClienteResponse::fromClienteModel($clienteCriado, false);
             $response->getBody()->write($contractResolver->toJson($output));
             return $response->withHeader('Content-Type', 'application/json');
         } catch (InvalidContractException $e) {

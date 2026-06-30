@@ -62,9 +62,9 @@ class EditarClienteControllerTest extends TestCase {
 
         $this->assertEquals(123, $res->id);
         $this->assertEquals("Ciclano Ltda", $res->nome);
-        $this->assertEquals("AB.***.***/****-91", $res->cpf_cnpj);
-        $this->assertEquals("te***@gmail.com", $res->email);
-        $this->assertEquals("*********88", $res->telefone);
+        $this->assertEquals("AB.345.678/000A-91", $res->cpf_cnpj);
+        $this->assertEquals("teste@gmail.com", $res->email);
+        $this->assertEquals("54999999988", $res->telefone);
     }
 
     public function testEditarClienteControllerDuplicated(): void {

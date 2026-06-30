@@ -85,7 +85,7 @@ class EditarClienteController {
             );
 
             $service->atualizarCliente($clienteAtualizar);
-            $output = ClienteResponse::fromClienteModel($clienteAtualizar);
+            $output = ClienteResponse::fromClienteModel($clienteAtualizar, false);
 
             $response->getBody()->write($contractResolver->toJson($output));
             return $response->withHeader('Content-Type', 'application/json');
