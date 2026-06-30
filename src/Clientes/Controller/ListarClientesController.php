@@ -21,7 +21,7 @@ class ListarClientesController {
         tags: ['Clientes']
     )]
     #[OA\Parameter(
-        name: 'cpfCnpj',
+        name: 'cpf_cnpj',
         in: 'query',
         required: false,
         schema: new OA\Schema(type: 'string'),

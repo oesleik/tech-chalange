@@ -21,7 +21,7 @@
                 "operationId": "listarClientes",
                 "parameters": [
                     {
-                        "name": "cpfCnpj",
+                        "name": "cpf_cnpj",
                         "in": "query",
                         "description": "CPF ou CNPJ para filtrar clientes",
                         "required": false,
@@ -639,6 +639,45 @@
                 ],
                 "summary": "Listar todas as Ordens de Serviço",
                 "operationId": "listarOrdensServico",
+                "parameters": [
+                    {
+                        "name": "situacao",
+                        "in": "query",
+                        "description": "Filtro por situação da ordem de serviço",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "Recebida",
+                                "EmDiagnostico",
+                                "AguardandoAprovacao",
+                                "Aprovada",
+                                "Rejeitada",
+                                "EmExecucao",
+                                "Finalizada",
+                                "Entregue"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "id_cliente",
+                        "in": "query",
+                        "description": "Filtro por cliente da ordem de serviço",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "id_veiculo",
+                        "in": "query",
+                        "description": "Filtro por veículo da ordem de serviço",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Lista de Ordens de Serviço",
