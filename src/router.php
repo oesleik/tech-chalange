@@ -48,7 +48,7 @@ $app->group('', function (RouteCollectorProxy $group): void {
     $group->group('/veiculos', function (RouteCollectorProxy $g): void {
         $g->get('/', App\Veiculos\Controller\ListarVeiculosController::class);
         $g->post('/', App\Veiculos\Controller\CriarVeiculoController::class);
-        $g->get('/{id:[0-9]+}', App\Veiculos\Controller\ObterVeiculoController::class);
+        $g->get('/{id:[0-9]+}', App\Veiculos\Presentation\Http\Controller\ObterVeiculoController::class);
         $g->patch('/{id:[0-9]+}', App\Veiculos\Controller\EditarVeiculoController::class);
     });
 

@@ -2,14 +2,13 @@
 
 declare(strict_types=1);
 
-use App\Clientes\Service\ClienteService;
-use App\Core\Auth\OrdemServico\JwtOrdemServicoService;
-use App\Core\Config\AppConfig;
+use App\Core\AppDatabase;
 use App\Core\Config\EmailConfig;
 use App\Core\Email\EmailService;
-use App\OrdemServico\Service\EnviarOrcamentoOrdemServicoEmailService;
-use App\OrdemServico\Service\ItensOrdemServicoService;
-use App\OrdemServico\Service\OrdemServicoService;
+use App\Core\Infrastructure\Persistence\DbConnectionInterface;
+use App\Core\Infrastructure\Persistence\PdoConnection;
+use App\Core\Infrastructure\Presentation\JsonPresenter;
+use App\Core\Infrastructure\Presentation\PresenterInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Slim\Psr7\Factory\ResponseFactory;
 
@@ -47,5 +46,11 @@ return [
     EmailConfig::class => fn() => new EmailConfig(),
     EmailService::class => fn(\DI\Container $c) => new EmailService(
         $c->get(EmailConfig::class),
+    ),
+    DbConnectionInterface::class => fn(\DI\Container $c) => new PdoConnection(
+        $c->get(AppDatabase::class),
+    ),
+    PresenterInterface::class => fn(\DI\Container $c) => new JsonPresenter(
+        $c->get(\App\Core\Contract\ContractResolver::class),
     ),
 ];
