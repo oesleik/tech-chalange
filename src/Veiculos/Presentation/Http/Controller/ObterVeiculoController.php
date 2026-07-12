@@ -7,7 +7,6 @@ namespace App\Veiculos\Presentation\Http\Controller;
 use App\Core\Infrastructure\Persistence\DbConnectionInterface;
 use App\Core\Infrastructure\Presentation\HttpStatusCodeEnum;
 use App\Core\Infrastructure\Presentation\PresenterInterface;
-use App\Veiculos\Application\UseCase\ObterVeiculo\ObterVeiculoInput;
 use App\Veiculos\Application\UseCase\ObterVeiculo\ObterVeiculoUseCase;
 use App\Veiculos\Domain\Exception\VeiculoNaoEncontradoException;
 use App\Veiculos\Infrastructure\Persistence\VeiculoGateway;
@@ -46,7 +45,7 @@ final class ObterVeiculoController {
         try {
             $veiculosGateway = new VeiculoGateway($dbConnection);
             $useCase = new ObterVeiculoUseCase($veiculosGateway);
-            $veiculo = $useCase->executar(new ObterVeiculoInput($id));
+            $veiculo = $useCase->executar(intval($id));
         } catch (VeiculoNaoEncontradoException $e) {
             return $presenter->error($response, $e->getMessage(), HttpStatusCodeEnum::NotFound);
         }

@@ -13,11 +13,11 @@ final class ObterVeiculoUseCase {
         private readonly VeiculoGatewayInterface $gateway,
     ) {}
 
-    public function executar(ObterVeiculoInput $input): Veiculo {
-        $veiculo = $this->gateway->buscarPorId($input->id);
+    public function executar(int $idVeiculo): Veiculo {
+        $veiculo = $this->gateway->buscarPorId($idVeiculo);
 
         if ($veiculo === null) {
-            throw VeiculoNaoEncontradoException::comId($input->id);
+            throw VeiculoNaoEncontradoException::comId($idVeiculo);
         }
 
         return $veiculo;
