@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Veiculos\Infrastructure\Persistence;
 
+use App\Veiculos\Domain\Entity\Placa;
 use App\Veiculos\Domain\Entity\Veiculo;
 
 final class VeiculoMapper {
@@ -13,7 +14,7 @@ final class VeiculoMapper {
     public static function paraEntidade(array $linha): Veiculo {
         return new Veiculo(
             id: (int) $linha['id'],
-            placa: $linha['placa'],
+            placa: new Placa($linha['placa']),
             marca: $linha['marca'],
             modelo: $linha['modelo'],
         );

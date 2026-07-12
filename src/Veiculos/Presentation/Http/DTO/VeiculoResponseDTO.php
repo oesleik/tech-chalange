@@ -17,7 +17,7 @@ final class VeiculoResponseDTO {
     public static function fromEntity(Veiculo $veiculo): self {
         return new self(
             id: $veiculo->id(),
-            placa: $veiculo->placa(),
+            placa: $veiculo->placa()->getFormattedValue(),
             marca: $veiculo->marca(),
             modelo: $veiculo->modelo(),
         );
