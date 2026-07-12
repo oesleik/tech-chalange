@@ -1,0 +1,65 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Veiculos\Presentation\Http\Controller;
+
+use App\Core\Infrastructure\Persistence\DbConnectionInterface;
+use App\Core\Infrastructure\Presentation\HttpStatusCodeEnum;
+use App\Core\Infrastructure\Presentation\PresenterInterface;
+use App\Veiculos\Application\UseCase\CriarVeiculo\CriarVeiculoInputDTO;
+use App\Veiculos\Application\UseCase\CriarVeiculo\CriarVeiculoUseCase;
+use App\Veiculos\Domain\Exception\VeiculoJaCasdastradoException;
+use App\Veiculos\Infrastructure\Persistence\VeiculoGateway;
+use App\Veiculos\Presentation\Http\DTO\VeiculoResponseDTO;
+use Psr\Http\Message\ResponseInterface;
+use OpenApi\Attributes as OA;
+use Psr\Http\Message\ServerRequestInterface;
+
+final class CriarVeiculoController {
+    #[OA\Post(
+        path: '/veiculos/',
+        operationId: 'criarVeiculo',
+        summary: 'Cadastrar um novo veículo',
+        tags: ['Veículos']
+    )]
+    #[OA\RequestBody(
+        required: true,
+        content: new OA\JsonContent(
+            ref: '#/components/schemas/CriarVeiculoRequest'
+        )
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Veículo criado',
+        content: new OA\JsonContent(ref: '#/components/schemas/VeiculoResponse')
+    )]
+    #[OA\Response(
+        response: 400,
+        description: 'Validation error',
+        content: new OA\JsonContent(ref: '#/components/schemas/ValidationErrorResponse')
+    )]
+    #[OA\Response(
+        response: 409,
+        description: 'Conflict error',
+        content: new OA\JsonContent(ref: '#/components/schemas/ValidationErrorResponse')
+    )]
+    public function __invoke(
+        ServerRequestInterface $request,
+        ResponseInterface $response,
+        PresenterInterface $presenter,
+        DbConnectionInterface $dbConnection,
+    ): ResponseInterface {
+        try {
+            $payload = json_decode($request->getBody()->getContents(), true);
+            $criarVeiculoInputDTO = CriarVeiculoInputDTO::fromArray($payload);
+            $veiculosGateway = new VeiculoGateway($dbConnection);
+            $useCase = new CriarVeiculoUseCase($veiculosGateway);
+            $veiculo = $useCase->executar($criarVeiculoInputDTO);
+        } catch (VeiculoJaCasdastradoException $e) {
+            return $presenter->error($response, $e->getMessage(), HttpStatusCodeEnum::Conflict);
+        }
+
+        return $presenter->success($response, VeiculoResponseDTO::fromEntity($veiculo));
+    }
+}

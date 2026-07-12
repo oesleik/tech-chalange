@@ -36,4 +36,8 @@ final class Veiculo {
     public function modelo(): string {
         return $this->modelo;
     }
+
+    public function comId(int $id): self {
+        return new self($id, $this->placa, $this->marca, $this->modelo);
+    }
 }
