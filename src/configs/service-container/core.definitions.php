@@ -6,7 +6,7 @@ use App\Core\AppDatabase;
 use App\Core\Config\EmailConfig;
 use App\Core\Email\EmailService;
 use App\Core\Infrastructure\Persistence\DbConnectionInterface;
-use App\Core\Infrastructure\Persistence\PdoConnection;
+use App\Core\Infrastructure\Persistence\DatabaseConnection;
 use App\Core\Infrastructure\Presentation\JsonPresenter;
 use App\Core\Infrastructure\Presentation\PresenterInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
@@ -47,7 +47,7 @@ return [
     EmailService::class => fn(\DI\Container $c) => new EmailService(
         $c->get(EmailConfig::class),
     ),
-    DbConnectionInterface::class => fn(\DI\Container $c) => new PdoConnection(
+    DbConnectionInterface::class => fn(\DI\Container $c) => new DatabaseConnection(
         $c->get(AppDatabase::class),
     ),
     PresenterInterface::class => fn(\DI\Container $c) => new JsonPresenter(

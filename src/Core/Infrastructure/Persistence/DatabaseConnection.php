@@ -6,7 +6,7 @@ namespace App\Core\Infrastructure\Persistence;
 
 use PDO;
 
-final class PdoConnection implements DbConnectionInterface {
+final class DatabaseConnection implements DbConnectionInterface {
     public function __construct(
         private readonly PDO $connection,
     ) {}
