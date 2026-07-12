@@ -9,6 +9,9 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
+/**
+ * @deprecated Usar o src\Core\Infrastructure\Presentation\JsonPresenter.php
+ */
 class ContractResolver {
     public function __construct(
         private ValidatorInterface $validator,

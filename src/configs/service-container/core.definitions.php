@@ -51,6 +51,6 @@ return [
         $c->get(AppDatabase::class),
     ),
     PresenterInterface::class => fn(\DI\Container $c) => new JsonPresenter(
-        $c->get(\App\Core\Contract\ContractResolver::class),
+        $c->get(Symfony\Component\Serializer\SerializerInterface::class),
     ),
 ];
