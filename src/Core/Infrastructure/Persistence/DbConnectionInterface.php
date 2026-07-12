@@ -36,4 +36,29 @@ interface DbConnectionInterface {
      * @param array<string, mixed> $condicoes
      */
     public function deletar(string $tabela, array $condicoes): void;
+
+    /**
+     * Busca linhas com suporte a correspondência parcial (LIKE) e paginação.
+     *
+     * @param array<string, mixed> $condicoesExatas   Pares campo => valor (igualdade, AND)
+     * @param array<string, string> $condicoesParciais Pares campo => termo (LIKE '%termo%', AND)
+     * @return array<int, array<string, mixed>>
+     */
+    public function buscarComFiltro(
+        string $tabela,
+        array $condicoesExatas,
+        array $condicoesParciais,
+        int $limite,
+        int $offset,
+    ): array;
+
+    /**
+     * @param array<string, mixed> $condicoesExatas
+     * @param array<string, string> $condicoesParciais
+     */
+    public function contarComFiltro(
+        string $tabela,
+        array $condicoesExatas,
+        array $condicoesParciais,
+    ): int;
 }

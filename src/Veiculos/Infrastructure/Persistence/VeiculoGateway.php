@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Veiculos\Infrastructure\Persistence;
 
 use App\Core\Infrastructure\Persistence\DbConnectionInterface;
+use App\Veiculos\Application\UseCase\ListarVeiculo\FiltroListagemVeiculo;
 use App\Veiculos\Domain\Entity\Placa;
-use App\Veiculos\Infrastructure\Persistence\VeiculoGatewayInterface;
 use App\Veiculos\Domain\Entity\Veiculo;
 
 final class VeiculoGateway implements VeiculoGatewayInterface {
@@ -55,5 +55,51 @@ final class VeiculoGateway implements VeiculoGatewayInterface {
         );
 
         return $veiculo->comId($idVeiculo);
+    }
+
+    public function listar(FiltroListagemVeiculo $filtro): array {
+        $registros = $this->connection->buscarComFiltro(
+            tabela: self::TABELA,
+            condicoesExatas: $this->condicoesExatas($filtro),
+            condicoesParciais: $this->condicoesParciais($filtro),
+            limite: $filtro->porPagina,
+            offset: $filtro->offset(),
+        );
+
+        return array_map(
+            static fn(array $registro) => VeiculoMapper::paraEntidade($registro),
+            $registros,
+        );
+    }
+
+    public function contar(FiltroListagemVeiculo $filtro): int {
+        return $this->connection->contarComFiltro(
+            tabela: self::TABELA,
+            condicoesExatas: $this->condicoesExatas($filtro),
+            condicoesParciais: $this->condicoesParciais($filtro),
+        );
+    }
+
+    /** @return array<string, mixed> */
+    private function condicoesExatas(FiltroListagemVeiculo $filtro): array {
+        $condicoes = [];
+        if ($filtro->placa !== null) {
+            $condicoes['placa'] = $filtro->placa->getValue();
+        }
+
+        return $condicoes;
+    }
+
+    /** @return array<string, string> */
+    private function condicoesParciais(FiltroListagemVeiculo $filtro): array {
+        $condicoes = [];
+        if ($filtro->marca !== null) {
+            $condicoes['marca'] = $filtro->marca;
+        }
+        if ($filtro->modelo !== null) {
+            $condicoes['modelo'] = $filtro->modelo;
+        }
+
+        return $condicoes;
     }
 }

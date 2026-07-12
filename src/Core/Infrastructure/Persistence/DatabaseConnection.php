@@ -87,4 +87,60 @@ final class DatabaseConnection implements DbConnectionInterface {
     private function quoteIdentifier(string $identifier): string {
         return '`' . str_replace('`', '``', $identifier) . '`';
     }
+
+    public function buscarComFiltro(
+        string $tabela,
+        array $condicoesExatas,
+        array $condicoesParciais,
+        int $limite,
+        int $offset,
+    ): array {
+        [$where, $valores] = $this->montarWhereComParciais($condicoesExatas, $condicoesParciais);
+
+        $sql = "SELECT * FROM {$this->quoteIdentifier($tabela)} {$where} LIMIT ? OFFSET ?";
+
+        $stmt = $this->connection->prepare($sql);
+        $stmt->execute([...$valores, $limite, $offset]);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    }
+
+    public function contarComFiltro(
+        string $tabela,
+        array $condicoesExatas,
+        array $condicoesParciais,
+    ): int {
+        [$where, $valores] = $this->montarWhereComParciais($condicoesExatas, $condicoesParciais);
+
+        $sql = "SELECT COUNT(*) as total FROM {$this->quoteIdentifier($tabela)} {$where}";
+
+        $stmt = $this->connection->prepare($sql);
+        $stmt->execute($valores);
+
+        return (int) $stmt->fetchColumn();
+    }
+
+    /**
+     * @return array{0: string, 1: array<int, mixed>}
+     */
+    private function montarWhereComParciais(array $condicoesExatas, array $condicoesParciais): array {
+        $clausulas = [];
+        $valores = [];
+
+        foreach ($condicoesExatas as $campo => $valor) {
+            $clausulas[] = "{$this->quoteIdentifier($campo)} = ?";
+            $valores[] = $valor;
+        }
+
+        foreach ($condicoesParciais as $campo => $termo) {
+            $clausulas[] = "{$this->quoteIdentifier($campo)} LIKE ?";
+            $valores[] = "%{$termo}%";
+        }
+
+        if (empty($clausulas)) {
+            return ['', []];
+        }
+
+        return ['WHERE ' . implode(' AND ', $clausulas), $valores];
+    }
 }
