@@ -11,6 +11,7 @@ use App\Veiculos\Application\UseCase\ObterVeiculo\ObterVeiculoUseCase;
 use App\Veiculos\Domain\Exception\VeiculoNaoEncontradoException;
 use App\Veiculos\Infrastructure\Persistence\VeiculoGateway;
 use App\Veiculos\Presentation\Http\DTO\VeiculoResponseDTO;
+use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
 use OpenApi\Attributes as OA;
 
@@ -25,12 +26,18 @@ final class ObterVeiculoController {
         name: 'id',
         in: 'path',
         required: true,
-        schema: new OA\Schema(type: 'integer')
+        description: 'Identificador do veículo',
+        schema: new OA\Schema(
+            type: 'integer',
+            example: 1
+        )
     )]
     #[OA\Response(
         response: 200,
         description: 'Veículo encontrado',
-        content: new OA\JsonContent(ref: '#/components/schemas/VeiculoResponse')
+        content: new OA\JsonContent(
+            ref: VeiculoResponseDTO::class
+        )
     )]
     #[OA\Response(
         response: 404,
@@ -48,6 +55,8 @@ final class ObterVeiculoController {
             $veiculo = $useCase->executar(intval($id));
         } catch (VeiculoNaoEncontradoException $e) {
             return $presenter->error($response, $e->getMessage(), HttpStatusCodeEnum::NotFound);
+        } catch (InvalidArgumentException $e) {
+            return $presenter->error($response, $e->getMessage(), HttpStatusCodeEnum::BadRequest);
         }
 
         return $presenter->success($response, VeiculoResponseDTO::fromEntity($veiculo));

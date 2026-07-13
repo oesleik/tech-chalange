@@ -5,11 +5,26 @@ declare(strict_types=1);
 namespace App\Veiculos\Application\UseCase\CriarVeiculo;
 
 use InvalidArgumentException;
+use OpenApi\Attributes as OA;
 
+#[OA\Schema(
+    schema: 'CriarVeiculoInputDTO',
+    required: ['placa', 'marca', 'modelo']
+)]
 final class CriarVeiculoInputDTO {
     public function __construct(
+        #[OA\Property(
+            example: 'ABC1D23',
+            maxLength: 8
+        )]
         public readonly string $placa,
+        #[OA\Property(
+            example: 'Toyota'
+        )]
         public readonly string $marca,
+        #[OA\Property(
+            example: 'Corolla'
+        )]
         public readonly string $modelo,
     ) {}
 

@@ -12,6 +12,7 @@ use App\Veiculos\Application\UseCase\CriarVeiculo\CriarVeiculoUseCase;
 use App\Veiculos\Domain\Exception\VeiculoJaCadastradoException;
 use App\Veiculos\Infrastructure\Persistence\VeiculoGateway;
 use App\Veiculos\Presentation\Http\DTO\VeiculoResponseDTO;
+use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ServerRequestInterface;
@@ -26,23 +27,23 @@ final class CriarVeiculoController {
     #[OA\RequestBody(
         required: true,
         content: new OA\JsonContent(
-            ref: '#/components/schemas/CriarVeiculoRequest'
+            ref: CriarVeiculoInputDTO::class
         )
     )]
     #[OA\Response(
-        response: 200,
-        description: 'Veículo criado',
-        content: new OA\JsonContent(ref: '#/components/schemas/VeiculoResponse')
+        response: 201,
+        description: 'Veículo criado com sucesso',
+        content: new OA\JsonContent(
+            ref: VeiculoResponseDTO::class
+        )
     )]
     #[OA\Response(
         response: 400,
-        description: 'Validation error',
-        content: new OA\JsonContent(ref: '#/components/schemas/ValidationErrorResponse')
+        description: 'Erro de validação'
     )]
     #[OA\Response(
         response: 409,
-        description: 'Conflict error',
-        content: new OA\JsonContent(ref: '#/components/schemas/ValidationErrorResponse')
+        description: 'Veículo já cadastrado'
     )]
     public function __invoke(
         ServerRequestInterface $request,
@@ -58,6 +59,8 @@ final class CriarVeiculoController {
             $veiculo = $useCase->executar($criarVeiculoInputDTO);
         } catch (VeiculoJaCadastradoException $e) {
             return $presenter->error($response, $e->getMessage(), HttpStatusCodeEnum::Conflict);
+        } catch (InvalidArgumentException $e) {
+            return $presenter->error($response, $e->getMessage(), HttpStatusCodeEnum::BadRequest);
         }
 
         return $presenter->success($response, VeiculoResponseDTO::fromEntity($veiculo));

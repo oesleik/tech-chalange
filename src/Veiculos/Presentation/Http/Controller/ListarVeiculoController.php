@@ -23,10 +23,47 @@ final class ListarVeiculoController {
         summary: 'Listar veículos cadastrados',
         tags: ['Veículos']
     )]
+    #[OA\Parameter(
+        name: 'placa',
+        in: 'query',
+        required: false,
+        description: 'Filtra pela placa do veículo',
+        schema: new OA\Schema(type: 'string', example: 'ABC1D23')
+    )]
+    #[OA\Parameter(
+        name: 'marca',
+        in: 'query',
+        required: false,
+        schema: new OA\Schema(type: 'string', example: 'Toyota')
+    )]
+    #[OA\Parameter(
+        name: 'modelo',
+        in: 'query',
+        required: false,
+        schema: new OA\Schema(type: 'string', example: 'Corolla')
+    )]
+    #[OA\Parameter(
+        name: 'pagina',
+        in: 'query',
+        required: false,
+        schema: new OA\Schema(type: 'integer', default: 1)
+    )]
+    #[OA\Parameter(
+        name: 'porPagina',
+        in: 'query',
+        required: false,
+        schema: new OA\Schema(type: 'integer', default: 20, maximum: 100)
+    )]
     #[OA\Response(
         response: 200,
-        description: 'Lista de veículos encontrados',
-        content: new OA\JsonContent(ref: '#/components/schemas/ListarVeiculosResponse')
+        description: 'Lista de veículos',
+        content: new OA\JsonContent(
+            ref: ListagemVeiculosResponseDTO::class
+        )
+    )]
+    #[OA\Response(
+        response: 400,
+        description: 'Parâmetros inválidos'
     )]
     public function __invoke(
         ServerRequestInterface $request,

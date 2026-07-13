@@ -1642,6 +1642,27 @@
                 },
                 "type": "object"
             },
+            "PaginacaoDTO": {
+                "properties": {
+                    "pagina": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "porPagina": {
+                        "type": "integer",
+                        "example": 20
+                    },
+                    "total": {
+                        "type": "integer",
+                        "example": 154
+                    },
+                    "totalPaginas": {
+                        "type": "integer",
+                        "example": 8
+                    }
+                },
+                "type": "object"
+            },
             "EstoquePecaResponse": {
                 "properties": {
                     "id_peca": {
@@ -2105,6 +2126,52 @@
                 },
                 "type": "object"
             },
+            "CriarVeiculoInputDTO": {
+                "required": [
+                    "placa",
+                    "marca",
+                    "modelo"
+                ],
+                "properties": {
+                    "placa": {
+                        "type": "string",
+                        "example": "ABC1D23",
+                        "maxLength": 8
+                    },
+                    "marca": {
+                        "type": "string",
+                        "example": "Toyota"
+                    },
+                    "modelo": {
+                        "type": "string",
+                        "example": "Corolla"
+                    }
+                },
+                "type": "object"
+            },
+            "EditarVeiculoInputDTO": {
+                "properties": {
+                    "placa": {
+                        "description": "Placa do veículo",
+                        "type": "string",
+                        "example": "ABC1D23",
+                        "nullable": true
+                    },
+                    "marca": {
+                        "description": "Marca do veículo",
+                        "type": "string",
+                        "example": "Toyota",
+                        "nullable": true
+                    },
+                    "modelo": {
+                        "description": "Modelo do veículo",
+                        "type": "string",
+                        "example": "Corolla",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
             "CriarVeiculoRequest": {
                 "properties": {
                     "placa": {
@@ -2162,6 +2229,41 @@
                     "placa": {
                         "type": "string",
                         "example": "ABC-1234"
+                    },
+                    "marca": {
+                        "type": "string",
+                        "example": "Toyota"
+                    },
+                    "modelo": {
+                        "type": "string",
+                        "example": "Corolla"
+                    }
+                },
+                "type": "object"
+            },
+            "ListagemVeiculosResponseDTO": {
+                "properties": {
+                    "dados": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/VeiculoResponseDTO"
+                        }
+                    },
+                    "paginacao": {
+                        "$ref": "#/components/schemas/PaginacaoDTO"
+                    }
+                },
+                "type": "object"
+            },
+            "VeiculoResponseDTO": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 10
+                    },
+                    "placa": {
+                        "type": "string",
+                        "example": "ABC1D23"
                     },
                     "marca": {
                         "type": "string",

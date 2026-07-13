@@ -5,11 +5,30 @@ declare(strict_types=1);
 namespace App\Veiculos\Application\UseCase\EditarVeiculo;
 
 use InvalidArgumentException;
+use OpenApi\Attributes as OA;
 
+#[OA\Schema(
+    type: 'object'
+)]
 final class EditarVeiculoInputDTO {
     public function __construct(
+        #[OA\Property(
+            description: 'Placa do veículo',
+            example: 'ABC1D23',
+            nullable: true
+        )]
         public readonly ?string $placa = null,
+        #[OA\Property(
+            description: 'Marca do veículo',
+            example: 'Toyota',
+            nullable: true
+        )]
         public readonly ?string $marca = null,
+        #[OA\Property(
+            description: 'Modelo do veículo',
+            example: 'Corolla',
+            nullable: true
+        )]
         public readonly ?string $modelo = null,
     ) {}
 

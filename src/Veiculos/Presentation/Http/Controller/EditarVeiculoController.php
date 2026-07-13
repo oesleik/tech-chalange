@@ -13,6 +13,7 @@ use App\Veiculos\Domain\Exception\VeiculoJaCadastradoException;
 use App\Veiculos\Domain\Exception\VeiculoNaoEncontradoException;
 use App\Veiculos\Infrastructure\Persistence\VeiculoGateway;
 use App\Veiculos\Presentation\Http\DTO\VeiculoResponseDTO;
+use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ServerRequestInterface;
@@ -21,30 +22,35 @@ final class EditarVeiculoController {
     #[OA\Patch(
         path: '/veiculos/{id}',
         operationId: 'editarVeiculo',
-        summary: 'Editar dados de um veículo',
+        summary: 'Editar um veículo',
         tags: ['Veículos']
     )]
     #[OA\Parameter(
         name: 'id',
         in: 'path',
         required: true,
-        schema: new OA\Schema(type: 'integer')
+        description: 'Identificador do veículo',
+        schema: new OA\Schema(
+            type: 'integer',
+            example: 1
+        )
     )]
     #[OA\RequestBody(
         required: true,
         content: new OA\JsonContent(
-            ref: '#/components/schemas/EditarVeiculoRequest'
+            ref: EditarVeiculoInputDTO::class
         )
     )]
     #[OA\Response(
         response: 200,
-        description: 'Veículo atualizado',
-        content: new OA\JsonContent(ref: '#/components/schemas/VeiculoResponse')
+        description: 'Veículo atualizado com sucesso',
+        content: new OA\JsonContent(
+            ref: VeiculoResponseDTO::class
+        )
     )]
     #[OA\Response(
         response: 400,
-        description: 'Validation error',
-        content: new OA\JsonContent(ref: '#/components/schemas/ValidationErrorResponse')
+        description: 'Dados inválidos'
     )]
     #[OA\Response(
         response: 404,
@@ -52,8 +58,7 @@ final class EditarVeiculoController {
     )]
     #[OA\Response(
         response: 409,
-        description: 'Conflict error',
-        content: new OA\JsonContent(ref: '#/components/schemas/ValidationErrorResponse')
+        description: 'Já existe um veículo cadastrado com a placa informada'
     )]
     public function __invoke(
         int $id,
@@ -73,6 +78,8 @@ final class EditarVeiculoController {
             return $presenter->error($response, $e->getMessage(), HttpStatusCodeEnum::NotFound);
         } catch (VeiculoJaCadastradoException $e) {
             return $presenter->error($response, $e->getMessage(), HttpStatusCodeEnum::Conflict);
+        } catch (InvalidArgumentException $e) {
+            return $presenter->error($response, $e->getMessage(), HttpStatusCodeEnum::BadRequest);
         }
 
         return $presenter->success($response, VeiculoResponseDTO::fromEntity($veiculo));
