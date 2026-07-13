@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Veiculos\Application\UseCase\CriarVeiculo;
 
 use App\Veiculos\Domain\Entity\Placa;
-use App\Veiculos\Infrastructure\Persistence\VeiculoGatewayInterface;
+use App\Veiculos\Application\Gateway\VeiculoGatewayInterface;
 use App\Veiculos\Domain\Entity\Veiculo;
 use App\Veiculos\Domain\Exception\VeiculoJaCadastradoException;
 

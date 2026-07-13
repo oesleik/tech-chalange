@@ -2,9 +2,8 @@
 
 declare(strict_types=1);
 
-namespace App\Veiculos\Infrastructure\Persistence;
+namespace App\Veiculos\Application\Gateway;
 
-use App\Veiculos\Application\UseCase\ListarVeiculo\FiltroListagemVeiculo;
 use App\Veiculos\Domain\Entity\Placa;
 use App\Veiculos\Domain\Entity\Veiculo;
 

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Veiculos\Application\UseCase\ListarVeiculo;
+namespace App\Veiculos\Application\Gateway;
 
 use App\Veiculos\Domain\Entity\Placa;
 

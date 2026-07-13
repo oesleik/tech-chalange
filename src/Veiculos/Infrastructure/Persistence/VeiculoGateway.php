@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace App\Veiculos\Infrastructure\Persistence;
 
 use App\Core\Infrastructure\Persistence\DbConnectionInterface;
-use App\Veiculos\Application\UseCase\ListarVeiculo\FiltroListagemVeiculo;
+use App\Veiculos\Application\Gateway\FiltroListagemVeiculo;
+use App\Veiculos\Application\Gateway\VeiculoGatewayInterface;
 use App\Veiculos\Domain\Entity\Placa;
 use App\Veiculos\Domain\Entity\Veiculo;
 

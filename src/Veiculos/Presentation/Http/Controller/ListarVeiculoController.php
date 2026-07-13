@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace App\Veiculos\Presentation\Http\Controller;
 
 use App\Core\Infrastructure\Persistence\DbConnectionInterface;
+use App\Core\Infrastructure\Presentation\HttpStatusCodeEnum;
 use App\Core\Infrastructure\Presentation\PresenterInterface;
 use App\Veiculos\Application\UseCase\ListarVeiculo\ListarVeiculoInputDTO;
 use App\Veiculos\Application\UseCase\ListarVeiculo\ListarVeiculoUseCase;
 use App\Veiculos\Infrastructure\Persistence\VeiculoGateway;
 use App\Veiculos\Presentation\Http\DTO\ListagemVeiculosResponseDTO;
+use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ServerRequestInterface;
@@ -32,11 +34,15 @@ final class ListarVeiculoController {
         PresenterInterface $presenter,
         DbConnectionInterface $dbConnection,
     ): ResponseInterface {
-        $input = ListarVeiculoInputDTO::fromArray($request->getQueryParams());
+        try {
+            $input = ListarVeiculoInputDTO::fromArray($request->getQueryParams());
 
-        $veiculosGateway = new VeiculoGateway($dbConnection);
-        $useCase = new ListarVeiculoUseCase($veiculosGateway);
-        $resultado = $useCase->executar($input);
+            $veiculosGateway = new VeiculoGateway($dbConnection);
+            $useCase = new ListarVeiculoUseCase($veiculosGateway);
+            $resultado = $useCase->executar($input);
+        } catch (InvalidArgumentException $e) {
+            return $presenter->error($response, $e->getMessage(), HttpStatusCodeEnum::BadRequest);
+        }
 
         return $presenter->success($response, ListagemVeiculosResponseDTO::fromOutputDTO($resultado));
     }

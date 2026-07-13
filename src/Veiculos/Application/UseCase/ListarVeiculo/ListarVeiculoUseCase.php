@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace App\Veiculos\Application\UseCase\ListarVeiculo;
 
-use App\Veiculos\Infrastructure\Persistence\VeiculoGatewayInterface;
+use App\Veiculos\Application\Gateway\FiltroListagemVeiculo;
+use App\Veiculos\Application\Gateway\VeiculoGatewayInterface;
 
 final class ListarVeiculoUseCase {
     public function __construct(
