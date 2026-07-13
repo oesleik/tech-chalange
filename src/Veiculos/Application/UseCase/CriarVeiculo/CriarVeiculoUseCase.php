@@ -7,7 +7,7 @@ namespace App\Veiculos\Application\UseCase\CriarVeiculo;
 use App\Veiculos\Domain\Entity\Placa;
 use App\Veiculos\Infrastructure\Persistence\VeiculoGatewayInterface;
 use App\Veiculos\Domain\Entity\Veiculo;
-use App\Veiculos\Domain\Exception\VeiculoJaCasdastradoException;
+use App\Veiculos\Domain\Exception\VeiculoJaCadastradoException;
 
 final class CriarVeiculoUseCase {
     public function __construct(
@@ -19,7 +19,7 @@ final class CriarVeiculoUseCase {
 
         $veiculoExistente = $this->gateway->buscarPorPlaca($placa);
         if ($veiculoExistente !== null) {
-            throw VeiculoJaCasdastradoException::comPlaca($input->placa);
+            throw VeiculoJaCadastradoException::comPlaca($placa->getFormattedValue());
         }
 
         $veiculo = new Veiculo(

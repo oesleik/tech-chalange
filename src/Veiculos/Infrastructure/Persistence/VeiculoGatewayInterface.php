@@ -22,5 +22,5 @@ interface VeiculoGatewayInterface {
 
     public function contar(FiltroListagemVeiculo $filtro): int;
 
-    // TODO p´roximas rotas vem aqui
+    public function atualizar(Veiculo $veiculo): Veiculo;
 }

@@ -102,4 +102,18 @@ final class VeiculoGateway implements VeiculoGatewayInterface {
 
         return $condicoes;
     }
+
+    public function atualizar(Veiculo $veiculo): Veiculo {
+        $this->connection->atualizar(
+            self::TABELA,
+            [
+                'placa' => $veiculo->placa()->getValue(),
+                'marca' => $veiculo->marca(),
+                'modelo' => $veiculo->modelo(),
+            ],
+            ['id' => $veiculo->id()],
+        );
+
+        return $veiculo;
+    }
 }

@@ -40,4 +40,16 @@ final class Veiculo {
     public function comId(int $id): self {
         return new self($id, $this->placa, $this->marca, $this->modelo);
     }
+
+    public function comPlaca(Placa $placa): self {
+        return new self($this->id, $placa, $this->marca, $this->modelo);
+    }
+
+    public function comMarca(string $marca): self {
+        return new self($this->id, $this->placa, $marca, $this->modelo);
+    }
+
+    public function comModelo(string $modelo): self {
+        return new self($this->id, $this->placa, $this->marca, $modelo);
+    }
 }

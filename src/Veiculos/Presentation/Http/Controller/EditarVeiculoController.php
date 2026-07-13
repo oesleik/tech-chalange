@@ -7,31 +7,38 @@ namespace App\Veiculos\Presentation\Http\Controller;
 use App\Core\Infrastructure\Persistence\DbConnectionInterface;
 use App\Core\Infrastructure\Presentation\HttpStatusCodeEnum;
 use App\Core\Infrastructure\Presentation\PresenterInterface;
-use App\Veiculos\Application\UseCase\CriarVeiculo\CriarVeiculoInputDTO;
-use App\Veiculos\Application\UseCase\CriarVeiculo\CriarVeiculoUseCase;
+use App\Veiculos\Application\UseCase\EditarVeiculo\EditarVeiculoInputDTO;
+use App\Veiculos\Application\UseCase\EditarVeiculo\EditarVeiculoUseCase;
 use App\Veiculos\Domain\Exception\VeiculoJaCadastradoException;
+use App\Veiculos\Domain\Exception\VeiculoNaoEncontradoException;
 use App\Veiculos\Infrastructure\Persistence\VeiculoGateway;
 use App\Veiculos\Presentation\Http\DTO\VeiculoResponseDTO;
 use Psr\Http\Message\ResponseInterface;
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ServerRequestInterface;
 
-final class CriarVeiculoController {
-    #[OA\Post(
-        path: '/veiculos/',
-        operationId: 'criarVeiculo',
-        summary: 'Cadastrar um novo veículo',
+final class EditarVeiculoController {
+    #[OA\Patch(
+        path: '/veiculos/{id}',
+        operationId: 'editarVeiculo',
+        summary: 'Editar dados de um veículo',
         tags: ['Veículos']
+    )]
+    #[OA\Parameter(
+        name: 'id',
+        in: 'path',
+        required: true,
+        schema: new OA\Schema(type: 'integer')
     )]
     #[OA\RequestBody(
         required: true,
         content: new OA\JsonContent(
-            ref: '#/components/schemas/CriarVeiculoRequest'
+            ref: '#/components/schemas/EditarVeiculoRequest'
         )
     )]
     #[OA\Response(
         response: 200,
-        description: 'Veículo criado',
+        description: 'Veículo atualizado',
         content: new OA\JsonContent(ref: '#/components/schemas/VeiculoResponse')
     )]
     #[OA\Response(
@@ -40,11 +47,16 @@ final class CriarVeiculoController {
         content: new OA\JsonContent(ref: '#/components/schemas/ValidationErrorResponse')
     )]
     #[OA\Response(
+        response: 404,
+        description: 'Veículo não encontrado'
+    )]
+    #[OA\Response(
         response: 409,
         description: 'Conflict error',
         content: new OA\JsonContent(ref: '#/components/schemas/ValidationErrorResponse')
     )]
     public function __invoke(
+        int $id,
         ServerRequestInterface $request,
         ResponseInterface $response,
         PresenterInterface $presenter,
@@ -52,10 +64,13 @@ final class CriarVeiculoController {
     ): ResponseInterface {
         try {
             $payload = json_decode($request->getBody()->getContents(), true);
-            $criarVeiculoInputDTO = CriarVeiculoInputDTO::fromArray($payload);
-            $veiculosGateway = new VeiculoGateway($dbConnection);
-            $useCase = new CriarVeiculoUseCase($veiculosGateway);
-            $veiculo = $useCase->executar($criarVeiculoInputDTO);
+            $input = EditarVeiculoInputDTO::fromArray($payload);
+
+            $veiculoGateway = new VeiculoGateway($dbConnection);
+            $useCase = new EditarVeiculoUseCase($veiculoGateway);
+            $veiculo = $useCase->executar($id, $input);
+        } catch (VeiculoNaoEncontradoException $e) {
+            return $presenter->error($response, $e->getMessage(), HttpStatusCodeEnum::NotFound);
         } catch (VeiculoJaCadastradoException $e) {
             return $presenter->error($response, $e->getMessage(), HttpStatusCodeEnum::Conflict);
         }
