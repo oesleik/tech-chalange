@@ -23,7 +23,7 @@ final class CriarVeiculoUseCase {
         }
 
         $veiculo = new Veiculo(
-            id: null,
+            id: 0,
             placa: $placa,
             marca: $input->marca,
             modelo: $input->modelo,

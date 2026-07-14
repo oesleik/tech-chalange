@@ -8,10 +8,10 @@ use InvalidArgumentException;
 
 final class Veiculo {
     public function __construct(
-        private readonly ?int $id,
-        private readonly Placa $placa,
-        private readonly string $marca,
-        private readonly string $modelo,
+        private int $id,
+        private Placa $placa,
+        private string $marca,
+        private string $modelo,
     ) {
         if (trim($marca) === '') {
             throw new InvalidArgumentException('Marca não pode ser vazia.');
@@ -21,7 +21,7 @@ final class Veiculo {
         }
     }
 
-    public function id(): ?int {
+    public function id(): int {
         return $this->id;
     }
 
@@ -38,18 +38,30 @@ final class Veiculo {
     }
 
     public function comId(int $id): self {
-        return new self($id, $this->placa, $this->marca, $this->modelo);
+        $clone = clone $this;
+        $clone->id = $id;
+
+        return $clone;
     }
 
     public function comPlaca(Placa $placa): self {
-        return new self($this->id, $placa, $this->marca, $this->modelo);
+        $clone = clone $this;
+        $clone->placa = $placa;
+
+        return $clone;
     }
 
     public function comMarca(string $marca): self {
-        return new self($this->id, $this->placa, $marca, $this->modelo);
+        $clone = clone $this;
+        $clone->marca = $marca;
+
+        return $clone;
     }
 
     public function comModelo(string $modelo): self {
-        return new self($this->id, $this->placa, $this->marca, $modelo);
+        $clone = clone $this;
+        $clone->modelo = $modelo;
+
+        return $clone;
     }
 }
