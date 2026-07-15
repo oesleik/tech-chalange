@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace App\Veiculos\Presentation\Http\Controller;
 
-use App\Core\Infrastructure\Persistence\DbConnectionInterface;
 use App\Core\Infrastructure\Presentation\HttpStatusCodeEnum;
 use App\Core\Infrastructure\Presentation\PresenterInterface;
 use App\Veiculos\Application\UseCase\ListarVeiculo\ListarVeiculoInputDTO;
 use App\Veiculos\Application\UseCase\ListarVeiculo\ListarVeiculoUseCase;
-use App\Veiculos\Infrastructure\Persistence\VeiculoGateway;
 use App\Veiculos\Presentation\Http\DTO\ListagemVeiculosResponseDTO;
 use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
@@ -17,6 +15,11 @@ use OpenApi\Attributes as OA;
 use Psr\Http\Message\ServerRequestInterface;
 
 final class ListarVeiculoController {
+    public function __construct(
+        private ListarVeiculoUseCase $useCase,
+        private PresenterInterface $presenter,
+    ) {}
+
     #[OA\Get(
         path: '/veiculos/',
         operationId: 'listarVeiculos',
@@ -65,22 +68,27 @@ final class ListarVeiculoController {
         response: 400,
         description: 'Parâmetros inválidos'
     )]
-    public function __invoke(
+    public function execute(
         ServerRequestInterface $request,
         ResponseInterface $response,
-        PresenterInterface $presenter,
-        DbConnectionInterface $dbConnection,
     ): ResponseInterface {
         try {
-            $input = ListarVeiculoInputDTO::fromArray($request->getQueryParams());
+            $input = ListarVeiculoInputDTO::fromArray(
+                $request->getQueryParams()
+            );
 
-            $veiculosGateway = new VeiculoGateway($dbConnection);
-            $useCase = new ListarVeiculoUseCase($veiculosGateway);
-            $resultado = $useCase->executar($input);
+            $resultado = $this->useCase->executar($input);
+
+            return $this->presenter->success(
+                $response,
+                ListagemVeiculosResponseDTO::fromOutputDTO($resultado)
+            );
         } catch (InvalidArgumentException $e) {
-            return $presenter->error($response, $e->getMessage(), HttpStatusCodeEnum::BadRequest);
+            return $this->presenter->error(
+                $response,
+                $e->getMessage(),
+                HttpStatusCodeEnum::BadRequest
+            );
         }
-
-        return $presenter->success($response, ListagemVeiculosResponseDTO::fromOutputDTO($resultado));
     }
 }

@@ -9,6 +9,8 @@ use App\Core\Infrastructure\Persistence\DbConnectionInterface;
 use App\Core\Infrastructure\Persistence\DatabaseConnection;
 use App\Core\Infrastructure\Presentation\JsonPresenter;
 use App\Core\Infrastructure\Presentation\PresenterInterface;
+use App\Veiculos\Application\Gateway\VeiculoGatewayInterface;
+use App\Veiculos\Infrastructure\Persistence\VeiculoGateway;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Slim\Psr7\Factory\ResponseFactory;
 
@@ -53,4 +55,5 @@ return [
     PresenterInterface::class => fn(\DI\Container $c) => new JsonPresenter(
         $c->get(Symfony\Component\Serializer\SerializerInterface::class),
     ),
+    VeiculoGatewayInterface::class => fn(\DI\Container $c) => new VeiculoGateway($c->get(DbConnectionInterface::class)),
 ];

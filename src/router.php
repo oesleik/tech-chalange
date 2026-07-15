@@ -46,10 +46,10 @@ $app->group('', function (RouteCollectorProxy $group): void {
     });
 
     $group->group('/veiculos', function (RouteCollectorProxy $g): void {
-        $g->get('/', App\Veiculos\Presentation\Http\Controller\ListarVeiculoController::class);
-        $g->post('/', App\Veiculos\Presentation\Http\Controller\CriarVeiculoController::class);
-        $g->get('/{id:[0-9]+}', App\Veiculos\Presentation\Http\Controller\ObterVeiculoController::class);
-        $g->patch('/{id:[0-9]+}', App\Veiculos\Presentation\Http\Controller\EditarVeiculoController::class);
+        $g->get('/', App\Veiculos\Presentation\Http\Router\ListarVeiculoRouter::class);
+        $g->post('/', App\Veiculos\Presentation\Http\Router\CriarVeiculoRouter::class);
+        $g->get('/{id:[0-9]+}', App\Veiculos\Presentation\Http\Router\ObterVeiculoRouter::class);
+        $g->patch('/{id:[0-9]+}', App\Veiculos\Presentation\Http\Router\EditarVeiculoRouter::class);
     });
 
     $group->group('/pecas', function (RouteCollectorProxy $g): void {

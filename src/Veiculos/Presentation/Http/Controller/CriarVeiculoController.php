@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace App\Veiculos\Presentation\Http\Controller;
 
-use App\Core\Infrastructure\Persistence\DbConnectionInterface;
 use App\Core\Infrastructure\Presentation\HttpStatusCodeEnum;
 use App\Core\Infrastructure\Presentation\PresenterInterface;
 use App\Veiculos\Application\UseCase\CriarVeiculo\CriarVeiculoUseCase;
 use App\Veiculos\Domain\Exception\VeiculoJaCadastradoException;
-use App\Veiculos\Infrastructure\Persistence\VeiculoGateway;
 use App\Veiculos\Presentation\Http\DTO\CriarVeiculoMapper;
 use App\Veiculos\Presentation\Http\DTO\VeiculoResponseDTO;
 use InvalidArgumentException;
@@ -18,6 +16,12 @@ use OpenApi\Attributes as OA;
 use Psr\Http\Message\ServerRequestInterface;
 
 final class CriarVeiculoController {
+    public function __construct(
+        private CriarVeiculoUseCase $useCase,
+        private CriarVeiculoMapper $mapper,
+        private PresenterInterface $presenter,
+    ) {}
+
     #[OA\Post(
         path: '/veiculos/',
         operationId: 'criarVeiculo',
@@ -45,24 +49,37 @@ final class CriarVeiculoController {
         response: 409,
         description: 'Veículo já cadastrado'
     )]
-    public function __invoke(
+    public function execute(
         ServerRequestInterface $request,
         ResponseInterface $response,
-        PresenterInterface $presenter,
-        DbConnectionInterface $dbConnection,
     ): ResponseInterface {
         try {
-            $payload = json_decode($request->getBody()->getContents(), true);
-            $veiculoParaCriar = CriarVeiculoMapper::parse($payload);
-            $veiculosGateway = new VeiculoGateway($dbConnection);
-            $useCase = new CriarVeiculoUseCase($veiculosGateway);
-            $veiculo = $useCase->executar($veiculoParaCriar);
-        } catch (VeiculoJaCadastradoException $e) {
-            return $presenter->error($response, $e->getMessage(), HttpStatusCodeEnum::Conflict);
-        } catch (InvalidArgumentException $e) {
-            return $presenter->error($response, $e->getMessage(), HttpStatusCodeEnum::BadRequest);
-        }
+            $payload = (array) json_decode(
+                $request->getBody()->getContents(),
+                true
+            );
 
-        return $presenter->success($response, VeiculoResponseDTO::fromEntity($veiculo));
+            $veiculo = $this->mapper->parse($payload);
+
+            $veiculoCriado = $this->useCase->executar($veiculo);
+
+            return $this->presenter->success(
+                $response,
+                VeiculoResponseDTO::fromEntity($veiculoCriado),
+                HttpStatusCodeEnum::Created,
+            );
+        } catch (VeiculoJaCadastradoException $e) {
+            return $this->presenter->error(
+                $response,
+                $e->getMessage(),
+                HttpStatusCodeEnum::Conflict,
+            );
+        } catch (InvalidArgumentException $e) {
+            return $this->presenter->error(
+                $response,
+                $e->getMessage(),
+                HttpStatusCodeEnum::BadRequest,
+            );
+        }
     }
 }
