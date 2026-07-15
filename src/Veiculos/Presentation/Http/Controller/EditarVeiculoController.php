@@ -7,11 +7,11 @@ namespace App\Veiculos\Presentation\Http\Controller;
 use App\Core\Infrastructure\Persistence\DbConnectionInterface;
 use App\Core\Infrastructure\Presentation\HttpStatusCodeEnum;
 use App\Core\Infrastructure\Presentation\PresenterInterface;
-use App\Veiculos\Application\UseCase\EditarVeiculo\EditarVeiculoInputDTO;
 use App\Veiculos\Application\UseCase\EditarVeiculo\EditarVeiculoUseCase;
 use App\Veiculos\Domain\Exception\VeiculoJaCadastradoException;
 use App\Veiculos\Domain\Exception\VeiculoNaoEncontradoException;
 use App\Veiculos\Infrastructure\Persistence\VeiculoGateway;
+use App\Veiculos\Presentation\Http\DTO\EditarVeiculoMapper;
 use App\Veiculos\Presentation\Http\DTO\VeiculoResponseDTO;
 use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
@@ -38,7 +38,7 @@ final class EditarVeiculoController {
     #[OA\RequestBody(
         required: true,
         content: new OA\JsonContent(
-            ref: EditarVeiculoInputDTO::class
+            ref: EditarVeiculoMapper::class
         )
     )]
     #[OA\Response(
@@ -69,7 +69,7 @@ final class EditarVeiculoController {
     ): ResponseInterface {
         try {
             $payload = json_decode($request->getBody()->getContents(), true);
-            $input = EditarVeiculoInputDTO::fromArray($payload);
+            $input = EditarVeiculoMapper::parse($payload);
 
             $veiculoGateway = new VeiculoGateway($dbConnection);
             $useCase = new EditarVeiculoUseCase($veiculoGateway);

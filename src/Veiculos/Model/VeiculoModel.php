@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace App\Veiculos\Model;
 
+/**
+ * TODO: Não vou remover pois outros lugares usam, mas no futuro devemos.
+ * @deprecated Usar src\Veiculos\Domain\Entity\Veiculo.php
+ */
 class VeiculoModel {
     public function __construct(
         private int $id,

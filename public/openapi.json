@@ -1369,16 +1369,68 @@
                 ],
                 "summary": "Listar veículos cadastrados",
                 "operationId": "listarVeiculos",
+                "parameters": [
+                    {
+                        "name": "placa",
+                        "in": "query",
+                        "description": "Filtra pela placa do veículo",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "ABC1D23"
+                        }
+                    },
+                    {
+                        "name": "marca",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "Toyota"
+                        }
+                    },
+                    {
+                        "name": "modelo",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "Corolla"
+                        }
+                    },
+                    {
+                        "name": "pagina",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "porPagina",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 20,
+                            "maximum": 100
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "Lista de veículos encontrados",
+                        "description": "Lista de veículos",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ListarVeiculosResponse"
+                                    "$ref": "#/components/schemas/ListagemVeiculosResponseDTO"
                                 }
                             }
                         }
+                    },
+                    "400": {
+                        "description": "Parâmetros inválidos"
                     }
                 }
             },
@@ -1393,41 +1445,27 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/CriarVeiculoRequest"
+                                "$ref": "#/components/schemas/CriarVeiculoInputDTO"
                             }
                         }
                     }
                 },
                 "responses": {
-                    "200": {
-                        "description": "Veículo criado",
+                    "201": {
+                        "description": "Veículo criado com sucesso",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/VeiculoResponse"
+                                    "$ref": "#/components/schemas/VeiculoResponseDTO"
                                 }
                             }
                         }
                     },
                     "400": {
-                        "description": "Validation error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ValidationErrorResponse"
-                                }
-                            }
-                        }
+                        "description": "Erro de validação"
                     },
                     "409": {
-                        "description": "Conflict error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ValidationErrorResponse"
-                                }
-                            }
-                        }
+                        "description": "Veículo já cadastrado"
                     }
                 }
             }
@@ -1443,9 +1481,11 @@
                     {
                         "name": "id",
                         "in": "path",
+                        "description": "Identificador do veículo",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "integer",
+                            "example": 1
                         }
                     }
                 ],
@@ -1455,7 +1495,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/VeiculoResponse"
+                                    "$ref": "#/components/schemas/VeiculoResponseDTO"
                                 }
                             }
                         }
@@ -1469,15 +1509,17 @@
                 "tags": [
                     "Veículos"
                 ],
-                "summary": "Editar dados de um veículo",
+                "summary": "Editar um veículo",
                 "operationId": "editarVeiculo",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
+                        "description": "Identificador do veículo",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "integer",
+                            "example": 1
                         }
                     }
                 ],
@@ -1486,44 +1528,30 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/EditarVeiculoRequest"
+                                "$ref": "#/components/schemas/EditarVeiculoInputDTO"
                             }
                         }
                     }
                 },
                 "responses": {
                     "200": {
-                        "description": "Veículo atualizado",
+                        "description": "Veículo atualizado com sucesso",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/VeiculoResponse"
+                                    "$ref": "#/components/schemas/VeiculoResponseDTO"
                                 }
                             }
                         }
                     },
                     "400": {
-                        "description": "Validation error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ValidationErrorResponse"
-                                }
-                            }
-                        }
+                        "description": "Dados inválidos"
                     },
                     "404": {
                         "description": "Veículo não encontrado"
                     },
                     "409": {
-                        "description": "Conflict error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ValidationErrorResponse"
-                                }
-                            }
-                        }
+                        "description": "Já existe um veículo cadastrado com a placa informada"
                     }
                 }
             }
@@ -2152,51 +2180,11 @@
             "EditarVeiculoInputDTO": {
                 "properties": {
                     "placa": {
-                        "description": "Placa do veículo",
                         "type": "string",
                         "example": "ABC1D23",
                         "nullable": true
                     },
                     "marca": {
-                        "description": "Marca do veículo",
-                        "type": "string",
-                        "example": "Toyota",
-                        "nullable": true
-                    },
-                    "modelo": {
-                        "description": "Modelo do veículo",
-                        "type": "string",
-                        "example": "Corolla",
-                        "nullable": true
-                    }
-                },
-                "type": "object"
-            },
-            "CriarVeiculoRequest": {
-                "properties": {
-                    "placa": {
-                        "type": "string",
-                        "example": "ABC-1234"
-                    },
-                    "marca": {
-                        "type": "string",
-                        "example": "Toyota"
-                    },
-                    "modelo": {
-                        "type": "string",
-                        "example": "Corolla"
-                    }
-                },
-                "type": "object"
-            },
-            "EditarVeiculoRequest": {
-                "properties": {
-                    "placa": {
-                        "type": "string",
-                        "example": "ABC-1234",
-                        "nullable": true
-                    },
-                    "marca": {
                         "type": "string",
                         "example": "Toyota",
                         "nullable": true
@@ -2205,38 +2193,6 @@
                         "type": "string",
                         "example": "Corolla",
                         "nullable": true
-                    }
-                },
-                "type": "object"
-            },
-            "ListarVeiculosResponse": {
-                "properties": {
-                    "veiculos": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/VeiculoResponse"
-                        }
-                    }
-                },
-                "type": "object"
-            },
-            "VeiculoResponse": {
-                "properties": {
-                    "id": {
-                        "type": "integer",
-                        "example": 1
-                    },
-                    "placa": {
-                        "type": "string",
-                        "example": "ABC-1234"
-                    },
-                    "marca": {
-                        "type": "string",
-                        "example": "Toyota"
-                    },
-                    "modelo": {
-                        "type": "string",
-                        "example": "Corolla"
                     }
                 },
                 "type": "object"

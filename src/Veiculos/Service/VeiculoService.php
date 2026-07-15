@@ -8,6 +8,10 @@ use App\Core\AppDatabase;
 use App\Veiculos\Model\VeiculoModel;
 use PDO;
 
+/**
+ * TODO: remover no futuro
+ * @deprecated Usar src\Veiculos\Application\UseCase\{Acao}Veiculo\{Acao}VeiculoUseCase.php
+ */
 class VeiculoService {
     public function __construct(
         private AppDatabase $pdo

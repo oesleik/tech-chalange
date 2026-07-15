@@ -7,10 +7,10 @@ namespace App\Veiculos\Presentation\Http\Controller;
 use App\Core\Infrastructure\Persistence\DbConnectionInterface;
 use App\Core\Infrastructure\Presentation\HttpStatusCodeEnum;
 use App\Core\Infrastructure\Presentation\PresenterInterface;
-use App\Veiculos\Application\UseCase\CriarVeiculo\CriarVeiculoInputDTO;
 use App\Veiculos\Application\UseCase\CriarVeiculo\CriarVeiculoUseCase;
 use App\Veiculos\Domain\Exception\VeiculoJaCadastradoException;
 use App\Veiculos\Infrastructure\Persistence\VeiculoGateway;
+use App\Veiculos\Presentation\Http\DTO\CriarVeiculoMapper;
 use App\Veiculos\Presentation\Http\DTO\VeiculoResponseDTO;
 use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
@@ -27,7 +27,7 @@ final class CriarVeiculoController {
     #[OA\RequestBody(
         required: true,
         content: new OA\JsonContent(
-            ref: CriarVeiculoInputDTO::class
+            ref: CriarVeiculoMapper::class
         )
     )]
     #[OA\Response(
@@ -53,10 +53,10 @@ final class CriarVeiculoController {
     ): ResponseInterface {
         try {
             $payload = json_decode($request->getBody()->getContents(), true);
-            $criarVeiculoInputDTO = CriarVeiculoInputDTO::fromArray($payload);
+            $veiculoParaCriar = CriarVeiculoMapper::parse($payload);
             $veiculosGateway = new VeiculoGateway($dbConnection);
             $useCase = new CriarVeiculoUseCase($veiculosGateway);
-            $veiculo = $useCase->executar($criarVeiculoInputDTO);
+            $veiculo = $useCase->executar($veiculoParaCriar);
         } catch (VeiculoJaCadastradoException $e) {
             return $presenter->error($response, $e->getMessage(), HttpStatusCodeEnum::Conflict);
         } catch (InvalidArgumentException $e) {
