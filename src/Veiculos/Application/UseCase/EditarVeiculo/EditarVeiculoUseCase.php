@@ -10,7 +10,7 @@ use App\Veiculos\Domain\Entity\Veiculo;
 use App\Veiculos\Domain\Exception\VeiculoJaCadastradoException;
 use App\Veiculos\Domain\Exception\VeiculoNaoEncontradoException;
 
-final class EditarVeiculoUseCase {
+class EditarVeiculoUseCase {
     public function __construct(
         private readonly VeiculoGatewayInterface $gateway,
     ) {}

@@ -7,7 +7,7 @@ namespace App\Veiculos\Application\UseCase\ListarVeiculo;
 use App\Veiculos\Application\Gateway\FiltroListagemVeiculo;
 use App\Veiculos\Application\Gateway\VeiculoGatewayInterface;
 
-final class ListarVeiculoUseCase {
+class ListarVeiculoUseCase {
     public function __construct(
         private readonly VeiculoGatewayInterface $gateway,
     ) {}
