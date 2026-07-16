@@ -8,7 +8,7 @@ use App\Veiculos\Application\Gateway\VeiculoGatewayInterface;
 use App\Veiculos\Domain\Entity\Veiculo;
 use App\Veiculos\Domain\Exception\VeiculoNaoEncontradoException;
 
-final class ObterVeiculoUseCase {
+class ObterVeiculoUseCase {
     public function __construct(
         private readonly VeiculoGatewayInterface $gateway,
     ) {}
