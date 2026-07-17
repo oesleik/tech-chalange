@@ -10,7 +10,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
- * @deprecated Usar o src\Core\Infrastructure\Presentation\JsonPresenter.php
+ * @deprecated Usar o src\Core\Presentation\Http\JsonPresenter.php
  */
 class ContractResolver {
     public function __construct(

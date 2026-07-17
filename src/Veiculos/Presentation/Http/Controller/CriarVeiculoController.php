@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Veiculos\Presentation\Http\Controller;
 
-use App\Core\Infrastructure\Presentation\HttpStatusCodeEnum;
-use App\Core\Infrastructure\Presentation\PresenterInterface;
+use App\Core\Presentation\Http\HttpStatusCodeEnum;
+use App\Core\Presentation\Http\PresenterInterface;
 use App\Veiculos\Application\UseCase\CriarVeiculo\CriarVeiculoUseCase;
 use App\Veiculos\Domain\Exception\VeiculoJaCadastradoException;
 use App\Veiculos\Presentation\Http\DTO\CriarVeiculoMapper;

@@ -16,8 +16,10 @@ use App\OrdemServico\Model\ServicoOrdemServicoModel;
 use App\OrdemServico\Model\SituacaoOrdemServicoEnum;
 use App\OrdemServico\Service\ItensOrdemServicoService;
 use App\OrdemServico\Service\OrdemServicoService;
-use App\Veiculos\Model\VeiculoModel;
-use App\Veiculos\Service\VeiculoService;
+use App\Veiculos\Application\UseCase\ObterVeiculoPorPlaca\ObterVeiculoPorPlacaUseCase;
+use App\Veiculos\Domain\Entity\Placa;
+use App\Veiculos\Domain\Entity\Veiculo;
+use App\Veiculos\Domain\Exception\VeiculoNaoEncontradoException;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Psr7\Factory\ServerRequestFactory;
@@ -28,14 +30,14 @@ class ConsultarOrdemServicoPorVeiculoEClienteControllerTest extends TestCase {
         $container = $containerBuilder->forTesting()->build();
 
         $clientesServiceMock = $this->createMock(ClienteService::class);
-        $veiculosServiceMock = $this->createMock(VeiculoService::class);
+        $obterVeiculoPorPlacaUseCaseMock = $this->createMock(ObterVeiculoPorPlacaUseCase::class);
         $serviceMock = $this->createMock(OrdemServicoService::class);
         $itensServiceMock = $this->createMock(ItensOrdemServicoService::class);
 
         $controller = new ConsultarOrdemServicoPorVeiculoEClienteController(
             contractResolver: $container->get(ContractResolver::class),
             clienteService: $clientesServiceMock,
-            veiculoService: $veiculosServiceMock,
+            obterVeiculoPorPlacaUseCase: $obterVeiculoPorPlacaUseCaseMock,
             ordemServicoService: $serviceMock,
             itensOrdemServicoService: $itensServiceMock,
         );
@@ -50,10 +52,10 @@ class ConsultarOrdemServicoPorVeiculoEClienteControllerTest extends TestCase {
             ),
         ]);
 
-        $veiculosServiceMock->expects($this->exactly(1))->method("obterVeiculoPorPlaca")->willReturn(
-            new VeiculoModel(
+        $obterVeiculoPorPlacaUseCaseMock->expects($this->exactly(1))->method("executar")->willReturn(
+            new Veiculo(
                 id: 789,
-                placa: "ABC-1234",
+                placa: new Placa("ABC-1234"),
                 marca: "Volkswagen",
                 modelo: "Gol",
             )
@@ -125,14 +127,14 @@ class ConsultarOrdemServicoPorVeiculoEClienteControllerTest extends TestCase {
         $container = $containerBuilder->forTesting()->build();
 
         $clientesServiceMock = $this->createMock(ClienteService::class);
-        $veiculosServiceMock = $this->createMock(VeiculoService::class);
+        $obterVeiculoPorPlacaUseCaseMock = $this->createMock(ObterVeiculoPorPlacaUseCase::class);
         $serviceMock = $this->createMock(OrdemServicoService::class);
         $itensServiceMock = $this->createMock(ItensOrdemServicoService::class);
 
         $controller = new ConsultarOrdemServicoPorVeiculoEClienteController(
             contractResolver: $container->get(ContractResolver::class),
             clienteService: $clientesServiceMock,
-            veiculoService: $veiculosServiceMock,
+            obterVeiculoPorPlacaUseCase: $obterVeiculoPorPlacaUseCaseMock,
             ordemServicoService: $serviceMock,
             itensOrdemServicoService: $itensServiceMock,
         );
@@ -163,14 +165,14 @@ class ConsultarOrdemServicoPorVeiculoEClienteControllerTest extends TestCase {
         $container = $containerBuilder->forTesting()->build();
 
         $clientesServiceMock = $this->createMock(ClienteService::class);
-        $veiculosServiceMock = $this->createMock(VeiculoService::class);
+        $obterVeiculoPorPlacaUseCaseMock = $this->createMock(ObterVeiculoPorPlacaUseCase::class);
         $serviceMock = $this->createMock(OrdemServicoService::class);
         $itensServiceMock = $this->createMock(ItensOrdemServicoService::class);
 
         $controller = new ConsultarOrdemServicoPorVeiculoEClienteController(
             contractResolver: $container->get(ContractResolver::class),
             clienteService: $clientesServiceMock,
-            veiculoService: $veiculosServiceMock,
+            obterVeiculoPorPlacaUseCase: $obterVeiculoPorPlacaUseCaseMock,
             ordemServicoService: $serviceMock,
             itensOrdemServicoService: $itensServiceMock,
         );
@@ -198,14 +200,14 @@ class ConsultarOrdemServicoPorVeiculoEClienteControllerTest extends TestCase {
         $container = $containerBuilder->forTesting()->build();
 
         $clientesServiceMock = $this->createMock(ClienteService::class);
-        $veiculosServiceMock = $this->createMock(VeiculoService::class);
+        $obterVeiculoPorPlacaUseCaseMock = $this->createMock(ObterVeiculoPorPlacaUseCase::class);
         $serviceMock = $this->createMock(OrdemServicoService::class);
         $itensServiceMock = $this->createMock(ItensOrdemServicoService::class);
 
         $controller = new ConsultarOrdemServicoPorVeiculoEClienteController(
             contractResolver: $container->get(ContractResolver::class),
             clienteService: $clientesServiceMock,
-            veiculoService: $veiculosServiceMock,
+            obterVeiculoPorPlacaUseCase: $obterVeiculoPorPlacaUseCaseMock,
             ordemServicoService: $serviceMock,
             itensOrdemServicoService: $itensServiceMock,
         );
@@ -220,7 +222,7 @@ class ConsultarOrdemServicoPorVeiculoEClienteControllerTest extends TestCase {
             ),
         ]);
 
-        $veiculosServiceMock->expects($this->exactly(1))->method("obterVeiculoPorPlaca")->willReturn(null);
+        $obterVeiculoPorPlacaUseCaseMock->expects($this->exactly(1))->method("executar")->willThrowException(VeiculoNaoEncontradoException::comPlaca("ABC-1234"));
 
         $requestFactory = new ServerRequestFactory();
         $request = $requestFactory->createServerRequest("POST", "/ordens-servico/");
@@ -243,14 +245,14 @@ class ConsultarOrdemServicoPorVeiculoEClienteControllerTest extends TestCase {
         $container = $containerBuilder->forTesting()->build();
 
         $clientesServiceMock = $this->createMock(ClienteService::class);
-        $veiculosServiceMock = $this->createMock(VeiculoService::class);
+        $obterVeiculoPorPlacaUseCaseMock = $this->createMock(ObterVeiculoPorPlacaUseCase::class);
         $serviceMock = $this->createMock(OrdemServicoService::class);
         $itensServiceMock = $this->createMock(ItensOrdemServicoService::class);
 
         $controller = new ConsultarOrdemServicoPorVeiculoEClienteController(
             contractResolver: $container->get(ContractResolver::class),
             clienteService: $clientesServiceMock,
-            veiculoService: $veiculosServiceMock,
+            obterVeiculoPorPlacaUseCase: $obterVeiculoPorPlacaUseCaseMock,
             ordemServicoService: $serviceMock,
             itensOrdemServicoService: $itensServiceMock,
         );
@@ -265,10 +267,10 @@ class ConsultarOrdemServicoPorVeiculoEClienteControllerTest extends TestCase {
             ),
         ]);
 
-        $veiculosServiceMock->expects($this->exactly(1))->method("obterVeiculoPorPlaca")->willReturn(
-            new VeiculoModel(
+        $obterVeiculoPorPlacaUseCaseMock->expects($this->exactly(1))->method("executar")->willReturn(
+            new Veiculo(
                 id: 789,
-                placa: "ABC-1234",
+                placa: new Placa("ABC-1234"),
                 marca: "Volkswagen",
                 modelo: "Gol",
             )

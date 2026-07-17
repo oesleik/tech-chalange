@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Veiculos\Presentation\Http\Controller;
 
-use App\Core\Infrastructure\Presentation\HttpStatusCodeEnum;
-use App\Core\Infrastructure\Presentation\PresenterInterface;
-use App\Veiculos\Application\UseCase\ListarVeiculo\ListarVeiculoInputDTO;
+use App\Core\Presentation\Http\HttpStatusCodeEnum;
+use App\Core\Presentation\Http\PresenterInterface;
 use App\Veiculos\Application\UseCase\ListarVeiculo\ListarVeiculoUseCase;
 use App\Veiculos\Presentation\Http\DTO\ListagemVeiculosResponseDTO;
+use App\Veiculos\Presentation\Http\DTO\ListarVeiculoMapper;
 use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
 use OpenApi\Attributes as OA;
@@ -73,7 +73,7 @@ final class ListarVeiculoController {
         ResponseInterface $response,
     ): ResponseInterface {
         try {
-            $input = ListarVeiculoInputDTO::fromArray(
+            $input = ListarVeiculoMapper::fromQueryParams(
                 $request->getQueryParams()
             );
 

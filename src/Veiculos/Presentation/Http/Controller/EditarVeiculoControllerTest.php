@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Veiculos\Presentation\Http\Controller;
 
-use App\Core\Infrastructure\Presentation\HttpStatusCodeEnum;
-use App\Core\Infrastructure\Presentation\PresenterInterface;
+use App\Core\Presentation\Http\HttpStatusCodeEnum;
+use App\Core\Presentation\Http\PresenterInterface;
 use App\Veiculos\Application\UseCase\EditarVeiculo\EditarVeiculoInputDTO;
 use App\Veiculos\Application\UseCase\EditarVeiculo\EditarVeiculoUseCase;
 use App\Veiculos\Domain\Entity\Placa;
