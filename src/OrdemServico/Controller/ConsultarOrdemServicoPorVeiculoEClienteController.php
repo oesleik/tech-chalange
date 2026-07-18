@@ -10,12 +10,12 @@ use App\Core\Contract\ContractResolver;
 use App\Core\Contract\InvalidContractException;
 use App\Core\Contract\ValidationErrorResponse;
 use App\OrdemServico\Contract\ConsultarOrdemServicoPorVeiculoEClienteRequest;
-use App\OrdemServico\Contract\ConsultarOrdemServicoPorVeiculoRequest;
 use App\OrdemServico\Contract\OrdemServicoCompletaResponse;
 use App\OrdemServico\Model\FiltroOrdemServico;
 use App\OrdemServico\Service\ItensOrdemServicoService;
 use App\OrdemServico\Service\OrdemServicoService;
-use App\Veiculos\Service\VeiculoService;
+use App\Veiculos\Application\UseCase\ObterVeiculoPorPlaca\ObterVeiculoPorPlacaUseCase;
+use App\Veiculos\Domain\Exception\VeiculoNaoEncontradoException;
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -52,7 +52,7 @@ class ConsultarOrdemServicoPorVeiculoEClienteController {
     public function __construct(
         private ContractResolver $contractResolver,
         private ClienteService $clienteService,
-        private VeiculoService $veiculoService,
+        private ObterVeiculoPorPlacaUseCase $obterVeiculoPorPlacaUseCase,
         private OrdemServicoService $ordemServicoService,
         private ItensOrdemServicoService $itensOrdemServicoService,
     ) {}
@@ -76,14 +76,15 @@ class ConsultarOrdemServicoPorVeiculoEClienteController {
             return $response->withStatus(404, "Cliente não encontrado para o CPF/CNPJ informado");
         }
 
-        $veiculo = $this->veiculoService->obterVeiculoPorPlaca($input->placa);
-        if ($veiculo === null || empty($veiculo->getId())) {
+        try {
+            $veiculo = $this->obterVeiculoPorPlacaUseCase->executar($input->placa);
+        } catch (VeiculoNaoEncontradoException) {
             return $response->withStatus(404, "Veículo não encontrado para a placa informada");
         }
 
         $filtros = new FiltroOrdemServico(
             idCliente: $cliente->getId(),
-            idVeiculo: $veiculo->getId(),
+            idVeiculo: $veiculo->id(),
             limit: 1,
         );
 

@@ -2,14 +2,15 @@
 
 declare(strict_types=1);
 
-use App\Clientes\Service\ClienteService;
-use App\Core\Auth\OrdemServico\JwtOrdemServicoService;
-use App\Core\Config\AppConfig;
+use App\Core\AppDatabase;
 use App\Core\Config\EmailConfig;
 use App\Core\Email\EmailService;
-use App\OrdemServico\Service\EnviarOrcamentoOrdemServicoEmailService;
-use App\OrdemServico\Service\ItensOrdemServicoService;
-use App\OrdemServico\Service\OrdemServicoService;
+use App\Core\Infrastructure\Persistence\DbConnectionInterface;
+use App\Core\Infrastructure\Persistence\DatabaseConnection;
+use App\Core\Presentation\Http\JsonPresenter;
+use App\Core\Presentation\Http\PresenterInterface;
+use App\Veiculos\Application\Gateway\VeiculoGatewayInterface;
+use App\Veiculos\Infrastructure\Persistence\VeiculoGateway;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Slim\Psr7\Factory\ResponseFactory;
 
@@ -48,4 +49,11 @@ return [
     EmailService::class => fn(\DI\Container $c) => new EmailService(
         $c->get(EmailConfig::class),
     ),
+    DbConnectionInterface::class => fn(\DI\Container $c) => new DatabaseConnection(
+        $c->get(AppDatabase::class),
+    ),
+    PresenterInterface::class => fn(\DI\Container $c) => new JsonPresenter(
+        $c->get(Symfony\Component\Serializer\SerializerInterface::class),
+    ),
+    VeiculoGatewayInterface::class => fn(\DI\Container $c) => new VeiculoGateway($c->get(DbConnectionInterface::class)),
 ];
