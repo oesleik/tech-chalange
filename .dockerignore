@@ -1,0 +1,7 @@
+.github/
+.vscode/
+coverage/
+local/
+docs/
+vendor/
+.env*
