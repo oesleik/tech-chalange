@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Veiculos\Validator;
 
-use App\Veiculos\Domain\Entity\Placa;
+use App\Veiculos\Domain\Entity\Placa as PlacaEntity;
 use InvalidArgumentException;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
@@ -27,7 +27,7 @@ class PlacaValidator extends ConstraintValidator {
         }
 
         try {
-            new Placa($value);
+            new PlacaEntity($value);
         } catch (InvalidArgumentException) {
             $this->context->buildViolation($constraint->message)
                 ->setParameter('{{ string }}', $value)
