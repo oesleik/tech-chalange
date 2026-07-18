@@ -11,6 +11,8 @@ use App\Core\Presentation\Http\JsonPresenter;
 use App\Core\Presentation\Http\PresenterInterface;
 use App\Veiculos\Application\Gateway\VeiculoGatewayInterface;
 use App\Veiculos\Infrastructure\Persistence\VeiculoGateway;
+use App\Peca\Application\Gateway\PecaGatewayInterface;
+use App\Peca\Infrastructure\Persistence\PecaGateway;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Slim\Psr7\Factory\ResponseFactory;
 
@@ -56,4 +58,5 @@ return [
         $c->get(Symfony\Component\Serializer\SerializerInterface::class),
     ),
     VeiculoGatewayInterface::class => fn(\DI\Container $c) => new VeiculoGateway($c->get(DbConnectionInterface::class)),
+    PecaGatewayInterface::class => fn(\DI\Container $c) => new PecaGateway($c->get(DbConnectionInterface::class)),
 ];
