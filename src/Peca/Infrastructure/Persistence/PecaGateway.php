@@ -6,54 +6,40 @@ namespace App\Peca\Infrastructure\Persistence;
 
 use App\Peca\Application\Gateway\PecaGatewayInterface;
 use App\Peca\Domain\Entity\Peca;
-use App\Core\AppDatabase;
-use PDO;
+use App\Core\Infrastructure\Persistence\DbConnectionInterface;
 
 final class PecaGateway implements PecaGatewayInterface {
     private const TABELA = 'pecas';
 
-    public function __construct(private readonly AppDatabase $pdo) {}
+    public function __construct(private readonly DbConnectionInterface $connection) {}
 
     public function buscarPorId(int $id): ?Peca {
-        $stmt = $this->pdo->prepare('SELECT * FROM ' . self::TABELA . ' WHERE id = ?');
-        $stmt->execute([$id]);
-        $row = $stmt->fetchObject();
-        return $row ? PecaMapper::paraEntidade($row) : null;
+        $linhas = $this->connection->buscarPorParametros(self::TABELA, null, ['id' => $id]);
+        return $linhas === [] ? null : PecaMapper::paraEntidade($linhas[0]);
     }
 
     public function inserir(Peca $peca): Peca {
-        $stmt = $this->pdo->prepare(
-            'INSERT INTO ' . self::TABELA . ' (descricao, valor_unitario) VALUES (?, ?)'
-        );
-        $stmt->execute([
-            $peca->descricao(),
-            $peca->valorUnitario()->getValue(),
+        $id = $this->connection->inserir(self::TABELA, [
+            'descricao' => $peca->descricao(),
+            'valor_unitario' => $peca->valorUnitario()->getValue(),
         ]);
-
-        $id = (int) $this->pdo->lastInsertId();
         return $peca->comId($id);
     }
 
     public function atualizar(Peca $peca): Peca {
-        $stmt = $this->pdo->prepare(
-            'UPDATE ' . self::TABELA . ' SET descricao = ?, valor_unitario = ? WHERE id = ?'
+        $this->connection->atualizar(
+            self::TABELA,
+            [
+                'descricao' => $peca->descricao(),
+                'valor_unitario' => $peca->valorUnitario()->getValue(),
+            ],
+            ['id' => $peca->id()],
         );
-        $stmt->execute([
-            $peca->descricao(),
-            $peca->valorUnitario()->getValue(),
-            $peca->id(),
-        ]);
-
         return $peca;
     }
 
     public function listar(): array {
-        $result = $this->pdo->query('SELECT * FROM ' . self::TABELA, PDO::FETCH_OBJ);
-
-        $pecas = [];
-        foreach ($result as $row) {
-            $pecas[] = PecaMapper::paraEntidade($row);
-        }
-        return $pecas;
+        $linhas = $this->connection->buscarTodos(self::TABELA);
+        return array_map(PecaMapper::paraEntidade(...), $linhas);
     }
 }

@@ -8,11 +8,12 @@ use App\Peca\Domain\Entity\Peca;
 use App\Peca\Domain\ValueObject\ValorUnitario;
 
 final class PecaMapper {
-    public static function paraEntidade(object $row): Peca {
+    /** @param array<string, mixed> $linha */
+    public static function paraEntidade(array $linha): Peca {
         return Peca::reconstituir(
-            (int) $row->id,
-            (string) $row->descricao,
-            new ValorUnitario((float) $row->valor_unitario),
+            (int) $linha['id'],
+            (string) $linha['descricao'],
+            new ValorUnitario((float) $linha['valor_unitario']),
         );
     }
 }
