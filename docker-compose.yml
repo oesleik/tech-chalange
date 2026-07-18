@@ -33,10 +33,8 @@ services:
     restart: unless-stopped
     volumes:
       - .:/var/www/html # mesmo volume do Nginx
-      - ./vendor:/var/www/html/vendor
+      - vendor:/var/www/html/vendor
       - ./docker/php/php.ini:/usr/local/etc/php/conf.d/custom.ini # configurações extras
-    command: >
-      sh -c "composer install --no-dev --optimize-autoloader && php-fpm"
     environment:
       - DB_HOST=mysql
       - DB_PORT=3306
@@ -126,6 +124,8 @@ services:
 # ------------------------------------------------------
 volumes:
   mysql_data:
+    driver: local
+  vendor:
     driver: local
 
 # ------------------------------------------------------
