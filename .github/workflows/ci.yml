@@ -71,7 +71,9 @@ jobs:
         id: tests
         continue-on-error: true
         run: |
-          docker compose run --rm -T --no-deps php vendor/bin/phpunit --configuration phpunit.xml \
+          mkdir -p coverage
+          docker compose run --rm -T --no-deps --user "$(id -u):$(id -g)" php vendor/bin/phpunit \
+            --configuration phpunit.xml \
             --coverage-clover=coverage/clover.xml --coverage-html=coverage/html --log-junit=coverage/junit.xml
 
       - name: Upload coverage HTML
