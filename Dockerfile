@@ -1,6 +1,3 @@
-# =====================================================
-# Dockerfile — PHP 8.4 FPM
-# =====================================================
 FROM php:8.4-fpm
 
 # Instala dependências do sistema
@@ -42,16 +39,16 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Define o diretório de trabalho
 WORKDIR /var/www/html
 
+RUN chown -R www-data:www-data /var/www/html
+
+USER www-data
+
 # Copia composer.json primeiro para aproveitar cache de layers
-COPY composer.json composer.lock* ./
+COPY --chown=www-data:www-data composer.json composer.lock* ./
 RUN composer install --no-dev --optimize-autoloader --no-scripts
 
 # Copia o restante do código da aplicação
-COPY . .
-
-# Ajusta permissões
-RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 755 /var/www/html
+COPY --chown=www-data:www-data . .
 
 EXPOSE 9000
 
