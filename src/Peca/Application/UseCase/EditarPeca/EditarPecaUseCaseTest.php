@@ -21,7 +21,7 @@ final class EditarPecaUseCaseTest extends TestCase {
         $gateway->method('buscarPorId')->with(1)->willReturn($pecaExistente);
         $gateway->method('atualizar')->willReturnArgument(0);
 
-        $resultado = (new EditarPecaUseCase($gateway))->executar(
+        $resultado = new EditarPecaUseCase($gateway)->executar(
             1,
             new EditarPecaInputDTO(descricao: 'Filtro de óleo premium', valorUnitario: null),
         );
@@ -38,7 +38,7 @@ final class EditarPecaUseCaseTest extends TestCase {
         $gateway->method('buscarPorId')->with(1)->willReturn($pecaExistente);
         $gateway->method('atualizar')->willReturnArgument(0);
 
-        $resultado = (new EditarPecaUseCase($gateway))->executar(
+        $resultado = new EditarPecaUseCase($gateway)->executar(
             1,
             new EditarPecaInputDTO(descricao: 'Correia dentada', valorUnitario: 120.0),
         );
@@ -54,7 +54,7 @@ final class EditarPecaUseCaseTest extends TestCase {
         $gateway->method('buscarPorId')->with(1)->willReturn($pecaExistente);
         $gateway->method('atualizar')->willReturnArgument(0);
 
-        $resultado = (new EditarPecaUseCase($gateway))->executar(
+        $resultado = new EditarPecaUseCase($gateway)->executar(
             1,
             new EditarPecaInputDTO(descricao: null, valorUnitario: null),
         );
@@ -69,7 +69,7 @@ final class EditarPecaUseCaseTest extends TestCase {
         $gateway->expects($this->never())->method('atualizar');
 
         $this->expectException(PecaNaoEncontradaException::class);
-        (new EditarPecaUseCase($gateway))->executar(
+        new EditarPecaUseCase($gateway)->executar(
             99,
             new EditarPecaInputDTO(descricao: 'Qualquer coisa', valorUnitario: null),
         );
@@ -83,7 +83,7 @@ final class EditarPecaUseCaseTest extends TestCase {
         $gateway->expects($this->never())->method('atualizar');
 
         $this->expectException(InvalidArgumentException::class);
-        (new EditarPecaUseCase($gateway))->executar(
+        new EditarPecaUseCase($gateway)->executar(
             1,
             new EditarPecaInputDTO(descricao: null, valorUnitario: -5.0),
         );

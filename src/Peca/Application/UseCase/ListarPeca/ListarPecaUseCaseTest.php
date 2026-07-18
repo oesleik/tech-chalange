@@ -20,7 +20,7 @@ final class ListarPecaUseCaseTest extends TestCase {
         $gateway = $this->createMock(PecaGatewayInterface::class);
         $gateway->method('listar')->willReturn($pecas);
 
-        $resultado = (new ListarPecaUseCase($gateway))->executar();
+        $resultado = new ListarPecaUseCase($gateway)->executar();
 
         $this->assertCount(2, $resultado);
         $this->assertSame('Filtro de óleo', $resultado[0]->descricao());
@@ -31,7 +31,7 @@ final class ListarPecaUseCaseTest extends TestCase {
         $gateway = $this->createMock(PecaGatewayInterface::class);
         $gateway->method('listar')->willReturn([]);
 
-        $resultado = (new ListarPecaUseCase($gateway))->executar();
+        $resultado = new ListarPecaUseCase($gateway)->executar();
 
         $this->assertSame([], $resultado);
     }

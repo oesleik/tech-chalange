@@ -18,7 +18,7 @@ final class ObterPecaUseCaseTest extends TestCase {
         $gateway = $this->createMock(PecaGatewayInterface::class);
         $gateway->method('buscarPorId')->with(1)->willReturn($peca);
 
-        $resultado = (new ObterPecaUseCase($gateway))->executar(1);
+        $resultado = new ObterPecaUseCase($gateway)->executar(1);
 
         $this->assertSame(1, $resultado->id());
         $this->assertSame('Filtro de óleo', $resultado->descricao());
@@ -29,6 +29,6 @@ final class ObterPecaUseCaseTest extends TestCase {
         $gateway->method('buscarPorId')->with(99)->willReturn(null);
 
         $this->expectException(PecaNaoEncontradaException::class);
-        (new ObterPecaUseCase($gateway))->executar(99);
+        new ObterPecaUseCase($gateway)->executar(99);
     }
 }

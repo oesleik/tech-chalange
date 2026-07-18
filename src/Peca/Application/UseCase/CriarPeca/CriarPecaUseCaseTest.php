@@ -17,7 +17,7 @@ final class CriarPecaUseCaseTest extends TestCase {
             fn(Peca $p) => $p->comId(1),
         );
 
-        $resultado = (new CriarPecaUseCase($gateway))->executar(
+        $resultado = new CriarPecaUseCase($gateway)->executar(
             new CriarPecaInputDTO('Filtro de óleo', 49.90),
         );
 
@@ -31,7 +31,7 @@ final class CriarPecaUseCaseTest extends TestCase {
         $gateway->expects($this->never())->method('inserir');
 
         $this->expectException(\InvalidArgumentException::class);
-        (new CriarPecaUseCase($gateway))->executar(
+        new CriarPecaUseCase($gateway)->executar(
             new CriarPecaInputDTO('Filtro de óleo', -10.0),
         );
     }
