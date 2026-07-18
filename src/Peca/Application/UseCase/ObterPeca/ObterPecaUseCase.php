@@ -8,7 +8,7 @@ use App\Peca\Application\Gateway\PecaGatewayInterface;
 use App\Peca\Domain\Entity\Peca;
 use App\Peca\Domain\Exception\PecaNaoEncontradaException;
 
-final class ObterPecaUseCase {
+class ObterPecaUseCase {
     public function __construct(private readonly PecaGatewayInterface $gateway) {}
 
     public function executar(int $id): Peca {

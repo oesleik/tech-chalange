@@ -7,7 +7,7 @@ namespace App\Peca\Application\UseCase\ListarPeca;
 use App\Peca\Application\Gateway\PecaGatewayInterface;
 use App\Peca\Domain\Entity\Peca;
 
-final class ListarPecaUseCase {
+class ListarPecaUseCase {
     public function __construct(private readonly PecaGatewayInterface $gateway) {}
 
     /** @return Peca[] */

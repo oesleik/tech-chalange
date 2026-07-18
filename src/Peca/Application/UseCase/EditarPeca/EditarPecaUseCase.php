@@ -9,7 +9,7 @@ use App\Peca\Domain\Entity\Peca;
 use App\Peca\Domain\Exception\PecaNaoEncontradaException;
 use App\Peca\Domain\ValueObject\ValorUnitario;
 
-final class EditarPecaUseCase {
+class EditarPecaUseCase {
     public function __construct(private readonly PecaGatewayInterface $gateway) {}
 
     public function executar(int $id, EditarPecaInputDTO $input): Peca {

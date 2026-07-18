@@ -8,7 +8,7 @@ use App\Peca\Application\Gateway\PecaGatewayInterface;
 use App\Peca\Domain\Entity\Peca;
 use App\Peca\Domain\ValueObject\ValorUnitario;
 
-final class CriarPecaUseCase {
+class CriarPecaUseCase {
     public function __construct(private readonly PecaGatewayInterface $gateway) {}
 
     public function executar(CriarPecaInputDTO $input): Peca {
