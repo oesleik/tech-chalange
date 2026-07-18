@@ -13,8 +13,7 @@ use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 use Symfony\Component\Validator\Exception\UnexpectedValueException;
 
 class PlacaValidator extends ConstraintValidator {
-    public function validate(mixed $value, Constraint $constraint): void
-    {
+    public function validate(mixed $value, Constraint $constraint): void {
         if (!$constraint instanceof PlacaConstraint) {
             throw new UnexpectedTypeException($constraint, PlacaConstraint::class);
         }
