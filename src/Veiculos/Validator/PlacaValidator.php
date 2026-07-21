@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace App\Veiculos\Validator;
 
-use App\Veiculos\Domain\Entity\Placa;
+use App\Veiculos\Domain\Entity\Placa as PlacaEntity;
+use App\Veiculos\Validator\Placa as PlacaConstraint;
 use InvalidArgumentException;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
@@ -13,11 +14,10 @@ use Symfony\Component\Validator\Exception\UnexpectedValueException;
 
 class PlacaValidator extends ConstraintValidator {
     public function validate(mixed $value, Constraint $constraint): void {
-        if (!$constraint instanceof Placa) {
-            throw new UnexpectedTypeException($constraint, Placa::class);
+        if (!$constraint instanceof PlacaConstraint) {
+            throw new UnexpectedTypeException($constraint, PlacaConstraint::class);
         }
 
-        // NotBlank, NotNull, etc. take care of null values
         if (null === $value || '' === $value) {
             return;
         }
@@ -27,7 +27,7 @@ class PlacaValidator extends ConstraintValidator {
         }
 
         try {
-            new Placa($value);
+            new PlacaEntity($value);
         } catch (InvalidArgumentException) {
             $this->context->buildViolation($constraint->message)
                 ->setParameter('{{ string }}', $value)

@@ -53,10 +53,10 @@ $app->group('', function (RouteCollectorProxy $group): void {
     });
 
     $group->group('/pecas', function (RouteCollectorProxy $g): void {
-        $g->get('/', App\Peca\Controller\ListarPecasController::class);
-        $g->post('/', App\Peca\Controller\CriarPecaController::class);
-        $g->get('/{id:[0-9]+}', App\Peca\Controller\ObterPecaController::class);
-        $g->patch('/{id:[0-9]+}', App\Peca\Controller\EditarPecaController::class);
+        $g->get('/', App\Peca\Presentation\Http\Router\ListarPecasRouter::class);
+        $g->post('/', App\Peca\Presentation\Http\Router\CriarPecaRouter::class);
+        $g->get('/{id:[0-9]+}', App\Peca\Presentation\Http\Router\ObterPecaRouter::class);
+        $g->patch('/{id:[0-9]+}', App\Peca\Presentation\Http\Router\EditarPecaRouter::class);
     });
 
     $group->group("/servicos", function (RouteCollectorProxy $group): void {
