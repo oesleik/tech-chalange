@@ -32,6 +32,29 @@ make up
 make migrate
 ```
 
+#### Para desenvolvimento
+
+Para ter o vendor local, funcionando com o intelisense da IDE:
+```bash
+mkdir -p vendor
+docker compose cp php:/var/www/html/vendor/. ./vendor/
+
+# Se erro de permissões
+sudo chown -R "$(id -u):$(id -g)" vendor
+```
+
+Gerenciando dependências do composer:
+```bash
+# Entre no container
+make shell
+
+# Para instalar
+composer require ...
+
+# Para atualizar
+composer update ...
+```
+
 ## 🛠️ Comandos úteis
 
 Vários comandos estão embutidos no Makefile, como rodar testes, lint, gerar token de autenticação, etc. Para visualizar todos os disponíveis, basta rodar:

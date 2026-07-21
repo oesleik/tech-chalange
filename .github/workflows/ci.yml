@@ -30,16 +30,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-composer-
 
-      - name: Install dependencies (composer)
-        run: |
-          docker run --rm \
-            -v ${{ github.workspace }}:/app \
-            -v $HOME/.composer/cache:/tmp/composer-cache \
-            -e COMPOSER_CACHE_DIR=/tmp/composer-cache \
-            -w /app \
-            composer:2 \
-            sh -lc "composer install --prefer-dist --no-interaction --no-progress"
-
       - name: Setup Docker Buildx
         id: buildx
         uses: docker/setup-buildx-action@v3
@@ -58,6 +48,15 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+      # Instala com require-dev no volume vendor usado pelo compose
+      # (a imagem de produção usa --no-dev; o volume nomeado sombreia o vendor do host)
+      - name: Install dependencies (composer)
+        run: |
+          docker compose run --rm -T --no-deps \
+            -v $HOME/.composer/cache:/tmp/composer-cache \
+            -e COMPOSER_CACHE_DIR=/tmp/composer-cache \
+            php composer install --prefer-dist --no-interaction --no-progress
+
       - name: Lint (php-cs-fixer dry-run)
         id: lint
         continue-on-error: true
@@ -72,7 +71,9 @@ jobs:
         id: tests
         continue-on-error: true
         run: |
-          docker compose run --rm -T --no-deps php vendor/bin/phpunit --configuration phpunit.xml \
+          mkdir -p coverage
+          docker compose run --rm -T --no-deps --user "$(id -u):$(id -g)" php vendor/bin/phpunit \
+            --configuration phpunit.xml \
             --coverage-clover=coverage/clover.xml --coverage-html=coverage/html --log-junit=coverage/junit.xml
 
       - name: Upload coverage HTML
