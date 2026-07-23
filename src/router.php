@@ -7,7 +7,6 @@ use App\Core\Auth\OrdemServico\JwtOrdemServicoMiddleware;
 use App\Core\BaseController;
 use App\Core\Config\AppConfig;
 use App\Core\ServiceContainerBuilder;
-use App\Estoque\Controller\EstoqueController;
 use Slim\Routing\RouteCollectorProxy;
 
 $containerBuilder = new ServiceContainerBuilder();
@@ -89,9 +88,9 @@ $app->group('', function (RouteCollectorProxy $group): void {
     });
 
     $group->group('/estoque', function (RouteCollectorProxy $g): void {
-        $g->post('/entrada', [EstoqueController::class, 'registrarEntrada']);
-        $g->post('/baixa', [EstoqueController::class, 'registrarBaixa']);
-        $g->get('/pecas/{id:[0-9]+}', [EstoqueController::class, 'consultarEstoque']);
+        $g->post('/entrada',          App\Estoque\Presentation\Http\Router\RegistrarEntradaEstoqueRouter::class);
+        $g->post('/baixa',            App\Estoque\Presentation\Http\Router\RegistrarBaixaEstoqueRouter::class);
+        $g->get('/pecas/{id:[0-9]+}', App\Estoque\Presentation\Http\Router\ConsultarEstoquePorPecaRouter::class);
     });
 
 })->add(JwtMiddleware::class);
