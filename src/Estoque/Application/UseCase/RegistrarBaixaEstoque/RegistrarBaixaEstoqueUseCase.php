@@ -10,12 +10,10 @@ use App\Estoque\Domain\Enum\TipoLancamentoEnum;
 use App\Estoque\Domain\Exception\EstoqueInsuficienteException;
 use App\Estoque\Domain\Exception\PecaNaoEncontradaException;
 
-final class RegistrarBaixaEstoqueUseCase implements RegistrarBaixaEstoqueUseCaseInterface
-{
+final class RegistrarBaixaEstoqueUseCase implements RegistrarBaixaEstoqueUseCaseInterface {
     public function __construct(private readonly EstoqueGatewayInterface $gateway) {}
 
-    public function executar(RegistrarBaixaEstoqueInputDTO $input): LancamentoEstoque
-    {
+    public function executar(RegistrarBaixaEstoqueInputDTO $input): LancamentoEstoque {
         if (!$this->gateway->pecaExiste($input->pecaId)) {
             throw PecaNaoEncontradaException::comId($input->pecaId);
         }

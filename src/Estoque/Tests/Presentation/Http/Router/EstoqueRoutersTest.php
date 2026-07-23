@@ -18,10 +18,8 @@ use App\Estoque\Presentation\Http\Controller\ConsultarEstoquePorPecaControllerIn
 use App\Estoque\Presentation\Http\Controller\RegistrarBaixaEstoqueControllerInterface;
 use App\Estoque\Presentation\Http\Controller\RegistrarEntradaEstoqueControllerInterface;
 
-final class EstoqueRoutersTest extends TestCase
-{
-    public function testEntradaRouterDelegaParaController(): void
-    {
+final class EstoqueRoutersTest extends TestCase {
+    public function testEntradaRouterDelegaParaController(): void {
         $request    = $this->createMock(ServerRequestInterface::class);
         $response   = $this->createMock(ResponseInterface::class);
         $controller = $this->createMock(RegistrarEntradaEstoqueControllerInterface::class);
@@ -38,8 +36,7 @@ final class EstoqueRoutersTest extends TestCase
         $this->assertSame($response, $result);
     }
 
-    public function testBaixaRouterDelegaParaController(): void
-    {
+    public function testBaixaRouterDelegaParaController(): void {
         $request    = $this->createMock(ServerRequestInterface::class);
         $response   = $this->createMock(ResponseInterface::class);
         $controller = $this->createMock(RegistrarBaixaEstoqueControllerInterface::class);
@@ -56,8 +53,7 @@ final class EstoqueRoutersTest extends TestCase
         $this->assertSame($response, $result);
     }
 
-    public function testConsultarRouterDelegaParaController(): void
-    {
+    public function testConsultarRouterDelegaParaController(): void {
         $request    = $this->createMock(ServerRequestInterface::class);
         $response   = $this->createMock(ResponseInterface::class);
         $args       = ['id' => '1'];

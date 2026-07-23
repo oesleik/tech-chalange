@@ -19,16 +19,14 @@ use Psr\Http\Message\ServerRequestInterface;
 use Slim\Psr7\Factory\ServerRequestFactory;
 use App\Estoque\Application\UseCase\RegistrarBaixaEstoque\RegistrarBaixaEstoqueUseCaseInterface;
 
-final class RegistrarBaixaEstoqueControllerTest extends TestCase
-{
+final class RegistrarBaixaEstoqueControllerTest extends TestCase {
     private RegistrarBaixaEstoqueController $controller;
     private RegistrarBaixaEstoqueUseCaseInterface&MockObject $useCaseMock;
     private ResponseInterface $response;
     private ServerRequestInterface $request;
 
-    protected function setUp(): void
-    {
-        $container = (new ServiceContainerBuilder())->forTesting()->build();
+    protected function setUp(): void {
+        $container = new ServiceContainerBuilder()->forTesting()->build();
 
         $this->useCaseMock = $this->createMock(RegistrarBaixaEstoqueUseCaseInterface::class);
 
@@ -45,8 +43,7 @@ final class RegistrarBaixaEstoqueControllerTest extends TestCase
         $this->response = $container->get(ResponseInterface::class);
     }
 
-    public function testRegistraBaixaComSucesso(): void
-    {
+    public function testRegistraBaixaComSucesso(): void {
         $this->useCaseMock
             ->expects($this->once())
             ->method('executar')
@@ -65,8 +62,7 @@ final class RegistrarBaixaEstoqueControllerTest extends TestCase
         $this->assertSame('baixa', $body->tipo_lancamento);
     }
 
-    public function testRetorna404QuandoPecaNaoEncontrada(): void
-    {
+    public function testRetorna404QuandoPecaNaoEncontrada(): void {
         $this->useCaseMock
             ->method('executar')
             ->willThrowException(PecaNaoEncontradaException::comId(1));
@@ -76,8 +72,7 @@ final class RegistrarBaixaEstoqueControllerTest extends TestCase
         $this->assertSame(404, $response->getStatusCode());
     }
 
-    public function testRetorna422QuandoEstoqueInsuficiente(): void
-    {
+    public function testRetorna422QuandoEstoqueInsuficiente(): void {
         // saldo insuficiente é regra de negócio — por isso 422, não 400
         $this->useCaseMock
             ->method('executar')
@@ -88,8 +83,7 @@ final class RegistrarBaixaEstoqueControllerTest extends TestCase
         $this->assertSame(422, $response->getStatusCode());
     }
 
-    public function testRetorna400QuandoQuantidadeInvalida(): void
-    {
+    public function testRetorna400QuandoQuantidadeInvalida(): void {
         $requestFactory = new ServerRequestFactory();
         $request = $requestFactory->createServerRequest('POST', '/estoque/baixa');
         $request->getBody()->write(json_encode(['id_peca' => 1, 'quantidade' => 0]));
@@ -102,8 +96,7 @@ final class RegistrarBaixaEstoqueControllerTest extends TestCase
         $this->assertSame(400, $response->getStatusCode());
     }
 
-    public function testRetorna400QuandoIdPecaInvalido(): void
-    {
+    public function testRetorna400QuandoIdPecaInvalido(): void {
         $requestFactory = new ServerRequestFactory();
         $request = $requestFactory->createServerRequest('POST', '/estoque/baixa');
         $request->getBody()->write(json_encode(['id_peca' => 0, 'quantidade' => 3]));

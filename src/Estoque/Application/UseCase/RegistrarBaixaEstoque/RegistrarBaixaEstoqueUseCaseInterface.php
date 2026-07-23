@@ -6,7 +6,6 @@ namespace App\Estoque\Application\UseCase\RegistrarBaixaEstoque;
 
 use App\Estoque\Domain\Entity\LancamentoEstoque;
 
-interface RegistrarBaixaEstoqueUseCaseInterface
-{
+interface RegistrarBaixaEstoqueUseCaseInterface {
     public function executar(RegistrarBaixaEstoqueInputDTO $input): LancamentoEstoque;
 }

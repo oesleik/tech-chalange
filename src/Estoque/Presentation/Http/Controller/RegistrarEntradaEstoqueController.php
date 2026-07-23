@@ -15,8 +15,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use App\Estoque\Application\UseCase\RegistrarEntradaEstoque\RegistrarEntradaEstoqueUseCaseInterface;
 
-final class RegistrarEntradaEstoqueController implements RegistrarEntradaEstoqueControllerInterface
-{
+final class RegistrarEntradaEstoqueController implements RegistrarEntradaEstoqueControllerInterface {
     public function __construct(
         private readonly RegistrarEntradaEstoqueUseCaseInterface $useCase,
         private readonly PresenterInterface $presenter,
@@ -31,14 +30,16 @@ final class RegistrarEntradaEstoqueController implements RegistrarEntradaEstoque
         ),
         tags: ['Estoque'],
         responses: [
-            new OA\Response(response: 200, description: 'Entrada registrada com sucesso',
-                content: new OA\JsonContent(ref: '#/components/schemas/LancamentoResponseDTO')),
+            new OA\Response(
+                response: 200,
+                description: 'Entrada registrada com sucesso',
+                content: new OA\JsonContent(ref: '#/components/schemas/LancamentoResponseDTO')
+            ),
             new OA\Response(response: 400, description: 'Dados inválidos'),
             new OA\Response(response: 404, description: 'Peça não encontrada'),
         ]
     )]
-    public function execute(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
-    {
+    public function execute(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface {
         try {
             $payload = (array) json_decode($request->getBody()->getContents(), true);
             $lancamento = $this->useCase->executar(RegistrarEntradaEstoqueMapper::parse($payload));

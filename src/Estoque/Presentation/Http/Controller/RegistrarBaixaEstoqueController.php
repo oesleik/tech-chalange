@@ -16,8 +16,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use App\Estoque\Application\UseCase\RegistrarBaixaEstoque\RegistrarBaixaEstoqueUseCaseInterface;
 
-final class RegistrarBaixaEstoqueController implements RegistrarBaixaEstoqueControllerInterface
-{
+final class RegistrarBaixaEstoqueController implements RegistrarBaixaEstoqueControllerInterface {
     public function __construct(
         private readonly RegistrarBaixaEstoqueUseCaseInterface $useCase,
         private readonly PresenterInterface $presenter,
@@ -32,15 +31,17 @@ final class RegistrarBaixaEstoqueController implements RegistrarBaixaEstoqueCont
         ),
         tags: ['Estoque'],
         responses: [
-            new OA\Response(response: 200, description: 'Baixa registrada com sucesso',
-                content: new OA\JsonContent(ref: '#/components/schemas/LancamentoResponseDTO')),
+            new OA\Response(
+                response: 200,
+                description: 'Baixa registrada com sucesso',
+                content: new OA\JsonContent(ref: '#/components/schemas/LancamentoResponseDTO')
+            ),
             new OA\Response(response: 400, description: 'Dados inválidos'),
             new OA\Response(response: 404, description: 'Peça não encontrada'),
             new OA\Response(response: 422, description: 'Estoque insuficiente'),
         ]
     )]
-    public function execute(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
-    {
+    public function execute(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface {
         try {
             $payload = (array) json_decode($request->getBody()->getContents(), true);
             $lancamento = $this->useCase->executar(RegistrarBaixaEstoqueMapper::parse($payload));

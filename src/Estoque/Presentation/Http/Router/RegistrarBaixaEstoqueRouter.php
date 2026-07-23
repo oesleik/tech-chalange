@@ -9,12 +9,10 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use App\Estoque\Presentation\Http\Controller\RegistrarBaixaEstoqueControllerInterface;
 
-final class RegistrarBaixaEstoqueRouter
-{
+final class RegistrarBaixaEstoqueRouter {
     public function __construct(private readonly RegistrarBaixaEstoqueControllerInterface $controller) {}
 
-    public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $args = []): ResponseInterface
-    {
+    public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $args = []): ResponseInterface {
         return $this->controller->execute($request, $response);
     }
 }

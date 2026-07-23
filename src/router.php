@@ -88,8 +88,8 @@ $app->group('', function (RouteCollectorProxy $group): void {
     });
 
     $group->group('/estoque', function (RouteCollectorProxy $g): void {
-        $g->post('/entrada',          App\Estoque\Presentation\Http\Router\RegistrarEntradaEstoqueRouter::class);
-        $g->post('/baixa',            App\Estoque\Presentation\Http\Router\RegistrarBaixaEstoqueRouter::class);
+        $g->post('/entrada', App\Estoque\Presentation\Http\Router\RegistrarEntradaEstoqueRouter::class);
+        $g->post('/baixa', App\Estoque\Presentation\Http\Router\RegistrarBaixaEstoqueRouter::class);
         $g->get('/pecas/{id:[0-9]+}', App\Estoque\Presentation\Http\Router\ConsultarEstoquePorPecaRouter::class);
     });
 

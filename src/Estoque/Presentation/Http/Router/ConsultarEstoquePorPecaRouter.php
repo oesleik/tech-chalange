@@ -9,12 +9,10 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use App\Estoque\Presentation\Http\Controller\ConsultarEstoquePorPecaControllerInterface;
 
-final class ConsultarEstoquePorPecaRouter
-{
+final class ConsultarEstoquePorPecaRouter {
     public function __construct(private readonly ConsultarEstoquePorPecaControllerInterface $controller) {}
 
-    public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $args = []): ResponseInterface
-    {
+    public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $args = []): ResponseInterface {
         // passa o $args para o controller conseguir pegar o {id} da rota
         return $this->controller->execute($request, $response, $args);
     }

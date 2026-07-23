@@ -7,7 +7,6 @@ namespace App\Estoque\Presentation\Http\Controller;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-interface RegistrarEntradaEstoqueControllerInterface
-{
+interface RegistrarEntradaEstoqueControllerInterface {
     public function execute(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface;
 }

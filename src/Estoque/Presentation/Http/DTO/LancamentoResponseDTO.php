@@ -9,8 +9,7 @@ use App\Estoque\Domain\Enum\TipoLancamentoEnum;
 use OpenApi\Attributes as OA;
 
 #[OA\Schema]
-final class LancamentoResponseDTO
-{
+final class LancamentoResponseDTO {
     public function __construct(
         #[OA\Property(example: 456)]
         public readonly int $id,
@@ -22,8 +21,7 @@ final class LancamentoResponseDTO
         public readonly string $tipo_lancamento,
     ) {}
 
-    public static function fromEntity(LancamentoEstoque $lancamento): self
-    {
+    public static function fromEntity(LancamentoEstoque $lancamento): self {
         return new self(
             id: (int) $lancamento->id(),
             id_peca: $lancamento->pecaId(),

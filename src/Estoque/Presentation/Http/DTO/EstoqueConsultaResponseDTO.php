@@ -8,8 +8,7 @@ use App\Estoque\Application\UseCase\ConsultarEstoquePorPeca\ConsultarEstoquePorP
 use OpenApi\Attributes as OA;
 
 #[OA\Schema]
-final class EstoqueConsultaResponseDTO
-{
+final class EstoqueConsultaResponseDTO {
     public function __construct(
         #[OA\Property(example: 123)]
         public readonly int $id_peca,
@@ -17,8 +16,7 @@ final class EstoqueConsultaResponseDTO
         public readonly int $estoque_atual,
     ) {}
 
-    public static function fromOutputDTO(ConsultarEstoquePorPecaOutputDTO $output): self
-    {
+    public static function fromOutputDTO(ConsultarEstoquePorPecaOutputDTO $output): self {
         return new self(
             id_peca: $output->pecaId,
             estoque_atual: $output->estoqueAtual,

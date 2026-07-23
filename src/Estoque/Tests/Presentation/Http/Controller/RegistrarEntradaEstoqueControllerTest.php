@@ -18,16 +18,14 @@ use Psr\Http\Message\ServerRequestInterface;
 use Slim\Psr7\Factory\ServerRequestFactory;
 use App\Estoque\Application\UseCase\RegistrarEntradaEstoque\RegistrarEntradaEstoqueUseCaseInterface;
 
-final class RegistrarEntradaEstoqueControllerTest extends TestCase
-{
+final class RegistrarEntradaEstoqueControllerTest extends TestCase {
     private RegistrarEntradaEstoqueController $controller;
     private RegistrarEntradaEstoqueUseCaseInterface&MockObject $useCaseMock;
     private ResponseInterface $response;
     private ServerRequestInterface $request;
 
-    protected function setUp(): void
-    {
-        $container = (new ServiceContainerBuilder())->forTesting()->build();
+    protected function setUp(): void {
+        $container = new ServiceContainerBuilder()->forTesting()->build();
 
         $this->useCaseMock = $this->createMock(RegistrarEntradaEstoqueUseCaseInterface::class);
 
@@ -44,8 +42,7 @@ final class RegistrarEntradaEstoqueControllerTest extends TestCase
         $this->response = $container->get(ResponseInterface::class);
     }
 
-    public function testRegistraEntradaComSucesso(): void
-    {
+    public function testRegistraEntradaComSucesso(): void {
         $this->useCaseMock
             ->expects($this->once())
             ->method('executar')
@@ -64,8 +61,7 @@ final class RegistrarEntradaEstoqueControllerTest extends TestCase
         $this->assertSame('entrada', $body->tipo_lancamento);
     }
 
-    public function testRetorna404QuandoPecaNaoEncontrada(): void
-    {
+    public function testRetorna404QuandoPecaNaoEncontrada(): void {
         $this->useCaseMock
             ->method('executar')
             ->willThrowException(PecaNaoEncontradaException::comId(1));
@@ -75,8 +71,7 @@ final class RegistrarEntradaEstoqueControllerTest extends TestCase
         $this->assertSame(404, $response->getStatusCode());
     }
 
-    public function testRetorna400QuandoQuantidadeInvalida(): void
-    {
+    public function testRetorna400QuandoQuantidadeInvalida(): void {
         $requestFactory = new ServerRequestFactory();
         $request = $requestFactory->createServerRequest('POST', '/estoque/entrada');
         // quantidade 0 é inválida
@@ -91,8 +86,7 @@ final class RegistrarEntradaEstoqueControllerTest extends TestCase
         $this->assertSame(400, $response->getStatusCode());
     }
 
-    public function testRetorna400QuandoIdPecaInvalido(): void
-    {
+    public function testRetorna400QuandoIdPecaInvalido(): void {
         $requestFactory = new ServerRequestFactory();
         $request = $requestFactory->createServerRequest('POST', '/estoque/entrada');
         $request->getBody()->write(json_encode(['id_peca' => 0, 'quantidade' => 5]));

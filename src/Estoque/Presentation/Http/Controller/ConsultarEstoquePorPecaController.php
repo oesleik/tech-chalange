@@ -14,8 +14,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use App\Estoque\Application\UseCase\ConsultarEstoquePorPeca\ConsultarEstoquePorPecaUseCaseInterface;
 
-final class ConsultarEstoquePorPecaController implements ConsultarEstoquePorPecaControllerInterface
-{
+final class ConsultarEstoquePorPecaController implements ConsultarEstoquePorPecaControllerInterface {
     public function __construct(
         private readonly ConsultarEstoquePorPecaUseCaseInterface $useCase,
         private readonly PresenterInterface $presenter,
@@ -26,17 +25,23 @@ final class ConsultarEstoquePorPecaController implements ConsultarEstoquePorPeca
         summary: 'Consultar estoque atual de uma peça',
         tags: ['Estoque'],
         parameters: [
-            new OA\Parameter(name: 'id', in: 'path', required: true,
-                schema: new OA\Schema(type: 'integer', example: 1)),
+            new OA\Parameter(
+                name: 'id',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer', example: 1)
+            ),
         ],
         responses: [
-            new OA\Response(response: 200, description: 'Estoque atual da peça',
-                content: new OA\JsonContent(ref: '#/components/schemas/EstoqueConsultaResponseDTO')),
+            new OA\Response(
+                response: 200,
+                description: 'Estoque atual da peça',
+                content: new OA\JsonContent(ref: '#/components/schemas/EstoqueConsultaResponseDTO')
+            ),
             new OA\Response(response: 404, description: 'Peça não encontrada'),
         ]
     )]
-    public function execute(ServerRequestInterface $request, ResponseInterface $response, array $args = []): ResponseInterface
-    {
+    public function execute(ServerRequestInterface $request, ResponseInterface $response, array $args = []): ResponseInterface {
         try {
             // no Slim 4 os parâmetros de rota ficam nos atributos do request
             $pecaId = (int) $request->getAttribute('id');
