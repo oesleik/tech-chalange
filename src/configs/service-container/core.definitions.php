@@ -75,6 +75,7 @@ return [
     PecaGatewayInterface::class => fn(\DI\Container $c) => new PecaGateway($c->get(DbConnectionInterface::class)),
     // Gateway
     EstoqueGatewayInterface::class => fn(\DI\Container $c) => new EstoqueGateway(
+        $c->get(DbConnectionInterface::class),
         $c->get(AppDatabase::class),
     ),
     // Use Cases
