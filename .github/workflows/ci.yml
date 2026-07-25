@@ -43,7 +43,7 @@ jobs:
         run: composer install --no-interaction --no-progress --prefer-dist
 
       - name: Run SAST (phpstan)
-        run: phpstan analyse
+        run: phpstan analyse src --no-interaction --no-progress --error-format=github
 
   tests:
     runs-on: ubuntu-latest
@@ -96,7 +96,7 @@ jobs:
           docker compose run --rm -T --no-deps --user "$(id -u):$(id -g)" php vendor/bin/phpunit --configuration phpunit.xml \
             --coverage-clover=coverage/clover.xml --coverage-html=coverage/html --log-junit=coverage/junit.xml
 
-      - name: Upload coverage HTML
+      - name: Upload coverage
         uses: actions/upload-artifact@v4
         with:
           name: coverage-html
