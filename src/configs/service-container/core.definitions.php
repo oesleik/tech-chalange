@@ -15,6 +15,20 @@ use App\Peca\Application\Gateway\PecaGatewayInterface;
 use App\Peca\Infrastructure\Persistence\PecaGateway;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Slim\Psr7\Factory\ResponseFactory;
+use App\Estoque\Application\Gateway\EstoqueGatewayInterface;
+use App\Estoque\Infrastructure\Persistence\EstoqueGateway;
+use App\Estoque\Application\UseCase\RegistrarEntradaEstoque\RegistrarEntradaEstoqueUseCaseInterface;
+use App\Estoque\Application\UseCase\RegistrarEntradaEstoque\RegistrarEntradaEstoqueUseCase;
+use App\Estoque\Application\UseCase\RegistrarBaixaEstoque\RegistrarBaixaEstoqueUseCaseInterface;
+use App\Estoque\Application\UseCase\RegistrarBaixaEstoque\RegistrarBaixaEstoqueUseCase;
+use App\Estoque\Application\UseCase\ConsultarEstoquePorPeca\ConsultarEstoquePorPecaUseCaseInterface;
+use App\Estoque\Application\UseCase\ConsultarEstoquePorPeca\ConsultarEstoquePorPecaUseCase;
+use App\Estoque\Presentation\Http\Controller\RegistrarEntradaEstoqueControllerInterface;
+use App\Estoque\Presentation\Http\Controller\RegistrarEntradaEstoqueController;
+use App\Estoque\Presentation\Http\Controller\RegistrarBaixaEstoqueControllerInterface;
+use App\Estoque\Presentation\Http\Controller\RegistrarBaixaEstoqueController;
+use App\Estoque\Presentation\Http\Controller\ConsultarEstoquePorPecaControllerInterface;
+use App\Estoque\Presentation\Http\Controller\ConsultarEstoquePorPecaController;
 
 return [
     Symfony\Component\Validator\Validator\ValidatorInterface::class => fn() => Symfony\Component\Validator\Validation::createValidatorBuilder()->getValidator(),
@@ -59,4 +73,32 @@ return [
     ),
     VeiculoGatewayInterface::class => fn(\DI\Container $c) => new VeiculoGateway($c->get(DbConnectionInterface::class)),
     PecaGatewayInterface::class => fn(\DI\Container $c) => new PecaGateway($c->get(DbConnectionInterface::class)),
+    // Gateway
+    EstoqueGatewayInterface::class => fn(\DI\Container $c) => new EstoqueGateway(
+        $c->get(DbConnectionInterface::class),
+        $c->get(AppDatabase::class),
+    ),
+    // Use Cases
+    RegistrarEntradaEstoqueUseCaseInterface::class => fn(\DI\Container $c) => new RegistrarEntradaEstoqueUseCase(
+        $c->get(EstoqueGatewayInterface::class),
+    ),
+    RegistrarBaixaEstoqueUseCaseInterface::class => fn(\DI\Container $c) => new RegistrarBaixaEstoqueUseCase(
+        $c->get(EstoqueGatewayInterface::class),
+    ),
+    ConsultarEstoquePorPecaUseCaseInterface::class => fn(\DI\Container $c) => new ConsultarEstoquePorPecaUseCase(
+        $c->get(EstoqueGatewayInterface::class),
+    ),
+    // Controllers
+    RegistrarEntradaEstoqueControllerInterface::class => fn(\DI\Container $c) => new RegistrarEntradaEstoqueController(
+        $c->get(RegistrarEntradaEstoqueUseCaseInterface::class),
+        $c->get(PresenterInterface::class),
+    ),
+    RegistrarBaixaEstoqueControllerInterface::class => fn(\DI\Container $c) => new RegistrarBaixaEstoqueController(
+        $c->get(RegistrarBaixaEstoqueUseCaseInterface::class),
+        $c->get(PresenterInterface::class),
+    ),
+    ConsultarEstoquePorPecaControllerInterface::class => fn(\DI\Container $c) => new ConsultarEstoquePorPecaController(
+        $c->get(ConsultarEstoquePorPecaUseCaseInterface::class),
+        $c->get(PresenterInterface::class),
+    ),
 ];
