@@ -26,12 +26,7 @@ final class RegistrarEntradaEstoqueController implements RegistrarEntradaEstoque
         summary: 'Registrar entrada de peças no estoque',
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(
-                properties: [
-                    new OA\Property(property: 'id_peca', type: 'integer', example: 123),
-                    new OA\Property(property: 'quantidade', type: 'integer', example: 5),
-                ]
-            )
+            content: new OA\JsonContent(ref: '#/components/schemas/LancamentoResponseDTO')
         ),
         tags: ['Estoque'],
         responses: [

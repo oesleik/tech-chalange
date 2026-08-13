@@ -45,17 +45,10 @@ USER www-data
 
 # Copia composer.json primeiro para aproveitar cache de layers
 COPY --chown=www-data:www-data composer.json composer.lock* ./
-
-# removido --no-dev para ter todas as ferramentas disponiveis no K8s
-RUN composer install --optimize-autoloader --no-scripts
-# RUN composer install --no-dev --optimize-autoloader --no-scripts
-
+RUN composer install --no-dev --optimize-autoloader --no-scripts
 
 # Copia o restante do código da aplicação
 COPY --chown=www-data:www-data . .
-
-# gera o openapi.json durante o build para que fique dentro da imagem
-RUN vendor/bin/openapi src -o public/openapi.json 2>/dev/null || true
 
 EXPOSE 9000
 
