@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\OrdemServico\Service;
 
-use App\Clientes\Model\ClienteModel;
+use App\Clientes\Domain\Entity\Cliente;
 use App\Core\Auth\OrdemServico\JwtOrdemServicoService;
 use App\Core\Config\AppConfig;
 use App\Core\Email\EmailService;
@@ -18,7 +18,7 @@ class EnviarOrcamentoOrdemServicoEmailService {
         private AppConfig $appConfig,
     ) {}
 
-    public function enviar(OrdemServicoModel $ordemServico, ClienteModel $cliente): void {
+    public function enviar(OrdemServicoModel $ordemServico, Cliente $cliente): void {
         $idOrdemServico = $ordemServico->getId();
         $pecas    = $this->itensOrdemServicoService->obterPecasPorIdOrdemServico($idOrdemServico);
         $servicos = $this->itensOrdemServicoService->obterServicosPorIdOrdemServico($idOrdemServico);
@@ -35,7 +35,7 @@ class EnviarOrcamentoOrdemServicoEmailService {
         $valorFormatado = 'R$ ' . number_format($valorTotal, 2, ',', '.');
 
         $html = $this->montarHtmlEmail(
-            nomeCliente: $cliente->getNome(),
+            nomeCliente: $this->obterNomeCliente($cliente),
             idOrdemServico: $idOrdemServico,
             pecas: $pecas,
             servicos: $servicos,
@@ -45,12 +45,20 @@ class EnviarOrcamentoOrdemServicoEmailService {
         );
 
         $this->emailService->send(
-            to: [['email' => $cliente->getEmail()->getValue(), 'name' => $cliente->getNome()]],
+            to: [['email' => $this->obterEmailCliente($cliente), 'name' => $this->obterNomeCliente($cliente)]],
             subject: "Orçamento da Ordem de Serviço #{$idOrdemServico}",
             body: $html,
             isHtml: true,
             altBody: "Acesse o link para aprovar ou rejeitar o orçamento da OS #{$idOrdemServico}.",
         );
+    }
+
+    private function obterNomeCliente(Cliente $cliente): string {
+        return $cliente->nome();
+    }
+
+    private function obterEmailCliente(Cliente $cliente): string {
+        return $cliente->email()->getValue();
     }
 
     private function formatarMoeda(float $valor): string {

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\OrdemServico\Controller;
 
-use App\Clientes\Service\ClienteService;
-use App\Clientes\ValueObject\CpfOrCnpjValueFactory;
+use App\Clientes\Application\UseCase\ListarClientes\ListarClientesInputDTO;
+use App\Clientes\Application\UseCase\ListarClientes\ListarClientesUseCaseInterface;
 use App\Core\Contract\ContractResolver;
 use App\Core\Contract\InvalidContractException;
 use App\Core\Contract\ValidationErrorResponse;
@@ -51,7 +51,7 @@ use Psr\Http\Message\ServerRequestInterface;
 class ConsultarOrdemServicoPorVeiculoEClienteController {
     public function __construct(
         private ContractResolver $contractResolver,
-        private ClienteService $clienteService,
+        private ListarClientesUseCaseInterface $clienteUseCase,
         private ObterVeiculoPorPlacaUseCase $obterVeiculoPorPlacaUseCase,
         private OrdemServicoService $ordemServicoService,
         private ItensOrdemServicoService $itensOrdemServicoService,
@@ -69,7 +69,7 @@ class ConsultarOrdemServicoPorVeiculoEClienteController {
             return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
         }
 
-        $clientes = $this->clienteService->listarClientes(CpfOrCnpjValueFactory::make($input->cpf_cnpj));
+        $clientes = $this->clienteUseCase->executar(new ListarClientesInputDTO($input->cpf_cnpj));
         $cliente = $clientes[0] ?? null;
 
         if ($cliente === null || empty($cliente->getId())) {

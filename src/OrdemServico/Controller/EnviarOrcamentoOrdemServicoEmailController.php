@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\OrdemServico\Controller;
 
-use App\Clientes\Service\ClienteService;
+use App\Clientes\Application\UseCase\ObterCliente\ObterClienteUseCaseInterface;
 use App\OrdemServico\Service\EnviarOrcamentoOrdemServicoEmailService;
 use App\OrdemServico\Service\OrdemServicoService;
 use OpenApi\Attributes as OA;
@@ -24,7 +24,7 @@ class EnviarOrcamentoOrdemServicoEmailController {
     public function __construct(
         private EnviarOrcamentoOrdemServicoEmailService $service,
         private OrdemServicoService $ordemServicoService,
-        private ClienteService $clienteService,
+        private ObterClienteUseCaseInterface $clienteUseCase,
     ) {}
 
     public function __invoke(
@@ -37,9 +37,9 @@ class EnviarOrcamentoOrdemServicoEmailController {
             return $response->withStatus(404, "Ordem de serviço não encontrada");
         }
 
-        $cliente = $this->clienteService->obterClientePorId($ordemServico->getIdCliente());
-
-        if ($cliente === null) {
+        try {
+            $cliente = $this->clienteUseCase->executar($ordemServico->getIdCliente());
+        } catch (\App\Clientes\Domain\Exception\ClienteNaoEncontradoException) {
             return $response->withStatus(404, "Cliente não encontrado");
         }
 

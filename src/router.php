@@ -38,10 +38,10 @@ $app->group('/email', function (RouteCollectorProxy $group): void {
 $app->group('', function (RouteCollectorProxy $group): void {
 
     $group->group('/clientes', function (RouteCollectorProxy $g): void {
-        $g->get('/', App\Clientes\Controller\ListarClientesController::class);
-        $g->post('/', App\Clientes\Controller\CriarClienteController::class);
-        $g->get('/{id:[0-9]+}', App\Clientes\Controller\ObterClienteController::class);
-        $g->patch('/{id:[0-9]+}', App\Clientes\Controller\EditarClienteController::class);
+        $g->get('/', App\Clientes\Presentation\Http\Router\ListarClientesRouter::class);
+        $g->post('/', App\Clientes\Presentation\Http\Router\CriarClienteRouter::class);
+        $g->get('/{id:[0-9]+}', App\Clientes\Presentation\Http\Router\ObterClienteRouter::class);
+        $g->patch('/{id:[0-9]+}', App\Clientes\Presentation\Http\Router\EditarClienteRouter::class);
     });
 
     $group->group('/veiculos', function (RouteCollectorProxy $g): void {
