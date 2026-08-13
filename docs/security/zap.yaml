@@ -3,7 +3,7 @@ env:
   - excludePaths: []
     name: baseline
     urls:
-    - http://localhost/
+    - http://192.168.49.2:30080/
   parameters:
     failOnError: true
     progressToStdout: false
@@ -14,7 +14,7 @@ jobs:
   type: passiveScan-config
 - parameters:
     maxDuration: 1
-    url: http://localhost/
+    url: http://192.168.49.2:30080/
   type: spider
 - parameters:
     maxDuration: 0
