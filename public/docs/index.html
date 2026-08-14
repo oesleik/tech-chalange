@@ -14,15 +14,6 @@
         SwaggerUIBundle({
           url: "/openapi.json?v=" + Date.now(),
           dom_id: "#swagger-ui",
-          // intercepta cada requisicao e substitui "http://localhost"
-          // pelo host atual — funciona no Docker, K8s e AWS sem mudar nada
-          requestInterceptor: (request) => {
-            request.url = request.url.replace(
-              'http://localhost',
-              window.location.origin
-            );
-            return request;
-          },
         });
       };
     </script>
