@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-pvc
+  namespace: tech-challenge
+spec:
+  accessModes:
+    # ReadWriteOnce = so um node escreve por vez, correto para banco de dados
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
