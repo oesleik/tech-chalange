@@ -23,6 +23,6 @@ final class CpfTest extends TestCase {
     }
 
     public function testMascaraCpf(): void {
-        $this->assertSame('52*.***.***-25', (new Cpf('52998224725'))->getMaskedValue());
+        $this->assertSame('52*.***.***-25', new Cpf('52998224725')->getMaskedValue());
     }
 }

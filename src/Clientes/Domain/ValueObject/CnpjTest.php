@@ -23,6 +23,6 @@ final class CnpjTest extends TestCase {
     }
 
     public function testMascaraCnpj(): void {
-        $this->assertSame('11.***.***/****-81', (new Cnpj('11222333000181'))->getMaskedValue());
+        $this->assertSame('11.***.***/****-81', new Cnpj('11222333000181')->getMaskedValue());
     }
 }
