@@ -8,7 +8,7 @@ use App\Clientes\Application\Gateway\ClienteGatewayInterface;
 use App\Clientes\Domain\Entity\Cliente;
 use App\Clientes\Domain\Exception\ClienteNaoEncontradoException;
 
-final class ObterClienteUseCase implements ObterClienteUseCaseInterface {
+class ObterClienteUseCase implements ObterClienteUseCaseInterface {
     public function __construct(
         private readonly ClienteGatewayInterface $gateway,
     ) {}

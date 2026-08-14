@@ -7,12 +7,12 @@ namespace App\Clientes\Application\UseCase\ListarClientes;
 use App\Clientes\Application\Gateway\ClienteGatewayInterface;
 use App\Clientes\Domain\ValueObject\CpfOrCnpjValueFactory;
 
-final class ListarClientesUseCase implements ListarClientesUseCaseInterface {
+class ListarClientesUseCase implements ListarClientesUseCaseInterface {
     public function __construct(
         private readonly ClienteGatewayInterface $gateway,
     ) {}
 
-	/** @inherits */
+    /** @inherits */
     public function executar(ListarClientesInputDTO $input): array {
         $cpfCnpj = $input->cpfCnpj !== null
             ? CpfOrCnpjValueFactory::make($input->cpfCnpj)
