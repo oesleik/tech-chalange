@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  namespace: tech-challenge
+data:
+  # "mysql" é o nome do Service do MySQL, o K8s resolve o DNS automaticamente
+  DB_HOST: "mysql"
+  DB_PORT: "3306"
+  DB_DATABASE: "app_db"
+  DB_USERNAME: "app_user"
+  APP_ENV: "production"
+  APP_URL: "http://localhost"
+  JWT_TTL: "3600"
+  JWT_ISSUER: "tech-challenge-api"
+  OS_EMAIL_ACTION_TOKEN_TTL: "3600"
+  OS_EMAIL_ACTION_TOKEN_ISSUER: "tech-challenge-api"
+  MAIL_HOST: "smtp.mailtrap.io"
+  MAIL_PORT: "587"
+  MAIL_ENCRYPTION: "tls"
+  MAIL_FROM_ADDRESS: "no-reply@tech-challenge.com"
+  MAIL_FROM_NAME: "Tech Challenge"

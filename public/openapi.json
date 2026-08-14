@@ -203,90 +203,13 @@
                 "security": []
             }
         },
-        "/estoque/entrada": {
-            "post": {
-                "tags": [
-                    "Estoque"
-                ],
-                "summary": "Registrar entrada de peças no estoque",
-                "operationId": "67ce5d7325f8511aee348ac5628a3e00",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/LancamentoEstoqueRequest"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "Entrada registrada com sucesso",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/LancamentoEstoqueResponse"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Peça não encontrada"
-                    },
-                    "422": {
-                        "description": "Dados inválidos"
-                    }
-                }
-            }
-        },
-        "/estoque/baixa": {
-            "post": {
-                "tags": [
-                    "Estoque"
-                ],
-                "summary": "Registrar baixa de peças no estoque",
-                "operationId": "7f29db16f4ff63ab13db88c1a34dde46",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/LancamentoEstoqueRequest"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "Baixa registrada com sucesso",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/LancamentoEstoqueResponse"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Peça não encontrada"
-                    },
-                    "409": {
-                        "description": "Estoque insuficiente"
-                    },
-                    "422": {
-                        "description": "Dados inválidos"
-                    }
-                }
-            }
-        },
         "/estoque/pecas/{id}": {
             "get": {
                 "tags": [
                     "Estoque"
                 ],
                 "summary": "Consultar estoque atual de uma peça",
-                "operationId": "907db9633d48b356e9508f67b864eaa6",
+                "operationId": "b4e5072c9100106dc0f2b2dbc19529ec",
                 "parameters": [
                     {
                         "name": "id",
@@ -304,10 +227,107 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/EstoquePecaResponse"
+                                    "$ref": "#/components/schemas/EstoqueConsultaResponseDTO"
                                 }
                             }
                         }
+                    },
+                    "404": {
+                        "description": "Peça não encontrada"
+                    }
+                }
+            }
+        },
+        "/estoque/baixa": {
+            "post": {
+                "tags": [
+                    "Estoque"
+                ],
+                "summary": "Registrar baixa de peças no estoque",
+                "operationId": "46af3e48cec21f192a337270259bde9a",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "id_peca": {
+                                        "type": "integer",
+                                        "example": 123
+                                    },
+                                    "quantidade": {
+                                        "type": "integer",
+                                        "example": 5
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Baixa registrada com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/LancamentoResponseDTO"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Dados inválidos"
+                    },
+                    "404": {
+                        "description": "Peça não encontrada"
+                    },
+                    "422": {
+                        "description": "Estoque insuficiente"
+                    }
+                }
+            }
+        },
+        "/estoque/entrada": {
+            "post": {
+                "tags": [
+                    "Estoque"
+                ],
+                "summary": "Registrar entrada de peças no estoque",
+                "operationId": "611829414d3455a6de526ab875a46fab",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "id_peca": {
+                                        "type": "integer",
+                                        "example": 123
+                                    },
+                                    "quantidade": {
+                                        "type": "integer",
+                                        "example": 5
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Entrada registrada com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/LancamentoResponseDTO"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Dados inválidos"
                     },
                     "404": {
                         "description": "Peça não encontrada"
@@ -1083,7 +1103,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ListarPecasResponse"
+                                    "$ref": "#/components/schemas/ListarPecasResponseDTO"
                                 }
                             }
                         }
@@ -1101,7 +1121,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/CriarPecaRequest"
+                                "$ref": "#/components/schemas/CriarPecaRequestBody"
                             }
                         }
                     }
@@ -1112,20 +1132,13 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/PecaResponse"
+                                    "$ref": "#/components/schemas/PecaResponseDTO"
                                 }
                             }
                         }
                     },
                     "400": {
-                        "description": "Validation error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ValidationErrorResponse"
-                                }
-                            }
-                        }
+                        "description": "Erro de validação"
                     }
                 }
             }
@@ -1153,7 +1166,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/PecaResponse"
+                                    "$ref": "#/components/schemas/PecaResponseDTO"
                                 }
                             }
                         }
@@ -1184,7 +1197,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/EditarPecaRequest"
+                                "$ref": "#/components/schemas/EditarPecaRequestBody"
                             }
                         }
                     }
@@ -1195,20 +1208,13 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/PecaResponse"
+                                    "$ref": "#/components/schemas/PecaResponseDTO"
                                 }
                             }
                         }
                     },
                     "400": {
-                        "description": "Validation error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ValidationErrorResponse"
-                                }
-                            }
-                        }
+                        "description": "Erro de validação"
                     },
                     "404": {
                         "description": "Peça não encontrada"
@@ -1691,7 +1697,7 @@
                 },
                 "type": "object"
             },
-            "EstoquePecaResponse": {
+            "EstoqueConsultaResponseDTO": {
                 "properties": {
                     "id_peca": {
                         "type": "integer",
@@ -1704,20 +1710,7 @@
                 },
                 "type": "object"
             },
-            "LancamentoEstoqueRequest": {
-                "properties": {
-                    "id_peca": {
-                        "type": "integer",
-                        "example": 123
-                    },
-                    "quantidade": {
-                        "type": "integer",
-                        "example": 1
-                    }
-                },
-                "type": "object"
-            },
-            "LancamentoEstoqueResponse": {
+            "LancamentoResponseDTO": {
                 "properties": {
                     "id": {
                         "type": "integer",
@@ -1729,10 +1722,11 @@
                     },
                     "quantidade": {
                         "type": "integer",
-                        "example": 1
+                        "example": 10
                     },
                     "tipo_lancamento": {
-                        "example": "baixa"
+                        "type": "string",
+                        "example": "entrada"
                     }
                 },
                 "type": "object"
@@ -2036,7 +2030,8 @@
                 },
                 "type": "object"
             },
-            "CriarPecaRequest": {
+            "CriarPecaRequestBody": {
+                "description": "Existe apenas para gerar o schema OpenAPI do corpo da requisição.\nO parse/validação real acontece em CriarPecaMapper.",
                 "properties": {
                     "descricao": {
                         "type": "string",
@@ -2050,7 +2045,8 @@
                 },
                 "type": "object"
             },
-            "EditarPecaRequest": {
+            "EditarPecaRequestBody": {
+                "description": "Existe apenas para gerar o schema OpenAPI do corpo da requisição.\nO parse/validação real acontece em EditarPecaMapper.",
                 "properties": {
                     "descricao": {
                         "type": "string",
@@ -2066,18 +2062,18 @@
                 },
                 "type": "object"
             },
-            "ListarPecasResponse": {
+            "ListarPecasResponseDTO": {
                 "properties": {
                     "pecas": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/PecaResponse"
+                            "$ref": "#/components/schemas/PecaResponseDTO"
                         }
                     }
                 },
                 "type": "object"
             },
-            "PecaResponse": {
+            "PecaResponseDTO": {
                 "properties": {
                     "id": {
                         "type": "integer",
