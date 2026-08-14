@@ -12,6 +12,7 @@ final class ListarClientesUseCase implements ListarClientesUseCaseInterface {
         private readonly ClienteGatewayInterface $gateway,
     ) {}
 
+	/** @inherits */
     public function executar(ListarClientesInputDTO $input): array {
         $cpfCnpj = $input->cpfCnpj !== null
             ? CpfOrCnpjValueFactory::make($input->cpfCnpj)

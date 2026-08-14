@@ -72,7 +72,7 @@ class ConsultarOrdemServicoPorVeiculoEClienteController {
         $clientes = $this->clienteUseCase->executar(new ListarClientesInputDTO($input->cpf_cnpj));
         $cliente = $clientes[0] ?? null;
 
-        if ($cliente === null || empty($cliente->getId())) {
+        if ($cliente === null || empty($cliente->id())) {
             return $response->withStatus(404, "Cliente não encontrado para o CPF/CNPJ informado");
         }
 
@@ -83,7 +83,7 @@ class ConsultarOrdemServicoPorVeiculoEClienteController {
         }
 
         $filtros = new FiltroOrdemServico(
-            idCliente: $cliente->getId(),
+            idCliente: $cliente->id(),
             idVeiculo: $veiculo->id(),
             limit: 1,
         );
