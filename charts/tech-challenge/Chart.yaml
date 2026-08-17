@@ -1,0 +1,6 @@
+apiVersion: v2
+name: tech-challenge
+description: Sistema de ordens de serviço (PHP-FPM, Nginx, MySQL)
+type: application
+version: 0.1.0
+appVersion: "8.4"

@@ -2,7 +2,9 @@ apiVersion: v1
 kind: Service
 metadata:
   name: php
-  namespace: tech-challenge
+  labels:
+    app: php
+    {{- include "tech-challenge.labels" . | nindent 4 }}
 spec:
   selector:
     app: php
@@ -10,3 +12,4 @@ spec:
     - port: 9000
       targetPort: 9000
   type: ClusterIP
+{{- if .Values.php.hpa.enabled }}

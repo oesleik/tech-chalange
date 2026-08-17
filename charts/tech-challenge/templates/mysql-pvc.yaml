@@ -2,11 +2,16 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: mysql-pvc
-  namespace: tech-challenge
+  labels:
+    app: mysql
+    {{- include "tech-challenge.labels" . | nindent 4 }}
 spec:
   accessModes:
     # ReadWriteOnce = so um node escreve por vez, correto para banco de dados
     - ReadWriteOnce
+  {{- if .Values.mysql.persistence.storageClassName }}
+  storageClassName: {{ .Values.mysql.persistence.storageClassName | quote }}
+  {{- end }}
   resources:
     requests:
-      storage: 5Gi
+      storage: {{ .Values.mysql.persistence.size }}

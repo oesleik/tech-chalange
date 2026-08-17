@@ -2,14 +2,17 @@ apiVersion: v1
 kind: Service
 metadata:
   name: nginx
-  namespace: tech-challenge
+  labels:
+    app: nginx
+    {{- include "tech-challenge.labels" . | nindent 4 }}
 spec:
   selector:
     app: nginx
+  type: {{ .Values.nginx.service.type }}
   ports:
-    - port: 80
+    - port: {{ .Values.nginx.service.port }}
       targetPort: 80
-      # NodePort expoe uma porta no host, intervalo valido: 30000 a 32767
-      nodePort: 30080
-  # LOCAL: NodePort | AWS: LoadBalancer (remove o nodePort acima)
-  type: NodePort
+      {{- if eq .Values.nginx.service.type "NodePort" }}
+      nodePort: {{ .Values.nginx.service.nodePort }}
+      {{- end }}
+{{- if .Values.nginx.hpa.enabled }}

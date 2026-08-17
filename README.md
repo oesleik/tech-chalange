@@ -90,6 +90,7 @@ tech-chalange/
 │   ├── nginx/default.conf      # Configuração do Nginx
 │   ├── php/php.ini             # Configurações customizadas do PHP
 │   └── mysql/init/             # Scripts SQL executados na criação do banco
+├── charts/tech-challenge/      # Helm (Minikube, MiniStack, AWS)
 ├── .github/workflows/          # Fluxos de CI/CD
 ├── public/index.php            # Entry point da aplicação (Slim 4)
 └── src/                        # Classes da aplicação (namespace App\)

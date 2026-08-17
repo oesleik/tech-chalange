@@ -1,0 +1,19 @@
+# AWS local: cluster k3s criado pelo MiniStack via Terraform (make aws-local-up)
+# Replicas em 1: o k3s do MiniStack é um único node
+php:
+  image: tech-challenge-php:latest
+  imagePullPolicy: Never
+  replicaCount: 1
+  hpa:
+    minReplicas: 1
+
+nginx:
+  replicaCount: 1
+  service:
+    type: NodePort
+    nodePort: 30080
+  hpa:
+    minReplicas: 1
+
+phpmyadmin:
+  enabled: false
