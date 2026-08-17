@@ -82,42 +82,42 @@ security-scan: ## Rodar scan de vulnerabilidades (OWASP ZAP)
 		-J zap-baseline-report.json
 
 # pega o nome do primeiro pod PHP rodando no K8s
-K8S_PHP_POD = $(shell kubectl get pod -n tech-challenge -l app=php -o jsonpath='{.items[0].metadata.name}')
+K8S_NS = tech-challenge
+HELM_RELEASE = tech-challenge
+HELM_CHART = charts/tech-challenge
+K8S_PHP_POD = $(shell kubectl get pod -n $(K8S_NS) -l app=php -o jsonpath='{.items[0].metadata.name}')
 
-##@ Kubernetes
 
-k8s-up: ## Subir todo o ambiente no Kubernetes
+##@ Kubernetes (Minikube)
+
+k8s-up: ## Subir o ambiente no Minikube via Helm
 	@echo "Parando Docker Compose antes de subir o K8s..."
 	docker compose down
 	@echo "Iniciando Minikube..."
 	minikube start --cpus=2 --memory=3072 --driver=docker
 	minikube addons enable metrics-server
-	@echo "Buildando imagem PHP no Minikube com todas as dependencias..."
+	@echo "Buildando imagem PHP no Minikube..."
 	eval $$(minikube docker-env) && docker build -t tech-challenge-php:latest .
-	@echo "Aplicando manifestos..."
-	kubectl apply -f k8s/namespace.yaml
-	kubectl apply -f k8s/configmap.yaml
-	kubectl apply -f k8s/secret.yaml
-	kubectl apply -f k8s/nginx-configmap.yaml
-	kubectl apply -f k8s/mysql/
-	kubectl apply -f k8s/php/
-	kubectl apply -f k8s/nginx/
-	kubectl apply -f k8s/phpmyadmin/
+	@echo "Instalando chart Helm (values-minikube)..."
+	helm upgrade --install $(HELM_RELEASE) $(HELM_CHART) \
+		-n $(K8S_NS) --create-namespace \
+		-f $(HELM_CHART)/values-minikube.yaml
 
 k8s-down: ## Parar o Minikube preservando pods e dados (retoma com k8s-up)
 	minikube stop
 
-k8s-destroy: ## Remover namespace e parar Minikube, dados do banco persistem no volume
-	kubectl delete namespace tech-challenge --ignore-not-found
+k8s-destroy: ## Remover o release Helm e parar Minikube, dados do PVC podem persistir
+	-helm uninstall $(HELM_RELEASE) -n $(K8S_NS)
+	kubectl delete namespace $(K8S_NS) --ignore-not-found
 	minikube stop
 
 k8s-reset: ## Destruir TUDO incluindo dados do banco, usa minikube delete
 	minikube delete
 
 k8s-status: ## Ver status de todos os recursos no Kubernetes
-	kubectl get all -n tech-challenge
+	kubectl get all -n $(K8S_NS)
 
-k8s-url: ## Ver URLs de acesso no Kubernetes
+k8s-url: ## Ver URLs de acesso no Minikube
 	@echo ""
 	@echo "Aplicacao:  http://$$(minikube ip):30080"
 	@echo "Swagger:    http://$$(minikube ip):30080/docs/index.html"
@@ -125,44 +125,44 @@ k8s-url: ## Ver URLs de acesso no Kubernetes
 	@echo ""
 
 k8s-shell: ## Abrir terminal dentro do pod PHP no Kubernetes
-	kubectl exec -n tech-challenge -it $(K8S_PHP_POD) -- bash
+	kubectl exec -n $(K8S_NS) -it $(K8S_PHP_POD) -- bash
 
 k8s-jwt-token: ## Gerar chave JWT no Kubernetes
-	kubectl exec -n tech-challenge $(K8S_PHP_POD) -- php src/cmd/generate-token.php
+	kubectl exec -n $(K8S_NS) $(K8S_PHP_POD) -- php src/cmd/generate-token.php
 
 k8s-jwt-token-email: ## Gerar chave JWT de email no Kubernetes
-	kubectl exec -n tech-challenge -it $(K8S_PHP_POD) -- \
+	kubectl exec -n $(K8S_NS) -it $(K8S_PHP_POD) -- \
 		php src/cmd/generate-token-ordem-servico.php
 	
 k8s-migrate: ## Rodar migrations no Kubernetes
-	kubectl exec -n tech-challenge $(K8S_PHP_POD) -- php src/cmd/migrations/migrate.php
+	kubectl exec -n $(K8S_NS) $(K8S_PHP_POD) -- php src/cmd/migrations/migrate.php
 
 k8s-new-migration: ## Criar nova migration no Kubernetes
-	kubectl exec -n tech-challenge $(K8S_PHP_POD) -- php src/cmd/migrations/create.php
+	kubectl exec -n $(K8S_NS) $(K8S_PHP_POD) -- php src/cmd/migrations/create.php
 
 k8s-format: ## Rodar o formatter php-cs-fixer no Kubernetes
-	kubectl exec -n tech-challenge $(K8S_PHP_POD) -- vendor/bin/php-cs-fixer fix
+	kubectl exec -n $(K8S_NS) $(K8S_PHP_POD) -- vendor/bin/php-cs-fixer fix
 
 k8s-lint: ## Rodar o linter phpstan no Kubernetes
-	kubectl exec -n tech-challenge $(K8S_PHP_POD) -- \
+	kubectl exec -n $(K8S_NS) $(K8S_PHP_POD) -- \
 		php -d memory_limit=512M vendor/bin/phpstan analyse src
 
 k8s-test: ## Rodar testes unitarios no Kubernetes
-	kubectl exec -n tech-challenge $(K8S_PHP_POD) -- vendor/bin/phpunit src
+	kubectl exec -n $(K8S_NS) $(K8S_PHP_POD) -- vendor/bin/phpunit src
 
 k8s-api-docs: ## Gerar Swagger, rebuildar imagem e reiniciar nginx
 	@echo "Rebuildando imagem com novo openapi.json..."
 	eval $$(minikube docker-env) && docker build -t tech-challenge-php:latest .
 	@echo "Reiniciando nginx para copiar arquivos atualizados..."
-	kubectl rollout restart deployment/nginx -n tech-challenge
-	kubectl rollout status deployment/nginx -n tech-challenge
+	kubectl rollout restart deployment/nginx -n $(K8S_NS)
+	kubectl rollout status deployment/nginx -n $(K8S_NS)
 	@echo "Swagger disponivel em: http://$$(minikube ip):30080/docs/index.html"
 
 k8s-logs-php: ## Ver logs do PHP no Kubernetes
-	kubectl logs -n tech-challenge -l app=php -f
+	kubectl logs -n $(K8S_NS) -l app=php -f
 
 k8s-logs-nginx: ## Ver logs do Nginx no Kubernetes
-	kubectl logs -n tech-challenge -l app=nginx -f
+	kubectl logs -n $(K8S_NS) -l app=nginx -f
 
 k8s-security-scan: ## Rodar scan OWASP ZAP no Kubernetes
 	@mkdir -p docs/security
