@@ -15,4 +15,3 @@ spec:
       {{- if eq .Values.nginx.service.type "NodePort" }}
       nodePort: {{ .Values.nginx.service.nodePort }}
       {{- end }}
-{{- if .Values.nginx.hpa.enabled }}

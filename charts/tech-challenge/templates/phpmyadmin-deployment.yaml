@@ -38,3 +38,4 @@ spec:
                   key: DB_PASSWORD
           resources:
             {{- toYaml .Values.phpmyadmin.resources | nindent 12 }}
+{{- end }}

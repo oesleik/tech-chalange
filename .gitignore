@@ -5,3 +5,7 @@ coverage/
 .php-cs-fixer.cache
 .phpunit.result.cache
 .kube/
+infra/.terraform/
+infra/*.tfstate
+infra/*.tfstate.backup
+crash.log
