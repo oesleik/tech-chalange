@@ -147,3 +147,10 @@ Domínios e Contextos Delimitados) estão em [`docs/ddd/`](./docs/ddd/README.md)
 
 - **ADRs:** [`docs/adr/`](./docs/adr/README.md)
 - **DAS:** [`docs/arch/DAS.md`](./docs/arch/DAS.md)
+
+## Kubernetes e AWS local
+
+Há dois fluxos locais, documentados em [`docs/infrastructure/guia_infraestrutura_k8s.md`](./docs/infrastructure/guia_infraestrutura_k8s.md) e [ADR-004](./docs/adr/004-minikube-ministack-eks.md):
+
+- **Minikube** (dia a dia): `make k8s-up`
+- **MiniStack** (simulação AWS local, com Terraform + EKS/k3s): `make aws-local-up`

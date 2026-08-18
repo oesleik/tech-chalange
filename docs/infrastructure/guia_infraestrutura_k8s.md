@@ -2,21 +2,31 @@
 
 > Tech Challenge Fase 2
 
-Este documento cobre o deploy em Kubernetes local (Minikube) e os ajustes necessários para produção na AWS. Para execução local via Docker Compose, consulte o `README.md` principal.
+Este documento cobre três fluxos:
+
+| Alvo | Cluster | Como sobe | Values Helm |
+|---|---|---|---|
+| Dia a dia | Minikube | `make k8s-up` | `values-minikube.yaml` |
+| AWS local (sem custo) | k3s via MiniStack | `make aws-local-up` (Terraform `env/ministack.tfvars` + Helm) | `values-aws-local.yaml` |
+| AWS | EKS | Github Actions (Terraform `env/aws.tfvars` + Helm) | `values-aws.yaml` |
+
+Para Docker Compose, consulte o `README.md` principal. Decisões em [ADR-004](../adr/004-minikube-ministack-eks.md).
 
 ---
 
 ## Sumário
 
 1. [Stack de infraestrutura](#1-stack-de-infraestrutura)
-2. [Estrutura dos manifestos K8s](#2-estrutura-dos-manifestos-k8s)
+2. [Chart Helm](#2-chart-helm)
 3. [Pré-requisitos](#3-pré-requisitos)
-4. [Configuração dos Secrets](#4-configuração-dos-secrets)
+4. [Secrets](#4-secrets)
 5. [Deploy local com Minikube](#5-deploy-local-com-minikube)
-6. [Comandos Kubernetes](#6-comandos-kubernetes)
-7. [HPA — Auto-scaling](#7-hpa--auto-scaling)
-8. [Persistência dos dados](#8-persistência-dos-dados)
-9. [Deploy na AWS (EKS)](#9-deploy-na-aws-eks)
+6. [AWS local com MiniStack](#6-aws-local-com-ministack)
+7. [Comandos](#7-comandos)
+8. [HPA](#8-hpa-auto-scaling)
+9. [Persistência](#9-persistência-dos-dados)
+10. [AWS real (EKS)](#10-aws-real-eks)
+11. [O que o MiniStack valida e o que não](#11-o-que-o-ministack-valida-e-o-que-nao)
 
 ---
 
@@ -25,39 +35,29 @@ Este documento cobre o deploy em Kubernetes local (Minikube) e os ajustes necess
 | Componente | Tecnologia | Detalhes |
 |---|---|---|
 | Servidor web | Nginx Alpine | Proxy reverso + arquivos estáticos via initContainer |
-| Aplicação | PHP 8.4-FPM | Slim Framework 4, todas as dependências incluídas |
-| Banco de dados | MySQL 9 | 1 replica, dados persistidos via PVC |
-| Interface do banco | phpMyAdmin | Para desenvolvimento |
-| Orquestração | Kubernetes | Deployments, Services, ConfigMap, Secret, HPA |
-| Cluster local | Minikube | Driver Docker |
-| Cluster cloud | AWS EKS | Via Terraform (ver `/infra`) |
+| Aplicação | PHP 8.4-FPM | Slim Framework 4 |
+| Banco de dados | MySQL 9 | Dentro do cluster via PVC |
+| Interface do banco | phpMyAdmin | **Só no Minikube** |
+| Workload | Helm chart `charts/tech-challenge` | Um pacote |
+| Cluster local (app) | Minikube | Driver Docker |
+| AWS local | MiniStack + k3s | Terraform em `infra/` |
+| Cluster AWS | AWS EKS | Mesmo Terraform, `env/aws.tfvars` |
 
-A imagem Docker é a mesma usada no Docker Compose. O K8s consome a imagem buildada localmente no Minikube ou publicada no ECR (AWS).
+A imagem Docker é a mesma usada no Docker Compose. No Minikube e no MiniStack ela é **importada** no cluster (`imagePullPolicy: Never`). Push para ECR fica para a AWS real.
 
 ---
 
-## 2. Estrutura dos manifestos K8s
+## 2. Chart Helm
 
 ```
-k8s/
-├── namespace.yaml           # Namespace "tech-challenge" — isola os recursos
-├── configmap.yaml           # Variáveis não sensíveis (host do banco, JWT issuer, etc.)
-├── secret.yaml              # Variáveis sensíveis com placeholders (editar antes de aplicar)
-├── nginx-configmap.yaml     # Configuração do Nginx injetada como ConfigMap
-├── mysql/
-│   ├── pvc.yaml             # Disco persistente para o banco (5Gi)
-│   ├── deployment.yaml      # MySQL — 1 replica, strategy Recreate
-│   └── service.yaml         # ClusterIP — DNS interno mysql:3306
-├── php/
-│   ├── deployment.yaml      # PHP-FPM — 2 replicas iniciais, imagePullPolicy Never
-│   ├── service.yaml         # ClusterIP — DNS interno php:9000
-│   └── hpa.yaml             # HPA — escala de 2 até 10 pods por CPU e memória
-├── nginx/
-│   ├── deployment.yaml      # Nginx — 2 replicas + initContainer copia arquivos do PHP
-│   ├── service.yaml         # NodePort 30080 (local) — trocar para LoadBalancer na AWS
-│   └── hpa.yaml             # HPA — escala de 2 até 5 pods por CPU
-└── phpmyadmin/
-    └── deployment.yaml      # phpMyAdmin + Service NodePort 30081
+charts/tech-challenge/
+├── Chart.yaml
+├── values.yaml                 # defaults
+├── values-minikube.yaml
+├── values-aws-local.yaml
+├── values-aws.yaml             # placeholder da AWS real
+├── files/nginx-default.conf
+└── templates/                  # Deployments, Services, HPA, Secret, ConfigMaps
 ```
 
 **Por que o initContainer no Nginx?**
@@ -67,255 +67,186 @@ No Docker Compose, Nginx e PHP compartilhavam o mesmo volume com o código. No K
 
 ## 3. Pré-requisitos
 
-- Docker (driver do Minikube)
+- Docker (driver do Minikube e socket do MiniStack)
 - Minikube 1.30+
 - kubectl 1.27+
+- Helm 3.14+
+- Terraform 1.5+ (só o fluxo MiniStack)
 
 ---
 
-## 4. Configuração dos Secrets
+## 4. Secrets
 
-Para o arquivo `k8s/secret.yaml`. Edite antes de subir o ambiente:
+O chart cria o Secret `app-secrets` a partir de `.Values.secrets`. Os values locais usam placeholders de desenvolvimento.
 
-```bash
-nano k8s/secret.yaml
-```
-
-| Campo | Descrição |
-|---|---|
-| `DB_PASSWORD` | Senha do usuário da aplicação no MySQL |
-| `DB_ROOT_PASSWORD` | Senha do root do MySQL |
-| `JWT_SECRET` | Chave secreta para assinar os tokens JWT |
-| `OS_EMAIL_ACTION_TOKEN_SECRET` | Chave para tokens de ação por email |
-| `MAIL_USERNAME` | Usuário do servidor SMTP |
-| `MAIL_PASSWORD` | Senha do servidor SMTP |
-
-> Para desenvolvimento local pode usar os mesmos valores do `.env`.
+Não commite senhas reais.
 
 ---
 
 ## 5. Deploy local com Minikube
 
-### Primeira vez
-
 ```bash
-# sobe tudo: para o Docker Compose, inicia o Minikube,
-# builda a imagem e aplica todos os manifestos
 make k8s-up
-
-# roda as migrations para criar as tabelas
 make k8s-migrate
-
-# exibe as URLs de acesso
 make k8s-url
 ```
 
-**URLs disponíveis:**
+| Serviço | URL | Alvo Make |
+|---|---|---|
+| Aplicação (API) | `http://localhost:30080` | `make k8s-url` |
+| Swagger | `http://localhost:30080/docs/index.html` | `make k8s-url` |
+| phpMyAdmin | `http://localhost:30081` | `make k8s-phpmyadmin-url` |
 
-| Serviço | URL |
-|---|---|
-| Aplicação (API) | `http://<minikube-ip>:30080` |
-| Swagger | `http://<minikube-ip>:30080/docs/index.html` |
-| phpMyAdmin | `http://<minikube-ip>:30081` |
-
-```bash
-# para obter o IP do Minikube
-minikube ip
-```
-
-### Autenticando no Swagger
+`make k8s-url` e `make k8s-phpmyadmin-url` fazem `kubectl port-forward`. O NodePort no chart continua; o IP do nó (`minikube ip`) não é usado pois no WSL2 esse IP não é acessível a partir do host.
 
 ```bash
 make k8s-jwt-token
 ```
 
-Cole o token no botão **Authorize** do Swagger UI.
-
-### O que o `make k8s-up` faz
-
-1. Para o Docker Compose (`docker compose down`)
-2. Inicia o Minikube com 2 CPUs e 3072MB
-3. Habilita o metrics-server (necessário para o HPA)
-4. Builda a imagem PHP dentro do Minikube (`eval $(minikube docker-env)`)
-5. Aplica os manifestos na ordem: namespace, configmap, secret, nginx-config, mysql, php, nginx, phpmyadmin
+O `make k8s-up` para o Docker Compose, sobe o Minikube (2 CPUs / 3072MB), habilita metrics-server, builda a imagem **dentro** do Minikube e faz `helm upgrade --install` com `values-minikube.yaml`.
 
 ---
 
-## 6. Comandos Kubernetes
+## 6. AWS local com MiniStack
+
+O MiniStack emula a API AWS em `localhost:4566`. O Terraform (`infra/` + `env/ministack.tfvars`) cria VPC, IAM, EKS e node group. O `CreateCluster` do MiniStack sobe um **k3s**. O mesmo chart Helm é instalado com `values-aws-local.yaml`.
+
+```bash
+make aws-local-up
+make aws-local-migrate
+make aws-local-url    # port-forward localhost:30080
+```
+
+phpMyAdmin **não** sobe neste fluxo.
+
+### Kubeconfig é um adapter
+
+Na AWS real: `aws eks update-kubeconfig`.
+
+No MiniStack: `make aws-local-kubeconfig` extrai `/etc/rancher/k3s/k3s.yaml` do container `ministack-eks-us-east-1-tech-challenge`. Isso **não** é o comando da AWS. O script está em `scripts/ministack-kubeconfig.sh`.
+
+### Derrubar
+
+```bash
+make aws-local-down
+```
+
+Destroy do Terraform (remove o k3s) e `docker compose` do MiniStack. O ambiente é **efêmero**.
+
+Não misture Minikube e MiniStack ao mesmo tempo: `aws-local-up` tenta parar os dois ambientes da app.
+
+---
+
+## 7. Comandos
+
+### Minikube
 
 | Comando | O que faz |
 |---|---|
-| `make k8s-up` | Sobe todo o ambiente Kubernetes |
-| `make k8s-down` | Para o Minikube preservando pods e dados |
-| `make k8s-destroy` | Remove o namespace e para o Minikube (dados persistem no volume) |
-| `make k8s-reset` | `minikube delete` — destroi tudo inclusive dados do banco |
-| `make k8s-status` | Status de todos os recursos no cluster |
-| `make k8s-url` | URLs da aplicação, Swagger e phpMyAdmin |
-| `make k8s-migrate` | Roda migrations no pod PHP |
-| `make k8s-new-migration` | Cria nova migration no pod PHP |
-| `make k8s-jwt-token` | Gera token JWT |
-| `make k8s-jwt-token-email` | Gera token JWT de email (interativo) |
-| `make k8s-test` | Roda testes unitários no pod PHP |
-| `make k8s-lint` | Roda PHPStan com 512MB de memória |
-| `make k8s-format` | Roda PHP CS Fixer no pod PHP |
-| `make k8s-api-docs` | Rebuilda imagem com novo openapi.json e reinicia o Nginx |
-| `make k8s-logs-php` | Logs do PHP em tempo real |
-| `make k8s-logs-nginx` | Logs do Nginx em tempo real |
-| `make k8s-shell` | Terminal dentro do pod PHP |
-| `make k8s-security-scan` | OWASP ZAP contra a URL do Minikube |
+| `make k8s-up` | Minikube + build da imagem + Helm (values-minikube) |
+| `make k8s-down` | Para o Minikube preservando o cluster |
+| `make k8s-destroy` | Helm uninstall + namespace + stop |
+| `make k8s-reset` | `minikube delete` |
+| `make k8s-status` | Recursos no namespace |
+| `make k8s-url` | Port-forward Nginx :30080 |
+| `make k8s-phpmyadmin-url` | Port-forward phpMyAdmin :30081 |
+| `make k8s-migrate` | Migrations no pod PHP |
+| `make k8s-jwt-token` | Token JWT |
+| `make k8s-logs-php` / `k8s-logs-nginx` | Logs |
+| `make k8s-shell` | Shell no pod PHP |
+| `make k8s-security-scan` | OWASP ZAP contra o Minikube |
+
+### MiniStack
+
+| Comando | O que faz |
+|---|---|
+| `make aws-local-up` | MiniStack + Terraform apply + import da imagem + Helm |
+| `make aws-local-kubeconfig` | Adapter k3s → `.kube/ministack.yaml` |
+| `make aws-local-down` | Terraform destroy + para MiniStack |
+| `make aws-local-status` | Recursos no k3s |
+| `make aws-local-url` | Port-forward Nginx :30080 |
+| `make aws-local-migrate` | Migrations no k3s |
+| `make aws-local-logs-php` / `aws-local-logs-nginx` | Logs |
+
+`make help` lista todos.
 
 ---
 
-## 7. HPA — Auto-scaling
-
-### Configuração
+## 8. HPA - Auto-scaling
 
 | Componente | Min pods | Max pods | Escala por CPU | Escala por memória |
 |---|---|---|---|---|
 | PHP-FPM | 2 | 10 | > 70% de 250m | > 80% de 256Mi |
 | Nginx | 2 | 5 | > 70% de 100m | não configurado |
 
-### Verificando o status do HPA
+Minikube: addon `metrics-server`. k3s: bundled/metrics conforme a imagem; HPA pode ficar sem métricas se o metrics-server não estiver no k3s do MiniStack.
 
 ```bash
 kubectl get hpa -n tech-challenge
 ```
 
-Saída esperada com o ambiente em repouso:
-
-```
-NAME        REFERENCE       TARGETS                         MINPODS  MAXPODS  REPLICAS
-nginx-hpa   Deployment/nginx  cpu: 1%/70%                   2        5        2
-php-hpa     Deployment/php    cpu: 1%/70%, memory: 21%/80%  2        10       2
-```
-
-### Testando o auto-scaling
-
-Simule carga no PHP com o `kubectl run` para disparar o HPA:
+Load test no Minikube:
 
 ```bash
-# instala o ab (Apache Benchmark)
-sudo apt install apache2-utils -y
-
 TOKEN=$(make k8s-jwt-token 2>/dev/null | tail -1)
-MINIKUBE_IP=$(minikube ip)
-
-# 10000 requisicoes, 100 conexoes simultaneas
-ab -n 10000 -c 100 \
-  -H "Authorization: Bearer $TOKEN" \
-  http://$MINIKUBE_IP:30080/clientes
+# em outro terminal: make k8s-url
+ab -n 10000 -c 100 -H "Authorization: Bearer $TOKEN" http://localhost:30080/clientes
 ```
-
-Em outro terminal, observe o HPA escalando:
-
-```bash
-# atualiza a cada 5 segundos
-watch -n 5 kubectl get hpa -n tech-challenge
-
-# acompanha os pods sendo criados
-watch -n 5 kubectl get pods -n tech-challenge
-```
-
-Quando a CPU médio dos pods PHP ultrapassar 70%, o HPA cria novos pods automaticamente até o máximo de 10. Quando parar o load test (Ctrl+C), o HPA remove os pods extras após alguns minutos, mas nunca abaixo de 2.
 
 ---
 
-## 8. Persistência dos dados
+## 9. Persistência dos dados
 
-O banco de dados é salvo em um PersistentVolumeClaim (PVC) no Minikube. O comportamento de cada comando:
+MySQL via PVC.
 
 | Comando | Pods | Dados do banco |
 |---|---|---|
-| `make k8s-down` | parados (Minikube pausado) | preservados |
-| `make k8s-destroy` | removidos (namespace apagado) | preservados no volume físico |
-| `make k8s-reset` | removidos (`minikube delete`) | perdidos permanentemente |
-
-> Após `make k8s-destroy`, ao rodar `make k8s-up` novamente o PVC é recriado apontando para o mesmo volume físico, os dados voltam sem precisar rodar migrations novamente.
+| `make k8s-down` | parados | preservados no Minikube |
+| `make k8s-destroy` | removidos | volume do Minikube pode persistir |
+| `make k8s-reset` | `minikube delete` | perdidos |
+| `make aws-local-down` | k3s destruído | **perdidos** (ambiente efêmero) |
 
 ---
 
-## 9. Deploy na AWS (EKS)
+## 10. AWS real (EKS)
 
-Os manifestos YAML são idênticos ao ambiente local. Apenas 3 ajustes são necessários.
+Não edite templates na mão. O chart já tem `values-aws.yaml`:
 
-### 9.1 Imagem Docker — ECR em vez de local
+- imagem ECR (`TODO_ALTERAR...`) e `imagePullPolicy: Always`
+- Service Nginx `LoadBalancer`
+- phpMyAdmin desligado
 
-```bash
-# autentique no ECR
-aws ecr get-login-password --region us-east-1 | \
-  docker login --username AWS --password-stdin \
-  <conta>.dkr.ecr.us-east-1.amazonaws.com
+O que ainda não está pronto:
 
-# crie o repositorio (primeira vez)
-aws ecr create-repository --repository-name tech-challenge-php --region us-east-1
+1. Terraform `apply -var-file=env/aws.tfvars` numa conta AWS (gera custo de control plane + nodes)
+2. Repositório ECR e push da imagem (imagem continua fora do Terraform)
+3. `aws eks update-kubeconfig` (comando real, não o adapter MiniStack)
+4. AWS Load Balancer Controller - `type: LoadBalancer` **não** vira ALB sozinho no EKS moderno
+5. Storage class EBS se o default do cluster não provisionar o PVC do MySQL
+6. GitHub Actions
 
-# builde e envie a imagem
-docker build -t tech-challenge-php:latest .
-docker tag tech-challenge-php:latest \
-  <conta>.dkr.ecr.us-east-1.amazonaws.com/tech-challenge-php:latest
-docker push \
-  <conta>.dkr.ecr.us-east-1.amazonaws.com/tech-challenge-php:latest
-```
+Resumo:
 
-Nos arquivos `k8s/php/deployment.yaml` e `k8s/nginx/deployment.yaml` (initContainer):
+| Aspecto | Minikube | MiniStack | AWS EKS |
+|---|---|---|---|
+| Cluster | Minikube | k3s via MiniStack | EKS gerenciado |
+| IaC | - | Terraform `ministack.tfvars` | Mesmo HCL, `aws.tfvars` |
+| Workload | Helm values-minikube | Helm values-aws-local | Helm values-aws |
+| Imagem | docker-env + build | build host + import k3s | push ECR |
+| Nginx | NodePort + port-forward | NodePort + port-forward | LoadBalancer (+ controller) |
+| phpMyAdmin | sim | não | não |
+| Secrets | Secret K8s | Secret K8s | Secret K8s |
+| kubeconfig | minikube | adapter `docker exec` | `aws eks update-kubeconfig` |
 
-```yaml
-# DE (local):
-image: tech-challenge-php:latest
-imagePullPolicy: Never
+---
 
-# PARA (AWS):
-image: <conta>.dkr.ecr.us-east-1.amazonaws.com/tech-challenge-php:latest
-imagePullPolicy: Always
-```
+## 11. O que o MiniStack valida e o que não
 
-### 9.2 Service do Nginx — LoadBalancer
+**Valida:** `terraform apply`/`destroy` contra API AWS emulada; Helm no k3s; MySQL dentro do cluster; probes; artefato de deploy.
 
-Em `k8s/nginx/service.yaml`:
+**Não valida:** IRSA e enforcement de IAM; security groups reais; pull ECR; ALB; EBS CSI; autenticação EKS (`aws-iam-authenticator`); custo e quotas.
 
-```yaml
-# DE (local):
-type: NodePort
-ports:
-  - port: 80
-    targetPort: 80
-    nodePort: 30080
-
-# PARA (AWS):
-type: LoadBalancer
-ports:
-  - port: 80
-    targetPort: 80
-```
-
-A AWS cria automaticamente um Application Load Balancer com DNS público.
-
-### 9.3 Conectar ao cluster EKS e aplicar
-
-```bash
-# configura o kubeconfig para o cluster EKS
-aws eks update-kubeconfig --name tech-challenge --region us-east-1
-
-# aplica os manifestos
-kubectl apply -f k8s/
-
-# roda as migrations
-kubectl exec -n tech-challenge \
-  $(kubectl get pod -n tech-challenge -l app=php -o jsonpath='{.items[0].metadata.name}') \
-  -- php src/cmd/migrations/migrate.php
-```
-
-### 9.4 Resumo local vs AWS
-
-| Aspecto | Minikube (local) | AWS EKS |
-|---|---|---|
-| Cluster | VM local do Minikube | EKS via Terraform (`/infra`) |
-| Imagem Docker | Buildada localmente | Publicada no ECR |
-| `imagePullPolicy` | `Never` | `Always` |
-| Service do Nginx | `NodePort :30080` | `LoadBalancer` (ALB automático) |
-| Storage (PVC) | Disco local do Minikube | EBS provisionado automaticamente |
-| Secrets | `secret.yaml` local | AWS Secrets Manager ou secret.yaml via CI/CD |
-| Acesso ao cluster | `minikube kubectl` | `aws eks update-kubeconfig` |
+Detalhe em [ADR-004](../adr/004-minikube-ministack-eks.md).
 
 ---
 
