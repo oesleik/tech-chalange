@@ -2,11 +2,12 @@
 
 declare(strict_types=1);
 
-use App\Clientes\Model\ClienteModel;
-use App\Clientes\Service\ClienteService;
-use App\Clientes\ValueObject\CpfValue;
-use App\Clientes\ValueObject\EmailValue;
-use App\Clientes\ValueObject\TelefoneValue;
+use App\Clientes\Application\UseCase\ObterCliente\ObterClienteUseCase;
+use App\Clientes\Domain\Entity\Cliente;
+use App\Clientes\Domain\Exception\ClienteNaoEncontradoException;
+use App\Clientes\Domain\ValueObject\Cpf;
+use App\Clientes\Domain\ValueObject\Email;
+use App\Clientes\Domain\ValueObject\Telefone;
 use App\Core\ServiceContainerBuilder;
 use App\OrdemServico\Controller\EnviarOrcamentoOrdemServicoEmailController;
 use App\OrdemServico\Model\OrdemServicoModel;
@@ -23,7 +24,7 @@ class EnviarOrcamentoOrdemServicoEmailControllerTest extends TestCase {
 
         $serviceMock = $this->createMock(EnviarOrcamentoOrdemServicoEmailService::class);
         $ordemServicoServiceMock = $this->createMock(OrdemServicoService::class);
-        $clienteServiceMock = $this->createMock(ClienteService::class);
+        $clienteServiceMock = $this->createMock(ObterClienteUseCase::class);
 
         $ordemServicoServiceMock->expects($this->exactly(1))->method("obterOrdemServicoPorId")->with(123)->willReturn(
             new OrdemServicoModel(
@@ -36,13 +37,13 @@ class EnviarOrcamentoOrdemServicoEmailControllerTest extends TestCase {
             )
         );
 
-        $clienteServiceMock->expects($this->exactly(1))->method("obterClientePorId")->with(456)->willReturn(
-            new ClienteModel(
+        $clienteServiceMock->expects($this->exactly(1))->method("executar")->with(456)->willReturn(
+            new Cliente(
                 id: 456,
                 nome: "Fulano de Tal",
-                cpfCnpj: new CpfValue("52998224725"),
-                email: new EmailValue("fulano@gmail.com"),
-                telefone: new TelefoneValue("54999999999")
+                cpfCnpj: new Cpf("52998224725"),
+                email: new Email("fulano@gmail.com"),
+                telefone: new Telefone("54999999999")
             )
         );
 
@@ -51,7 +52,7 @@ class EnviarOrcamentoOrdemServicoEmailControllerTest extends TestCase {
         $controller = new EnviarOrcamentoOrdemServicoEmailController(
             service: $serviceMock,
             ordemServicoService: $ordemServicoServiceMock,
-            clienteService: $clienteServiceMock,
+            clienteUseCase: $clienteServiceMock,
         );
 
         $response = $controller->__invoke(
@@ -68,14 +69,14 @@ class EnviarOrcamentoOrdemServicoEmailControllerTest extends TestCase {
 
         $serviceMock = $this->createMock(EnviarOrcamentoOrdemServicoEmailService::class);
         $ordemServicoServiceMock = $this->createMock(OrdemServicoService::class);
-        $clienteServiceMock = $this->createMock(ClienteService::class);
+        $clienteServiceMock = $this->createMock(ObterClienteUseCase::class);
 
         $ordemServicoServiceMock->expects($this->exactly(1))->method("obterOrdemServicoPorId")->with(123)->willReturn(null);
 
         $controller = new EnviarOrcamentoOrdemServicoEmailController(
             service: $serviceMock,
             ordemServicoService: $ordemServicoServiceMock,
-            clienteService: $clienteServiceMock,
+            clienteUseCase: $clienteServiceMock,
         );
 
         $response = $controller->__invoke(
@@ -92,7 +93,7 @@ class EnviarOrcamentoOrdemServicoEmailControllerTest extends TestCase {
 
         $serviceMock = $this->createMock(EnviarOrcamentoOrdemServicoEmailService::class);
         $ordemServicoServiceMock = $this->createMock(OrdemServicoService::class);
-        $clienteServiceMock = $this->createMock(ClienteService::class);
+        $clienteServiceMock = $this->createMock(ObterClienteUseCase::class);
 
         $ordemServicoServiceMock->expects($this->exactly(1))->method("obterOrdemServicoPorId")->with(123)->willReturn(
             new OrdemServicoModel(
@@ -105,12 +106,12 @@ class EnviarOrcamentoOrdemServicoEmailControllerTest extends TestCase {
             )
         );
 
-        $clienteServiceMock->expects($this->exactly(1))->method("obterClientePorId")->with(456)->willReturn(null);
+        $clienteServiceMock->expects($this->exactly(1))->method("executar")->with(456)->willThrowException(ClienteNaoEncontradoException::comId(456));
 
         $controller = new EnviarOrcamentoOrdemServicoEmailController(
             service: $serviceMock,
             ordemServicoService: $ordemServicoServiceMock,
-            clienteService: $clienteServiceMock,
+            clienteUseCase: $clienteServiceMock,
         );
 
         $response = $controller->__invoke(

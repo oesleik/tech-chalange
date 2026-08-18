@@ -1,0 +1,33 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Clientes\Domain\ValueObject;
+
+use InvalidArgumentException;
+
+final class Telefone {
+    public function __construct(
+        private string $telefone,
+    ) {
+        if (strlen($telefone) < 8 || preg_match('/[^\d\(\)\s\+-]/', $telefone)) {
+            throw new InvalidArgumentException('Telefone inválido');
+        }
+    }
+
+    public function getValue(): string {
+        return $this->telefone;
+    }
+
+    public function getMaskedValue(): string {
+        $masked = preg_replace('/./', '*', $this->telefone);
+        $masked[-1] = $this->telefone[-1];
+        $masked[-2] = $this->telefone[-2];
+
+        return $masked;
+    }
+
+    public function __toString(): string {
+        return $this->getValue();
+    }
+}

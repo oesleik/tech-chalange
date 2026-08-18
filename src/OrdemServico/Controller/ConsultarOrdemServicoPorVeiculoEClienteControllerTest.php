@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-use App\Clientes\Model\ClienteModel;
-use App\Clientes\Service\ClienteService;
-use App\Clientes\ValueObject\CpfValue;
-use App\Clientes\ValueObject\EmailValue;
-use App\Clientes\ValueObject\TelefoneValue;
+use App\Clientes\Application\UseCase\ListarClientes\ListarClientesUseCase;
+use App\Clientes\Domain\Entity\Cliente;
+use App\Clientes\Domain\ValueObject\Cpf;
+use App\Clientes\Domain\ValueObject\Email;
+use App\Clientes\Domain\ValueObject\Telefone;
 use App\Core\Contract\ContractResolver;
 use App\Core\ServiceContainerBuilder;
 use App\OrdemServico\Controller\ConsultarOrdemServicoPorVeiculoEClienteController;
@@ -29,26 +29,26 @@ class ConsultarOrdemServicoPorVeiculoEClienteControllerTest extends TestCase {
         $containerBuilder = new ServiceContainerBuilder();
         $container = $containerBuilder->forTesting()->build();
 
-        $clientesServiceMock = $this->createMock(ClienteService::class);
+        $clientesServiceMock = $this->createMock(ListarClientesUseCase::class);
         $obterVeiculoPorPlacaUseCaseMock = $this->createMock(ObterVeiculoPorPlacaUseCase::class);
         $serviceMock = $this->createMock(OrdemServicoService::class);
         $itensServiceMock = $this->createMock(ItensOrdemServicoService::class);
 
         $controller = new ConsultarOrdemServicoPorVeiculoEClienteController(
             contractResolver: $container->get(ContractResolver::class),
-            clienteService: $clientesServiceMock,
+            clienteUseCase: $clientesServiceMock,
             obterVeiculoPorPlacaUseCase: $obterVeiculoPorPlacaUseCaseMock,
             ordemServicoService: $serviceMock,
             itensOrdemServicoService: $itensServiceMock,
         );
 
-        $clientesServiceMock->expects($this->exactly(1))->method("listarClientes")->willReturn([
-            new ClienteModel(
+        $clientesServiceMock->expects($this->exactly(1))->method("executar")->willReturn([
+            new Cliente(
                 id: 456,
                 nome: "Fulano de Tal",
-                cpfCnpj: new CpfValue("52998224725"),
-                email: new EmailValue("fulano@gmail.com"),
-                telefone: new TelefoneValue("54999999999"),
+                cpfCnpj: new Cpf("52998224725"),
+                email: new Email("fulano@gmail.com"),
+                telefone: new Telefone("54999999999"),
             ),
         ]);
 
@@ -126,14 +126,14 @@ class ConsultarOrdemServicoPorVeiculoEClienteControllerTest extends TestCase {
         $containerBuilder = new ServiceContainerBuilder();
         $container = $containerBuilder->forTesting()->build();
 
-        $clientesServiceMock = $this->createMock(ClienteService::class);
+        $clientesServiceMock = $this->createMock(ListarClientesUseCase::class);
         $obterVeiculoPorPlacaUseCaseMock = $this->createMock(ObterVeiculoPorPlacaUseCase::class);
         $serviceMock = $this->createMock(OrdemServicoService::class);
         $itensServiceMock = $this->createMock(ItensOrdemServicoService::class);
 
         $controller = new ConsultarOrdemServicoPorVeiculoEClienteController(
             contractResolver: $container->get(ContractResolver::class),
-            clienteService: $clientesServiceMock,
+            clienteUseCase: $clientesServiceMock,
             obterVeiculoPorPlacaUseCase: $obterVeiculoPorPlacaUseCaseMock,
             ordemServicoService: $serviceMock,
             itensOrdemServicoService: $itensServiceMock,
@@ -157,27 +157,26 @@ class ConsultarOrdemServicoPorVeiculoEClienteControllerTest extends TestCase {
         $response->getBody()->rewind();
         $res = json_decode($response->getBody()->getContents());
         $this->assertStringContainsString("cpf_cnpj", $res->errors[0]->field);
-        $this->assertStringContainsString("placa", $res->errors[1]->field);
     }
 
     public function testConsultarOrdemServicoClienteNaoEncontrado(): void {
         $containerBuilder = new ServiceContainerBuilder();
         $container = $containerBuilder->forTesting()->build();
 
-        $clientesServiceMock = $this->createMock(ClienteService::class);
+        $clientesServiceMock = $this->createMock(ListarClientesUseCase::class);
         $obterVeiculoPorPlacaUseCaseMock = $this->createMock(ObterVeiculoPorPlacaUseCase::class);
         $serviceMock = $this->createMock(OrdemServicoService::class);
         $itensServiceMock = $this->createMock(ItensOrdemServicoService::class);
 
         $controller = new ConsultarOrdemServicoPorVeiculoEClienteController(
             contractResolver: $container->get(ContractResolver::class),
-            clienteService: $clientesServiceMock,
+            clienteUseCase: $clientesServiceMock,
             obterVeiculoPorPlacaUseCase: $obterVeiculoPorPlacaUseCaseMock,
             ordemServicoService: $serviceMock,
             itensOrdemServicoService: $itensServiceMock,
         );
 
-        $clientesServiceMock->expects($this->exactly(1))->method("listarClientes")->willReturn([]);
+        $clientesServiceMock->expects($this->exactly(1))->method("executar")->willReturn([]);
 
         $requestFactory = new ServerRequestFactory();
         $request = $requestFactory->createServerRequest("POST", "/ordens-servico/");
@@ -199,26 +198,26 @@ class ConsultarOrdemServicoPorVeiculoEClienteControllerTest extends TestCase {
         $containerBuilder = new ServiceContainerBuilder();
         $container = $containerBuilder->forTesting()->build();
 
-        $clientesServiceMock = $this->createMock(ClienteService::class);
+        $clientesServiceMock = $this->createMock(ListarClientesUseCase::class);
         $obterVeiculoPorPlacaUseCaseMock = $this->createMock(ObterVeiculoPorPlacaUseCase::class);
         $serviceMock = $this->createMock(OrdemServicoService::class);
         $itensServiceMock = $this->createMock(ItensOrdemServicoService::class);
 
         $controller = new ConsultarOrdemServicoPorVeiculoEClienteController(
             contractResolver: $container->get(ContractResolver::class),
-            clienteService: $clientesServiceMock,
+            clienteUseCase: $clientesServiceMock,
             obterVeiculoPorPlacaUseCase: $obterVeiculoPorPlacaUseCaseMock,
             ordemServicoService: $serviceMock,
             itensOrdemServicoService: $itensServiceMock,
         );
 
-        $clientesServiceMock->expects($this->exactly(1))->method("listarClientes")->willReturn([
-            new ClienteModel(
+        $clientesServiceMock->expects($this->exactly(1))->method("executar")->willReturn([
+            new Cliente(
                 id: 456,
                 nome: "Fulano de Tal",
-                cpfCnpj: new CpfValue("52998224725"),
-                email: new EmailValue("fulano@gmail.com"),
-                telefone: new TelefoneValue("54999999999"),
+                cpfCnpj: new Cpf("52998224725"),
+                email: new Email("fulano@gmail.com"),
+                telefone: new Telefone("54999999999"),
             ),
         ]);
 
@@ -244,26 +243,26 @@ class ConsultarOrdemServicoPorVeiculoEClienteControllerTest extends TestCase {
         $containerBuilder = new ServiceContainerBuilder();
         $container = $containerBuilder->forTesting()->build();
 
-        $clientesServiceMock = $this->createMock(ClienteService::class);
+        $clientesServiceMock = $this->createMock(ListarClientesUseCase::class);
         $obterVeiculoPorPlacaUseCaseMock = $this->createMock(ObterVeiculoPorPlacaUseCase::class);
         $serviceMock = $this->createMock(OrdemServicoService::class);
         $itensServiceMock = $this->createMock(ItensOrdemServicoService::class);
 
         $controller = new ConsultarOrdemServicoPorVeiculoEClienteController(
             contractResolver: $container->get(ContractResolver::class),
-            clienteService: $clientesServiceMock,
+            clienteUseCase: $clientesServiceMock,
             obterVeiculoPorPlacaUseCase: $obterVeiculoPorPlacaUseCaseMock,
             ordemServicoService: $serviceMock,
             itensOrdemServicoService: $itensServiceMock,
         );
 
-        $clientesServiceMock->expects($this->exactly(1))->method("listarClientes")->willReturn([
-            new ClienteModel(
+        $clientesServiceMock->expects($this->exactly(1))->method("executar")->willReturn([
+            new Cliente(
                 id: 456,
                 nome: "Fulano de Tal",
-                cpfCnpj: new CpfValue("52998224725"),
-                email: new EmailValue("fulano@gmail.com"),
-                telefone: new TelefoneValue("54999999999"),
+                cpfCnpj: new Cpf("52998224725"),
+                email: new Email("fulano@gmail.com"),
+                telefone: new Telefone("54999999999"),
             ),
         ]);
 

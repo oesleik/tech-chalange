@@ -1,0 +1,45 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Clientes\Domain\ValueObject;
+
+use InvalidArgumentException;
+
+final class Email {
+    public function __construct(
+        private string $email,
+    ) {
+        if (
+            empty($email)
+            || !preg_match('/.@./', $email)
+            || !filter_var($email, FILTER_VALIDATE_EMAIL)
+        ) {
+            throw new InvalidArgumentException('E-mail inválido');
+        }
+    }
+
+    public function getValue(): string {
+        return $this->email;
+    }
+
+    public function getMaskedValue(): string {
+        $frags = explode('@', $this->email);
+        $provider = array_pop($frags);
+        $username = implode('@', $frags);
+
+        if (strlen($username) < 5) {
+            return preg_replace('/./', '*', $username) . '@' . $provider;
+        }
+
+        $maskedUsername = preg_replace('/./', '*', $username);
+        $maskedUsername[0] = $username[0];
+        $maskedUsername[1] = $username[1];
+
+        return $maskedUsername . '@' . $provider;
+    }
+
+    public function __toString(): string {
+        return $this->getValue();
+    }
+}

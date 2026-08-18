@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-use App\Clientes\Model\ClienteModel;
-use App\Clientes\ValueObject\CnpjValue;
-use App\Clientes\ValueObject\EmailValue;
-use App\Clientes\ValueObject\TelefoneValue;
+use App\Clientes\Domain\Entity\Cliente;
+use App\Clientes\Domain\ValueObject\Cnpj;
+use App\Clientes\Domain\ValueObject\Email;
+use App\Clientes\Domain\ValueObject\Telefone;
 use App\Core\Auth\OrdemServico\JwtOrdemServicoService;
 use App\Core\Config\AppConfig;
 use App\Core\Email\EmailService;
@@ -60,12 +60,12 @@ class EnviarOrcamentoOrdemServicoEmailServiceTest extends TestCase {
             dataSolicitacao: new DateTime(),
         );
 
-        $cliente = new ClienteModel(
+        $cliente = new Cliente(
             id: 456,
             nome: "Fulano de Tal",
-            cpfCnpj: new CnpjValue("AB345678000A91"),
-            email: new EmailValue("fulano@gmail.com"),
-            telefone: new TelefoneValue("54999999988"),
+            cpfCnpj: new Cnpj("AB345678000A91"),
+            email: new Email("fulano@gmail.com"),
+            telefone: new Telefone("54999999988"),
         );
 
         $service->enviar($ordemServico, $cliente);
