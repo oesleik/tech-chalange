@@ -57,6 +57,9 @@ COPY --chown=www-data:www-data . .
 # gera o openapi.json durante o build para que fique dentro da imagem
 RUN vendor/bin/openapi src -o public/openapi.json 2>/dev/null || true
 
+# assets publicos precisam ser legiveis pelo nginx
+RUN chmod -R a+rX public
+
 EXPOSE 9000
 
 CMD ["php-fpm"]
