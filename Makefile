@@ -89,9 +89,9 @@ K8S_PHP_POD = $(shell kubectl get pod -n $(K8S_NS) -l app=php -o jsonpath='{.ite
 
 MINISTACK_COMPOSE = docker compose -f docker-compose.ministack.yml -p ministack
 AWS_LOCAL_KUBECONFIG = $(PWD)/.kube/ministack.yaml
-AWS_LOCAL_HELM = helm --kubeconfig $(AWS_LOCAL_KUBECONFIG)
-AWS_LOCAL_KUBECTL = kubectl --kubeconfig $(AWS_LOCAL_KUBECONFIG)
-AWS_LOCAL_PHP_POD = $(shell kubectl --kubeconfig $(AWS_LOCAL_KUBECONFIG) get pod -n $(K8S_NS) -l app=php -o jsonpath='{.items[0].metadata.name}' 2>/dev/null)
+AWS_LOCAL_HELM = helm --kubeconfig "$(AWS_LOCAL_KUBECONFIG)"
+AWS_LOCAL_KUBECTL = kubectl --kubeconfig "$(AWS_LOCAL_KUBECONFIG)"
+AWS_LOCAL_PHP_POD = $(shell kubectl --kubeconfig "$(AWS_LOCAL_KUBECONFIG)" get pod -n $(K8S_NS) -l app=php -o jsonpath='{.items[0].metadata.name}' 2>/dev/null)
 
 ##@ Kubernetes (Minikube)
 
@@ -219,7 +219,7 @@ aws-local-kubeconfig: ## Adapter: extrai kubeconfig do k3s (NAO e aws eks update
 aws-local-down: ## Terraform destroy + para MiniStack (k3s some com o cluster)
 	-terraform -chdir=infra destroy -input=false -auto-approve -var-file=env/ministack.tfvars
 	$(MINISTACK_COMPOSE) down
-	rm -f $(AWS_LOCAL_KUBECONFIG)
+	rm -f "$(AWS_LOCAL_KUBECONFIG)"
 
 aws-local-status: ## Status do cluster k3s do MiniStack
 	$(AWS_LOCAL_KUBECTL) get all -n $(K8S_NS)
@@ -230,6 +230,13 @@ aws-local-url: ## Port-forward do Nginx (localhost; mesmo modelo do make k8s-url
 
 aws-local-migrate: ## Rodar migrations no cluster MiniStack
 	$(AWS_LOCAL_KUBECTL) exec -n $(K8S_NS) $(AWS_LOCAL_PHP_POD) -- php src/cmd/migrations/migrate.php
+
+aws-local-jwt-token: ## Gerar chave JWT no MiniStack
+	$(AWS_LOCAL_KUBECTL) exec -n $(K8S_NS) $(AWS_LOCAL_PHP_POD) -- php src/cmd/generate-token.php
+
+aws-local-jwt-token-email: ## Gerar chave JWT de email no MiniStack
+	$(AWS_LOCAL_KUBECTL) exec -n $(K8S_NS) $(AWS_LOCAL_PHP_POD) -- \
+		php src/cmd/generate-token-ordem-servico.php
 
 aws-local-logs-php: ## Logs do PHP no MiniStack
 	$(AWS_LOCAL_KUBECTL) logs -n $(K8S_NS) -l app=php -f
