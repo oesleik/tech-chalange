@@ -1,27 +1,29 @@
+{{- if .Values.php.hpa.enabled }}
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: php-hpa
-  namespace: tech-challenge
+  labels:
+    app: php
+    {{- include "tech-challenge.labels" . | nindent 4 }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
     name: php
-  minReplicas: 2
-  maxReplicas: 10
+  minReplicas: {{ .Values.php.hpa.minReplicas }}
+  maxReplicas: {{ .Values.php.hpa.maxReplicas }}
   metrics:
-    # escala quando a media de CPU dos pods passar de 70% do requests.cpu (250m)
     - type: Resource
       resource:
         name: cpu
         target:
           type: Utilization
-          averageUtilization: 70
-    # escala quando a media de memoria passar de 80% do requests.memory (256Mi)
+          averageUtilization: {{ .Values.php.hpa.cpuAverageUtilization }}
     - type: Resource
       resource:
         name: memory
         target:
           type: Utilization
-          averageUtilization: 80
+          averageUtilization: {{ .Values.php.hpa.memoryAverageUtilization }}
+{{- end }}

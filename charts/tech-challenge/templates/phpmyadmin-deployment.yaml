@@ -1,8 +1,11 @@
+{{- if .Values.phpmyadmin.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: phpmyadmin
-  namespace: tech-challenge
+  labels:
+    app: phpmyadmin
+    {{- include "tech-challenge.labels" . | nindent 4 }}
 spec:
   replicas: 1
   selector:
@@ -15,14 +18,14 @@ spec:
     spec:
       containers:
         - name: phpmyadmin
-          image: phpmyadmin:latest
+          image: {{ .Values.phpmyadmin.image }}
           ports:
             - containerPort: 80
           env:
             - name: PMA_HOST
-              value: "mysql"
+              value: {{ .Values.config.DB_HOST | quote }}
             - name: PMA_PORT
-              value: "3306"
+              value: {{ .Values.config.DB_PORT | quote }}
             - name: PMA_USER
               valueFrom:
                 configMapKeyRef:
@@ -34,23 +37,5 @@ spec:
                   name: app-secrets
                   key: DB_PASSWORD
           resources:
-            requests:
-              memory: "128Mi"
-              cpu: "100m"
-            limits:
-              memory: "256Mi"
-              cpu: "200m"
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: phpmyadmin
-  namespace: tech-challenge
-spec:
-  selector:
-    app: phpmyadmin
-  ports:
-    - port: 80
-      targetPort: 80
-      nodePort: 30081
-  type: NodePort
+            {{- toYaml .Values.phpmyadmin.resources | nindent 12 }}
+{{- end }}

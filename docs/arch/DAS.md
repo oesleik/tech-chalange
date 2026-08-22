@@ -181,6 +181,7 @@ Deve ser gerado e entregue um relatório com os resultados do scan de vulnerabil
 - **MySQL:** [ADR-001](../adr/001-banco-dados.md)
 - **Symfony Validator:** [ADR-002](../adr/002-symfony-validator.md)
 - **Slim:** [ADR-003](../adr/003-framework-slim.md)
+- **Minikube / MiniStack / EKS:** [ADR-004](../adr/004-minikube-ministack-eks.md)
 
 ---
 

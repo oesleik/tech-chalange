@@ -1,0 +1,12 @@
+# Minikube para uso em desenvolvimento (make k8s-up)
+php:
+  image: tech-challenge-php:latest
+  imagePullPolicy: Never
+
+nginx:
+  service:
+    type: NodePort
+    nodePort: 30080
+
+phpmyadmin:
+  enabled: true

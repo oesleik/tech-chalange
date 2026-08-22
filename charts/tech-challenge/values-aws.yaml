@@ -1,0 +1,11 @@
+# AWS real
+php:
+  image: TODO_ALTERAR.dkr.ecr.us-east-1.amazonaws.com/tech-challenge-php:latest
+  imagePullPolicy: Always
+
+nginx:
+  service:
+    type: LoadBalancer
+
+phpmyadmin:
+  enabled: false

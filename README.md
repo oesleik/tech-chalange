@@ -17,6 +17,8 @@ Ter o **Docker** e o **Docker Compose** instalados na máquina.
 
 Para execução de comandos, também é necessário o **make**. No Windows, instale o projeto dentro do **WSL**. É possível rodar os comandos manualmente para não depender do make.
 
+Para Kubernetes local: **Minikube**, **kubectl** e **Helm 3**. Para rodar AWS local (emulado com MiniStack): **Terraform**.
+
 ## 🚀 Como rodar
 
 ### 1. Configure o ambiente
@@ -84,12 +86,16 @@ tech-chalange/
 ├── Dockerfile                  # Imagem PHP 8.4 FPM customizada
 ├── docker-compose.yml          # Orquestração dos containers
 ├── composer.json               # Dependências PHP (Slim 4)
-├── .env                        # Variáveis de ambiente (não versionar!)
+├── .env                        # Variáveis de ambiente local (não versionar!)
 ├── .env.example                # Modelo do .env
 ├── docker/
 │   ├── nginx/default.conf      # Configuração do Nginx
 │   ├── php/php.ini             # Configurações customizadas do PHP
 │   └── mysql/init/             # Scripts SQL executados na criação do banco
+├── docker-compose.ministack.yml # emulador AWS local
+├── charts/tech-challenge/      # Helm (Minikube, MiniStack, AWS)
+├── infra/                      # Terraform (VPC, IAM, EKS)
+├── scripts/                    # adapter kubeconfig MiniStack
 ├── .github/workflows/          # Fluxos de CI/CD
 ├── public/index.php            # Entry point da aplicação (Slim 4)
 └── src/                        # Classes da aplicação (namespace App\)
@@ -141,3 +147,10 @@ Domínios e Contextos Delimitados) estão em [`docs/ddd/`](./docs/ddd/README.md)
 
 - **ADRs:** [`docs/adr/`](./docs/adr/README.md)
 - **DAS:** [`docs/arch/DAS.md`](./docs/arch/DAS.md)
+
+## Kubernetes e AWS local
+
+Há dois fluxos locais, documentados em [`docs/infrastructure/guia_infraestrutura_k8s.md`](./docs/infrastructure/guia_infraestrutura_k8s.md) e [ADR-004](./docs/adr/004-minikube-ministack-eks.md):
+
+- **Minikube** (dia a dia): `make k8s-up`
+- **MiniStack** (simulação AWS local, com Terraform + EKS/k3s): `make aws-local-up`

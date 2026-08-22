@@ -2,9 +2,11 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: php
-  namespace: tech-challenge
+  labels:
+    app: php
+    {{- include "tech-challenge.labels" . | nindent 4 }}
 spec:
-  replicas: 2
+  replicas: {{ .Values.php.replicaCount }}
   selector:
     matchLabels:
       app: php
@@ -15,10 +17,8 @@ spec:
     spec:
       containers:
         - name: php-fpm
-          image: tech-challenge-php:latest
-          # Never = usa imagem local do Minikube, nao tenta baixar da internet
-          # Na AWS, trocar para "Always" e apontar para o ECR
-          imagePullPolicy: Never
+          image: {{ .Values.php.image }}
+          imagePullPolicy: {{ .Values.php.imagePullPolicy }}
           ports:
             - containerPort: 9000
           # envFrom injeta todas as variaveis do ConfigMap e Secret de uma vez
@@ -38,11 +38,5 @@ spec:
               port: 9000
             initialDelaySeconds: 20
             periodSeconds: 10
-          # requests e obrigatorio para o HPA calcular o percentual de uso
           resources:
-            requests:
-              memory: "256Mi"
-              cpu: "250m"
-            limits:
-              memory: "512Mi"
-              cpu: "500m"
+            {{- toYaml .Values.php.resources | nindent 12 }}

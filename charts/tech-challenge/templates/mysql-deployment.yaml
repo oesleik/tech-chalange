@@ -2,9 +2,11 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mysql
-  namespace: tech-challenge
+  labels:
+    app: mysql
+    {{- include "tech-challenge.labels" . | nindent 4 }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.mysql.replicaCount }}
   selector:
     matchLabels:
       app: mysql
@@ -19,7 +21,7 @@ spec:
     spec:
       containers:
         - name: mysql
-          image: mysql:9
+          image: {{ .Values.mysql.image }}
           ports:
             - containerPort: 3306
           env:
@@ -60,12 +62,7 @@ spec:
             initialDelaySeconds: 15
             periodSeconds: 5
           resources:
-            requests:
-              memory: "512Mi"
-              cpu: "250m"
-            limits:
-              memory: "1Gi"
-              cpu: "500m"
+            {{- toYaml .Values.mysql.resources | nindent 12 }}
       volumes:
         - name: mysql-data
           persistentVolumeClaim:

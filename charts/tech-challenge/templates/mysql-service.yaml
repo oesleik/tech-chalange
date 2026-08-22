@@ -2,12 +2,13 @@ apiVersion: v1
 kind: Service
 metadata:
   name: mysql
-  namespace: tech-challenge
+  labels:
+    app: mysql
+    {{- include "tech-challenge.labels" . | nindent 4 }}
 spec:
   selector:
     app: mysql
   ports:
     - port: 3306
       targetPort: 3306
-  # ClusterIP = so acessivel dentro do cluster, banco nunca exposto externamente
   type: ClusterIP

@@ -1,0 +1,19 @@
+{{- if .Values.phpmyadmin.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: phpmyadmin
+  labels:
+    app: phpmyadmin
+    {{- include "tech-challenge.labels" . | nindent 4 }}
+spec:
+  selector:
+    app: phpmyadmin
+  type: {{ .Values.phpmyadmin.service.type }}
+  ports:
+    - port: {{ .Values.phpmyadmin.service.port }}
+      targetPort: 80
+      {{- if eq .Values.phpmyadmin.service.type "NodePort" }}
+      nodePort: {{ .Values.phpmyadmin.service.nodePort }}
+      {{- end }}
+{{- end }}

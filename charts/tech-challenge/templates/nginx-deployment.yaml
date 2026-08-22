@@ -2,9 +2,11 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: nginx
-  namespace: tech-challenge
+  labels:
+    app: nginx
+    {{- include "tech-challenge.labels" . | nindent 4 }}
 spec:
-  replicas: 2
+  replicas: {{ .Values.nginx.replicaCount }}
   selector:
     matchLabels:
       app: nginx
@@ -16,17 +18,16 @@ spec:
       # initContainer roda antes do nginx e copia os arquivos estaticos da imagem PHP
       initContainers:
         - name: copy-public
-          image: tech-challenge-php:latest
-          imagePullPolicy: Never
+          image: {{ .Values.php.image }}
+          imagePullPolicy: {{ .Values.php.imagePullPolicy }}
           # copia tudo de /var/www/html/public para o volume compartilhado
-          command: ['sh', '-c', 'cp -r /var/www/html/public/. /public/']
+          command: ["sh", "-c", "cp -r /var/www/html/public/. /public/"]
           volumeMounts:
             - name: public-files
               mountPath: /public
-
       containers:
         - name: nginx
-          image: nginx:alpine
+          image: {{ .Values.nginx.image }}
           ports:
             - containerPort: 80
           volumeMounts:
@@ -50,12 +51,7 @@ spec:
             initialDelaySeconds: 10
             periodSeconds: 10
           resources:
-            requests:
-              memory: "64Mi"
-              cpu: "100m"
-            limits:
-              memory: "128Mi"
-              cpu: "200m"
+            {{- toYaml .Values.nginx.resources | nindent 12 }}
       volumes:
         # associa o nome "nginx-config" ao ConfigMap criado no nginx-configmap.yaml
         - name: nginx-config
