@@ -146,6 +146,8 @@ Trust: só `refs/heads/master` **e** só `aws-deploy.yml` / `aws-destroy.yml`. S
 
 A policy cobre o HCL atual (VPC, IAM de EKS, EKS, EBS CSI, ECR) + state. O `Deny` no final impede o apply de apagar o próprio setup de OIDC.
 
+A primeira criação de cluster/node group na conta precisa do **service-linked role** (`AWSServiceRoleForAmazonEKS` / node group). Sem `iam:CreateServiceLinkedRole` restrito a esses serviços, o `CreateCluster` falha com `InvalidParameterException`. Se a role `gha-apply` já existir, o `put-role-policy` abaixo sobrescreve a inline policy.
+
 ```bash
 cat > /tmp/gha-apply-trust.json <<EOF
 {
@@ -248,6 +250,20 @@ cat > /tmp/gha-apply-inline.json <<EOF
         "iam:PassRole"
       ],
       "Resource": "*"
+    },
+    {
+      "Sid": "EksServiceLinkedRoles",
+      "Effect": "Allow",
+      "Action": "iam:CreateServiceLinkedRole",
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "iam:AWSServiceName": [
+            "eks.amazonaws.com",
+            "eks-nodegroup.amazonaws.com"
+          ]
+        }
+      }
     },
     {
       "Sid": "Eks",
