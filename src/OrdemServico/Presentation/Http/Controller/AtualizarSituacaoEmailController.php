@@ -9,7 +9,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use OpenApi\Attributes as OA;
 
-#[OA\Get(path: '/email/ordens-servico/aprovada',  operationId: 'atualizarParaAprovada',  summary: 'Atualizar ordem para aprovada via e-mail',  tags: ['Ordens de Serviço - Situação'], security: [])]
+#[OA\Get(path: '/email/ordens-servico/aprovada', operationId: 'atualizarParaAprovada', summary: 'Atualizar ordem para aprovada via e-mail', tags: ['Ordens de Serviço - Situação'], security: [])]
 #[OA\Get(path: '/email/ordens-servico/rejeitada', operationId: 'atualizarParaRejeitada', summary: 'Atualizar ordem para rejeitada via e-mail', tags: ['Ordens de Serviço - Situação'], security: [])]
 #[OA\Response(response: 200, description: 'Situação atualizada')]
 #[OA\Response(response: 404, description: 'Não encontrada')]

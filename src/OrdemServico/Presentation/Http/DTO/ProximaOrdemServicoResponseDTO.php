@@ -28,10 +28,10 @@ final class ProximaOrdemServicoResponseDTO {
         $id      = $os->id();
 
         $linksExecucao = [
-            new ApiLinkSchema('adicionar_pecas',    "{$baseUrl}ordens-servico/{$id}/pecas",    'POST'),
-            new ApiLinkSchema('adicionar_servicos',  "{$baseUrl}ordens-servico/{$id}/servicos", 'POST'),
-            new ApiLinkSchema('atualizar_pecas',     "{$baseUrl}ordens-servico/{$id}/pecas",    'PUT'),
-            new ApiLinkSchema('atualizar_servicos',  "{$baseUrl}ordens-servico/{$id}/servicos", 'PUT'),
+            new ApiLinkSchema('adicionar_pecas', "{$baseUrl}ordens-servico/{$id}/pecas", 'POST'),
+            new ApiLinkSchema('adicionar_servicos', "{$baseUrl}ordens-servico/{$id}/servicos", 'POST'),
+            new ApiLinkSchema('atualizar_pecas', "{$baseUrl}ordens-servico/{$id}/pecas", 'PUT'),
+            new ApiLinkSchema('atualizar_servicos', "{$baseUrl}ordens-servico/{$id}/servicos", 'PUT'),
         ];
 
         if ($os->situacao() === SituacaoOrdemServicoEnum::RECEBIDA) {
@@ -39,8 +39,8 @@ final class ProximaOrdemServicoResponseDTO {
                 tipo_servico: 'realizar_diagnostico',
                 ordem_servico: OrdemServicoCompletaResponseDTO::fromOutputDTO($output),
                 links: [
-                    new ApiLinkSchema('marcar_em_diagnostico',  "{$baseUrl}ordens-servico/{$id}/em_diagnostico",     'PUT'),
-                    new ApiLinkSchema('enviar_para_aprovacao',  "{$baseUrl}ordens-servico/{$id}/aguardando_aprovacao", 'PUT'),
+                    new ApiLinkSchema('marcar_em_diagnostico', "{$baseUrl}ordens-servico/{$id}/em_diagnostico", 'PUT'),
+                    new ApiLinkSchema('enviar_para_aprovacao', "{$baseUrl}ordens-servico/{$id}/aguardando_aprovacao", 'PUT'),
                     ...$linksExecucao,
                 ],
             );
@@ -51,7 +51,7 @@ final class ProximaOrdemServicoResponseDTO {
             ordem_servico: OrdemServicoCompletaResponseDTO::fromOutputDTO($output),
             links: [
                 new ApiLinkSchema('marcar_em_execucao', "{$baseUrl}ordens-servico/{$id}/em_execucao", 'PUT'),
-                new ApiLinkSchema('marcar_finalizada',  "{$baseUrl}ordens-servico/{$id}/finalizada",  'PUT'),
+                new ApiLinkSchema('marcar_finalizada', "{$baseUrl}ordens-servico/{$id}/finalizada", 'PUT'),
                 ...$linksExecucao,
             ],
         );

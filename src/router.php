@@ -30,7 +30,7 @@ $app->get('/consulta/ordem-servico', App\OrdemServico\Presentation\Http\Controll
 
 // Rota pública validada por token, um JWT específico da Ordem de Serviço
 $app->group('/email', function (RouteCollectorProxy $group): void {
-    $group->get('/email/ordens-servico/aprovada',  [App\OrdemServico\Presentation\Http\Controller\AtualizarSituacaoEmailController::class, 'atualizarParaAprovada']);
+    $group->get('/email/ordens-servico/aprovada', [App\OrdemServico\Presentation\Http\Controller\AtualizarSituacaoEmailController::class, 'atualizarParaAprovada']);
     $group->get('/email/ordens-servico/rejeitada', [App\OrdemServico\Presentation\Http\Controller\AtualizarSituacaoEmailController::class, 'atualizarParaRejeitada']);
 })->add(JwtOrdemServicoMiddleware::class);
 
@@ -71,16 +71,16 @@ $app->group('', function (RouteCollectorProxy $group): void {
         $group->get("/proxima", App\OrdemServico\Presentation\Http\Router\ObterProximaOrdemServicoRouter::class);
         $group->get("/{id:[0-9]+}", App\OrdemServico\Presentation\Http\Router\ObterOrdemServicoRouter::class);
 
-        $group->put("/{id:[0-9]+}/em-diagnostico",       [App\OrdemServico\Presentation\Http\Controller\AtualizarSituacaoController::class, "atualizarParaEmDiagnostico"]);
+        $group->put("/{id:[0-9]+}/em-diagnostico", [App\OrdemServico\Presentation\Http\Controller\AtualizarSituacaoController::class, "atualizarParaEmDiagnostico"]);
         $group->put("/{id:[0-9]+}/aguardando-aprovacao", [App\OrdemServico\Presentation\Http\Controller\AtualizarSituacaoController::class, "atualizarParaAguardandoAprovacao"]);
-        $group->put("/{id:[0-9]+}/em-execucao",          [App\OrdemServico\Presentation\Http\Controller\AtualizarSituacaoController::class, "atualizarParaEmExecucao"]);
-        $group->put("/{id:[0-9]+}/finalizada",           [App\OrdemServico\Presentation\Http\Controller\AtualizarSituacaoController::class, "atualizarParaFinalizada"]);
-        $group->put("/{id:[0-9]+}/entregue",             [App\OrdemServico\Presentation\Http\Controller\AtualizarSituacaoController::class, "atualizarParaEntregue"]);
+        $group->put("/{id:[0-9]+}/em-execucao", [App\OrdemServico\Presentation\Http\Controller\AtualizarSituacaoController::class, "atualizarParaEmExecucao"]);
+        $group->put("/{id:[0-9]+}/finalizada", [App\OrdemServico\Presentation\Http\Controller\AtualizarSituacaoController::class, "atualizarParaFinalizada"]);
+        $group->put("/{id:[0-9]+}/entregue", [App\OrdemServico\Presentation\Http\Controller\AtualizarSituacaoController::class, "atualizarParaEntregue"]);
 
-        $group->post("/{id:[0-9]+}/pecas",    [App\OrdemServico\Presentation\Http\Controller\EditarItensOrdemServicoController::class, "adicionarPecas"]);
-        $group->put("/{id:[0-9]+}/pecas",     [App\OrdemServico\Presentation\Http\Controller\EditarItensOrdemServicoController::class, "atualizarPecas"]);
+        $group->post("/{id:[0-9]+}/pecas", [App\OrdemServico\Presentation\Http\Controller\EditarItensOrdemServicoController::class, "adicionarPecas"]);
+        $group->put("/{id:[0-9]+}/pecas", [App\OrdemServico\Presentation\Http\Controller\EditarItensOrdemServicoController::class, "atualizarPecas"]);
         $group->post("/{id:[0-9]+}/servicos", [App\OrdemServico\Presentation\Http\Controller\EditarItensOrdemServicoController::class, "adicionarServicos"]);
-        $group->put("/{id:[0-9]+}/servicos",  [App\OrdemServico\Presentation\Http\Controller\EditarItensOrdemServicoController::class, "atualizarServicos"]);
+        $group->put("/{id:[0-9]+}/servicos", [App\OrdemServico\Presentation\Http\Controller\EditarItensOrdemServicoController::class, "atualizarServicos"]);
 
         $group->post("/{id:[0-9]+}/enviar-orcamento", App\OrdemServico\Presentation\Http\Controller\EnviarOrcamentoOrdemServicoEmailController::class);
 

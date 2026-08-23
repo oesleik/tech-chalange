@@ -21,11 +21,11 @@ final class AtualizarSituacaoController {
         private readonly PresenterInterface $presenter,
     ) {}
 
-    #[OA\Put(path: '/ordens-servico/{id}/em-diagnostico',       operationId: 'atualizarParaEmDiagnostico',       summary: 'Atualizar para em diagnóstico',    tags: ['Ordens de Serviço - Situação'])]
+    #[OA\Put(path: '/ordens-servico/{id}/em-diagnostico', operationId: 'atualizarParaEmDiagnostico', summary: 'Atualizar para em diagnóstico', tags: ['Ordens de Serviço - Situação'])]
     #[OA\Put(path: '/ordens-servico/{id}/aguardando-aprovacao', operationId: 'atualizarParaAguardandoAprovacao', summary: 'Atualizar para aguardando aprovação', tags: ['Ordens de Serviço - Situação'])]
-    #[OA\Put(path: '/ordens-servico/{id}/em-execucao',          operationId: 'atualizarParaEmExecucao',          summary: 'Atualizar para em execução',         tags: ['Ordens de Serviço - Situação'])]
-    #[OA\Put(path: '/ordens-servico/{id}/finalizada',           operationId: 'atualizarParaFinalizada',          summary: 'Atualizar para finalizada',          tags: ['Ordens de Serviço - Situação'])]
-    #[OA\Put(path: '/ordens-servico/{id}/entregue',             operationId: 'atualizarParaEntregue',            summary: 'Atualizar para entregue',            tags: ['Ordens de Serviço - Situação'])]
+    #[OA\Put(path: '/ordens-servico/{id}/em-execucao', operationId: 'atualizarParaEmExecucao', summary: 'Atualizar para em execução', tags: ['Ordens de Serviço - Situação'])]
+    #[OA\Put(path: '/ordens-servico/{id}/finalizada', operationId: 'atualizarParaFinalizada', summary: 'Atualizar para finalizada', tags: ['Ordens de Serviço - Situação'])]
+    #[OA\Put(path: '/ordens-servico/{id}/entregue', operationId: 'atualizarParaEntregue', summary: 'Atualizar para entregue', tags: ['Ordens de Serviço - Situação'])]
     #[OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))]
     #[OA\Response(response: 200, description: 'Situação atualizada', content: new OA\JsonContent(ref: OrdemServicoResumidaResponseDTO::class))]
     #[OA\Response(response: 404, description: 'Não encontrada')]

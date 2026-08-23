@@ -22,7 +22,7 @@ use Psr\Http\Message\ServerRequestInterface;
 
 #[OA\Get(path: '/consulta/ordem-servico', operationId: 'consultarOrdemServicoPorVeiculo', summary: 'Consulta pública de OS por CPF/CNPJ e placa', description: 'Rota pública. Retorna a OS mais recente do cliente e veículo informados.', tags: ['Consulta Pública'])]
 #[OA\Parameter(name: 'cpf_cnpj', in: 'query', required: true, schema: new OA\Schema(type: 'string', example: '123.456.789-09'))]
-#[OA\Parameter(name: 'placa',    in: 'query', required: true, schema: new OA\Schema(type: 'string', example: 'ABC-1234'))]
+#[OA\Parameter(name: 'placa', in: 'query', required: true, schema: new OA\Schema(type: 'string', example: 'ABC-1234'))]
 #[OA\Response(response: 200, description: 'OS encontrada', content: new OA\JsonContent(ref: OrdemServicoCompletaResponseDTO::class))]
 #[OA\Response(response: 400, description: 'Parâmetros inválidos')]
 #[OA\Response(response: 404, description: 'Cliente, veículo ou OS não encontrados')]

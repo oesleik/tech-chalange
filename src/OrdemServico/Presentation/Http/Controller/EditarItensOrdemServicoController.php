@@ -17,10 +17,10 @@ use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-#[OA\Post(path: '/ordens-servico/{id}/pecas',     operationId: 'adicionarPecasOrdemServico',     summary: 'Adicionar peças',                                   tags: ['Ordens de Serviço - Peças e Serviços'])]
-#[OA\Put( path: '/ordens-servico/{id}/pecas',     operationId: 'atualizarPecasOrdemServico',     summary: 'Atualizar peças (substitui todas as atuais)',        tags: ['Ordens de Serviço - Peças e Serviços'])]
-#[OA\Post(path: '/ordens-servico/{id}/servicos',  operationId: 'adicionarServicosOrdemServico',  summary: 'Adicionar serviços',                                 tags: ['Ordens de Serviço - Peças e Serviços'])]
-#[OA\Put( path: '/ordens-servico/{id}/servicos',  operationId: 'atualizarServicosOrdemServico',  summary: 'Atualizar serviços (substitui todos os atuais)',     tags: ['Ordens de Serviço - Peças e Serviços'])]
+#[OA\Post(path: '/ordens-servico/{id}/pecas', operationId: 'adicionarPecasOrdemServico', summary: 'Adicionar peças', tags: ['Ordens de Serviço - Peças e Serviços'])]
+#[OA\Put(path: '/ordens-servico/{id}/pecas', operationId: 'atualizarPecasOrdemServico', summary: 'Atualizar peças (substitui todas as atuais)', tags: ['Ordens de Serviço - Peças e Serviços'])]
+#[OA\Post(path: '/ordens-servico/{id}/servicos', operationId: 'adicionarServicosOrdemServico', summary: 'Adicionar serviços', tags: ['Ordens de Serviço - Peças e Serviços'])]
+#[OA\Put(path: '/ordens-servico/{id}/servicos', operationId: 'atualizarServicosOrdemServico', summary: 'Atualizar serviços (substitui todos os atuais)', tags: ['Ordens de Serviço - Peças e Serviços'])]
 #[OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer'))]
 #[OA\Response(response: 200, description: 'Itens atualizados', content: new OA\JsonContent(ref: OrdemServicoCompletaResponseDTO::class))]
 #[OA\Response(response: 400, description: 'Dados inválidos')]
