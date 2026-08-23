@@ -1,0 +1,9 @@
+# Copie para backend-aws.hcl só se for rodar terraform AWS na sua máquina.
+# No GitHub Actions o workflow gera este arquivo a partir das variables do repositório.
+# O bucket precisa existir ANTES do primeiro terraform init (veja o runbook).
+
+bucket         = "tech-challenge-ACCOUNT_ID-tfstate"
+key            = "tech-challenge/terraform.tfstate"
+region         = "us-east-1"
+dynamodb_table = "tech-challenge-tfstate-lock"
+encrypt        = true

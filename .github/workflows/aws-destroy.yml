@@ -1,0 +1,91 @@
+name: AWS destroy
+
+# Para o custo do EKS. Manual. Não apaga o bucket S3 / DynamoDB do state (bootstrap).
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Digite exatamente destroy para confirmar'
+        required: true
+        type: string
+
+concurrency:
+  group: aws-infra
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  TF_IN_AUTOMATION: "true"
+  TF_INPUT: "false"
+  AWS_REGION: us-east-1
+
+jobs:
+  destroy:
+    name: Terraform destroy
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Require master branch
+        run: |
+          if [ "${GITHUB_REF}" != "refs/heads/master" ]; then
+            echo "Rode este workflow com a branch master selecionada."
+            exit 1
+          fi
+
+      - name: Confirm destroy
+        env:
+          CONFIRM: ${{ inputs.confirm }}
+        run: |
+          if [ "$CONFIRM" != "destroy" ]; then
+            echo "Abortado: o campo confirm precisa ser exatamente: destroy"
+            exit 1
+          fi
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN_APPLY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.9.8"
+          terraform_wrapper: false
+
+      - name: Configure remote state backend
+        working-directory: infra
+        env:
+          TF_STATE_BUCKET: ${{ vars.TF_STATE_BUCKET }}
+          TF_STATE_LOCK_TABLE: ${{ vars.TF_STATE_LOCK_TABLE }}
+        run: |
+          if [ -z "$TF_STATE_BUCKET" ] || [ -z "$TF_STATE_LOCK_TABLE" ]; then
+            echo "Defina TF_STATE_BUCKET e TF_STATE_LOCK_TABLE (runbook_aws.md)."
+            exit 1
+          fi
+          cat > backend.tf <<'EOF'
+          terraform {
+            backend "s3" {}
+          }
+          EOF
+          cat > env/backend-aws.hcl <<EOF
+          bucket         = "${TF_STATE_BUCKET}"
+          key            = "tech-challenge/terraform.tfstate"
+          region         = "${AWS_REGION}"
+          dynamodb_table = "${TF_STATE_LOCK_TABLE}"
+          encrypt        = true
+          EOF
+
+      - name: Terraform init
+        working-directory: infra
+        run: terraform init -backend-config=env/backend-aws.hcl
+
+      - name: Terraform destroy
+        working-directory: infra
+        run: terraform destroy -auto-approve -var-file=env/aws.tfvars
