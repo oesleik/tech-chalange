@@ -10,30 +10,30 @@ use App\Core\Auth\OrdemServico\JwtOrdemServicoService;
 use App\Core\Config\AppConfig;
 use App\Core\Email\EmailService;
 use App\Core\ServiceContainerBuilder;
-use App\OrdemServico\Model\OrdemServicoModel;
-use App\OrdemServico\Model\PecaOrdemServicoModel;
-use App\OrdemServico\Model\ServicoOrdemServicoModel;
-use App\OrdemServico\Model\SituacaoOrdemServicoEnum;
+use App\OrdemServico\Application\Gateway\ItensOrdemServicoGatewayInterface;
+use App\OrdemServico\Domain\Entity\OrdemServico;
+use App\OrdemServico\Domain\Entity\PecaOrdemServico;
+use App\OrdemServico\Domain\Entity\ServicoOrdemServico;
+use App\OrdemServico\Domain\Enum\SituacaoOrdemServicoEnum;
 use App\OrdemServico\Service\EnviarOrcamentoOrdemServicoEmailService;
-use App\OrdemServico\Service\ItensOrdemServicoService;
 use PHPUnit\Framework\TestCase;
 
 class EnviarOrcamentoOrdemServicoEmailServiceTest extends TestCase {
     public function testEnviarEmail(): void {
         $containerBuilder = new ServiceContainerBuilder();
         $container = $containerBuilder->forTesting()->build();
-        $itensServiceMock = $this->createMock(ItensOrdemServicoService::class);
+        $itensGatewayMock = $this->createMock(ItensOrdemServicoGatewayInterface::class);
 
-        $itensServiceMock->expects($this->exactly(2))->method("obterPecasPorIdOrdemServico")->with(123)->willReturnOnConsecutiveCalls([
-            new PecaOrdemServicoModel(
+        $itensGatewayMock->expects($this->exactly(2))->method("buscarPecasPorOrdemServico")->with(123)->willReturnOnConsecutiveCalls([
+            new PecaOrdemServico(
                 idPeca: 111,
                 quantidade: 10,
                 valorUnitario: 80.90,
             ),
         ], []);
 
-        $itensServiceMock->expects($this->exactly(2))->method("obterServicosPorIdOrdemServico")->with(123)->willReturnOnConsecutiveCalls([
-            new ServicoOrdemServicoModel(
+        $itensGatewayMock->expects($this->exactly(2))->method("buscarServicosPorOrdemServico")->with(123)->willReturnOnConsecutiveCalls([
+            new ServicoOrdemServico(
                 idServico: 222,
                 quantidade: 2,
                 valorUnitario: 50.55,
@@ -45,13 +45,13 @@ class EnviarOrcamentoOrdemServicoEmailServiceTest extends TestCase {
         $emailServiceMock->expects($this->exactly(2))->method("send")->willReturn(true);
 
         $service = new EnviarOrcamentoOrdemServicoEmailService(
-            itensOrdemServicoService: $itensServiceMock,
+            itensOrdemServicoGateway: $itensGatewayMock,
             jwtOrdemServicoService: $container->get(JwtOrdemServicoService::class),
             emailService: $emailServiceMock,
             appConfig: $container->get(AppConfig::class),
         );
 
-        $ordemServico = new OrdemServicoModel(
+        $ordemServico = new OrdemServico(
             id: 123,
             idCliente: 456,
             idVeiculo: 789,
@@ -60,10 +60,10 @@ class EnviarOrcamentoOrdemServicoEmailServiceTest extends TestCase {
             dataSolicitacao: new DateTime(),
         );
 
-        $cliente = new Cliente(
+        $cliente = Cliente::reconstituir(
             id: 456,
             nome: "Fulano de Tal",
-            cpfCnpj: new Cnpj("AB345678000A91"),
+            cpfCnpj: new Cnpj("11222333000181"),
             email: new Email("fulano@gmail.com"),
             telefone: new Telefone("54999999988"),
         );
