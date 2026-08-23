@@ -53,10 +53,13 @@ use App\OrdemServico\Application\UseCase\AtualizarSituacao\AtualizarSituacaoUseC
 use App\OrdemServico\Application\UseCase\AtualizarSituacao\AtualizarSituacaoUseCaseInterface;
 use App\OrdemServico\Application\UseCase\CriarOrdemServico\CriarOrdemServicoUseCase;
 use App\OrdemServico\Application\UseCase\CriarOrdemServico\CriarOrdemServicoUseCaseInterface;
+use App\OrdemServico\Application\Gateway\EnviarOrcamentoGatewayInterface;
 use App\OrdemServico\Application\UseCase\EditarItensOrdemServico\EditarPecasOrdemServicoUseCase;
 use App\OrdemServico\Application\UseCase\EditarItensOrdemServico\EditarPecasOrdemServicoUseCaseInterface;
 use App\OrdemServico\Application\UseCase\EditarItensOrdemServico\EditarServicosOrdemServicoUseCase;
 use App\OrdemServico\Application\UseCase\EditarItensOrdemServico\EditarServicosOrdemServicoUseCaseInterface;
+use App\OrdemServico\Application\UseCase\EnviarOrcamento\EnviarOrcamentoUseCase;
+use App\OrdemServico\Application\UseCase\EnviarOrcamento\EnviarOrcamentoUseCaseInterface;
 use App\OrdemServico\Application\UseCase\GerarRelatorioMediaTempo\GerarRelatorioMediaTempoUseCase;
 use App\OrdemServico\Application\UseCase\GerarRelatorioMediaTempo\GerarRelatorioMediaTempoUseCaseInterface;
 use App\OrdemServico\Application\UseCase\GerarRelatorioMediaTempo\RelatorioMediaTempoRepositoryInterface;
@@ -66,6 +69,7 @@ use App\OrdemServico\Application\UseCase\ObterOrdemServico\ObterOrdemServicoUseC
 use App\OrdemServico\Application\UseCase\ObterOrdemServico\ObterOrdemServicoUseCaseInterface;
 use App\OrdemServico\Application\UseCase\ObterProximaOrdemServico\ObterProximaOrdemServicoUseCase;
 use App\OrdemServico\Application\UseCase\ObterProximaOrdemServico\ObterProximaOrdemServicoUseCaseInterface;
+use App\OrdemServico\Infrastructure\Email\EnviarOrcamentoEmailGateway;
 use App\OrdemServico\Infrastructure\Persistence\ItensOrdemServicoGateway;
 use App\OrdemServico\Infrastructure\Persistence\OrdemServicoGateway;
 use App\OrdemServico\Infrastructure\Persistence\RelatorioMediaTempoRepository;
@@ -203,6 +207,17 @@ return [
         $c->get(ItensOrdemServicoGatewayInterface::class),
     ),
     GerarRelatorioMediaTempoUseCaseInterface::class => fn(\DI\Container $c) => new GerarRelatorioMediaTempoUseCase($c->get(RelatorioMediaTempoRepositoryInterface::class)),
+    EnviarOrcamentoGatewayInterface::class => fn(\DI\Container $c) => new EnviarOrcamentoEmailGateway(
+        $c->get(ItensOrdemServicoGatewayInterface::class),
+        $c->get(App\Core\Auth\OrdemServico\JwtOrdemServicoService::class),
+        $c->get(EmailService::class),
+        $c->get(App\Core\Config\AppConfig::class),
+    ),
+    EnviarOrcamentoUseCaseInterface::class => fn(\DI\Container $c) => new EnviarOrcamentoUseCase(
+        $c->get(OrdemServicoGatewayInterface::class),
+        $c->get(ObterClienteUseCaseInterface::class),
+        $c->get(EnviarOrcamentoGatewayInterface::class),
+    ),
 
     // OrdemServico — Controllers
     CriarOrdemServicoController::class => fn(\DI\Container $c) => new CriarOrdemServicoController(
@@ -236,9 +251,7 @@ return [
         $c->get(PresenterInterface::class),
     ),
     EnviarOrcamentoOrdemServicoEmailController::class => fn(\DI\Container $c) => new EnviarOrcamentoOrdemServicoEmailController(
-        $c->get(App\OrdemServico\Service\EnviarOrcamentoOrdemServicoEmailService::class),
-        $c->get(OrdemServicoGatewayInterface::class),
-        $c->get(ObterClienteUseCaseInterface::class),
+        $c->get(EnviarOrcamentoUseCaseInterface::class),
         $c->get(PresenterInterface::class),
     ),
     RelatoriosOrdemServicoController::class => fn(\DI\Container $c) => new RelatoriosOrdemServicoController(

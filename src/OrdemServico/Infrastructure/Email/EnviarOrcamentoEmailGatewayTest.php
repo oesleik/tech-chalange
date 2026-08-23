@@ -15,10 +15,10 @@ use App\OrdemServico\Domain\Entity\OrdemServico;
 use App\OrdemServico\Domain\Entity\PecaOrdemServico;
 use App\OrdemServico\Domain\Entity\ServicoOrdemServico;
 use App\OrdemServico\Domain\Enum\SituacaoOrdemServicoEnum;
-use App\OrdemServico\Service\EnviarOrcamentoOrdemServicoEmailService;
+use App\OrdemServico\Infrastructure\Email\EnviarOrcamentoEmailGateway;
 use PHPUnit\Framework\TestCase;
 
-class EnviarOrcamentoOrdemServicoEmailServiceTest extends TestCase {
+class EnviarOrcamentoEmailGatewayTest extends TestCase {
     public function testEnviarEmail(): void {
         $containerBuilder = new ServiceContainerBuilder();
         $container = $containerBuilder->forTesting()->build();
@@ -44,7 +44,7 @@ class EnviarOrcamentoOrdemServicoEmailServiceTest extends TestCase {
         $emailServiceMock = $this->createMock(EmailService::class);
         $emailServiceMock->expects($this->exactly(2))->method("send")->willReturn(true);
 
-        $service = new EnviarOrcamentoOrdemServicoEmailService(
+        $service = new EnviarOrcamentoEmailGateway(
             itensOrdemServicoGateway: $itensGatewayMock,
             jwtOrdemServicoService: $container->get(JwtOrdemServicoService::class),
             emailService: $emailServiceMock,

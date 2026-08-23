@@ -4,13 +4,11 @@ declare(strict_types=1);
 
 namespace App\OrdemServico\Presentation\Http\Controller;
 
-use App\Clientes\Application\UseCase\ObterCliente\ObterClienteUseCaseInterface;
 use App\Clientes\Domain\Exception\ClienteNaoEncontradoException;
 use App\Core\Presentation\Http\HttpStatusCodeEnum;
 use App\Core\Presentation\Http\PresenterInterface;
-use App\OrdemServico\Application\Gateway\OrdemServicoGatewayInterface;
+use App\OrdemServico\Application\UseCase\EnviarOrcamento\EnviarOrcamentoUseCaseInterface;
 use App\OrdemServico\Domain\Exception\OrdemServicoNaoEncontradaException;
-use App\OrdemServico\Service\EnviarOrcamentoOrdemServicoEmailService;
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface;
 
@@ -20,31 +18,21 @@ use Psr\Http\Message\ResponseInterface;
 #[OA\Response(response: 404, description: 'OS ou cliente não encontrados')]
 final class EnviarOrcamentoOrdemServicoEmailController {
     public function __construct(
-        private readonly EnviarOrcamentoOrdemServicoEmailService $emailService,
-        private readonly OrdemServicoGatewayInterface $ordemServicoGateway,
-        private readonly ObterClienteUseCaseInterface $clienteUseCase,
+        private readonly EnviarOrcamentoUseCaseInterface $useCase,
         private readonly PresenterInterface $presenter,
     ) {}
 
     public function __invoke(int $id, ResponseInterface $response): ResponseInterface {
-        $os = $this->ordemServicoGateway->buscarPorId($id);
-
-        if ($os === null) {
-            return $this->presenter->error($response, 'Ordem de serviço não encontrada.', HttpStatusCodeEnum::NotFound);
-        }
-
         try {
-            $cliente = $this->clienteUseCase->executar($os->idCliente());
-        } catch (ClienteNaoEncontradoException) {
-            return $this->presenter->error($response, 'Cliente não encontrado.', HttpStatusCodeEnum::NotFound);
+            $this->useCase->executar($id);
+
+            return $this->presenter->success(
+                $response,
+                (object) ['mensagem' => "Orçamento da Ordem de Serviço #{$id} enviado com sucesso."],
+                HttpStatusCodeEnum::Ok,
+            );
+        } catch (OrdemServicoNaoEncontradaException|ClienteNaoEncontradoException $e) {
+            return $this->presenter->error($response, $e->getMessage(), HttpStatusCodeEnum::NotFound);
         }
-
-        $this->emailService->enviar($os, $cliente);
-
-        return $this->presenter->success(
-            $response,
-            (object) ['mensagem' => "Orçamento da Ordem de Serviço #{$id} enviado com sucesso."],
-            HttpStatusCodeEnum::Ok,
-        );
     }
 }

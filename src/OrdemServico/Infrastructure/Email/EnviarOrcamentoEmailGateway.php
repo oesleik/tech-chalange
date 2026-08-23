@@ -2,21 +2,22 @@
 
 declare(strict_types=1);
 
-namespace App\OrdemServico\Service;
+namespace App\OrdemServico\Infrastructure\Email;
 
 use App\Clientes\Domain\Entity\Cliente;
 use App\Core\Auth\OrdemServico\JwtOrdemServicoService;
 use App\Core\Config\AppConfig;
 use App\Core\Email\EmailService;
+use App\OrdemServico\Application\Gateway\EnviarOrcamentoGatewayInterface;
 use App\OrdemServico\Application\Gateway\ItensOrdemServicoGatewayInterface;
 use App\OrdemServico\Domain\Entity\OrdemServico;
 
-class EnviarOrcamentoOrdemServicoEmailService {
+final class EnviarOrcamentoEmailGateway implements EnviarOrcamentoGatewayInterface {
     public function __construct(
-        private ItensOrdemServicoGatewayInterface $itensOrdemServicoGateway,
-        private JwtOrdemServicoService $jwtOrdemServicoService,
-        private EmailService $emailService,
-        private AppConfig $appConfig,
+        private readonly ItensOrdemServicoGatewayInterface $itensOrdemServicoGateway,
+        private readonly JwtOrdemServicoService $jwtOrdemServicoService,
+        private readonly EmailService $emailService,
+        private readonly AppConfig $appConfig,
     ) {}
 
     public function enviar(OrdemServico $ordemServico, Cliente $cliente): void {
