@@ -190,7 +190,7 @@ kubectl get hpa -n tech-challenge
 
 `TARGETS` tem que mostrar `%`, não `<unknown>`. Sem métrica o HPA não escala.
 
-HPA muda **réplicas do Deployment**, não cria EC2. Com `t3.micro`, scale-up pode deixar pods **Pending**. No **AWS deploy**, o input `node_instance_type` (`t3.small` / `t3.medium`) é o jeito de ver pods extras *Running* sem desligar o HPA.
+HPA muda **réplicas do Deployment**, não cria EC2. Com node pequeno demais, scale-up pode deixar pods **Pending**. No **AWS deploy**, o input `node_instance_type` (`t3.small` / `t3.medium`) é o jeito de ver pods extras *Running* sem desligar o HPA.
 
 Load test no Minikube:
 

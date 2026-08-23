@@ -5,11 +5,10 @@ on:
   workflow_dispatch:
     inputs:
       node_instance_type:
-        description: "Node EKS. t3.micro = barato; t3.small/medium para ver HPA com pods Running"
+        description: "Node EKS. t3.small = padrão; t3.medium para ver HPA com pods extras Running"
         type: choice
-        default: t3.micro
+        default: t3.small
         options:
-          - t3.micro
           - t3.small
           - t3.medium
 

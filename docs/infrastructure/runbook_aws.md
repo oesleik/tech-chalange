@@ -224,6 +224,7 @@ cat > /tmp/gha-apply-inline.json <<EOF
         "ec2:DescribeSecurityGroups", "ec2:CreateSecurityGroup", "ec2:DeleteSecurityGroup",
         "ec2:AuthorizeSecurityGroupIngress", "ec2:AuthorizeSecurityGroupEgress",
         "ec2:RevokeSecurityGroupIngress", "ec2:RevokeSecurityGroupEgress",
+        "ec2:DescribeSecurityGroupRules", "ec2:ModifySecurityGroupRules",
         "ec2:DescribeNetworkInterfaces", "ec2:CreateNetworkInterface",
         "ec2:DeleteNetworkInterface", "ec2:DescribeVpcAttribute",
         "ec2:DescribePrefixLists", "ec2:DescribeImages", "ec2:DescribeLaunchTemplates",
@@ -248,6 +249,20 @@ cat > /tmp/gha-apply-inline.json <<EOF
         "iam:PassRole"
       ],
       "Resource": "*"
+    },
+    {
+      "Sid": "EksServiceLinkedRoles",
+      "Effect": "Allow",
+      "Action": "iam:CreateServiceLinkedRole",
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "iam:AWSServiceName": [
+            "eks.amazonaws.com",
+            "eks-nodegroup.amazonaws.com"
+          ]
+        }
+      }
     },
     {
       "Sid": "Eks",
@@ -331,7 +346,7 @@ gh variable set AWS_ROLE_ARN_APPLY --repo "${GH_OWNER}/${GH_REPO}" --body "arn:a
 | tfvars | `env/ministack.tfvars` | `env/aws.tfvars` |
 | Backend | local (sem `backend.tf`) | S3 gerado no workflow |
 | ECR, EBS CSI | não criados (`use_ministack = true`) | criados |
-| Instance type | default `t3.micro` | `aws.tfvars` + override no **AWS deploy** |
+| Instance type | default `t3.small` | `aws.tfvars` + override no **AWS deploy** |
 
 Não rode `apply -var-file=env/aws.tfvars` apontando para o MiniStack, nem o inverso com o state S3.
 
