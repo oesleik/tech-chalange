@@ -32,6 +32,7 @@ nginx:
     type: NodePort
     port: 80
     nodePort: 30080
+    annotations: {}
   hpa:
     enabled: true
     minReplicas: 2
@@ -44,6 +45,14 @@ mysql:
   persistence:
     size: 5Gi
     storageClassName: ""
+    storageClass:
+      create: false
+      default: false
+      name: gp3
+      provisioner: ebs.csi.aws.com
+      parameters:
+        type: gp3
+        encrypted: "true"
   resources:
     requests:
       memory: "512Mi"

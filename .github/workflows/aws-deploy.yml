@@ -1,0 +1,140 @@
+name: AWS deploy
+
+# Manual only. Push em master NÃO sobe cluster (plano GitHub Free sem required reviewers).
+on:
+  workflow_dispatch:
+    inputs:
+      node_instance_type:
+        description: "Node EKS. t3.micro = barato; t3.small/medium para ver HPA com pods Running"
+        type: choice
+        default: t3.micro
+        options:
+          - t3.micro
+          - t3.small
+          - t3.medium
+
+concurrency:
+  group: aws-infra
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  TF_IN_AUTOMATION: "true"
+  TF_INPUT: "false"
+  AWS_REGION: us-east-1
+
+jobs:
+  deploy:
+    name: Plan, apply, Helm, migrate
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Require master branch
+        run: |
+          if [ "${GITHUB_REF}" != "refs/heads/master" ]; then
+            echo "Rode este workflow com a branch master selecionada."
+            exit 1
+          fi
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN_APPLY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.9.8"
+          terraform_wrapper: false
+
+      - name: Configure remote state backend
+        working-directory: infra
+        env:
+          TF_STATE_BUCKET: ${{ vars.TF_STATE_BUCKET }}
+          TF_STATE_LOCK_TABLE: ${{ vars.TF_STATE_LOCK_TABLE }}
+        run: |
+          if [ -z "$TF_STATE_BUCKET" ] || [ -z "$TF_STATE_LOCK_TABLE" ]; then
+            echo "Defina TF_STATE_BUCKET e TF_STATE_LOCK_TABLE (runbook_aws.md)."
+            exit 1
+          fi
+          cat > backend.tf <<'EOF'
+          terraform {
+            backend "s3" {}
+          }
+          EOF
+          cat > env/backend-aws.hcl <<EOF
+          bucket         = "${TF_STATE_BUCKET}"
+          key            = "tech-challenge/terraform.tfstate"
+          region         = "${AWS_REGION}"
+          dynamodb_table = "${TF_STATE_LOCK_TABLE}"
+          encrypt        = true
+          EOF
+
+      - name: Terraform init
+        working-directory: infra
+        run: terraform init -backend-config=env/backend-aws.hcl
+
+      - name: Terraform plan
+        working-directory: infra
+        env:
+          NODE_INSTANCE_TYPE: ${{ inputs.node_instance_type }}
+        run: |
+          terraform plan -var-file=env/aws.tfvars \
+            -var="node_instance_types=[\"${NODE_INSTANCE_TYPE}\"]" \
+            -out=tfplan -no-color
+
+      - name: Terraform apply
+        working-directory: infra
+        run: terraform apply -auto-approve tfplan
+
+      - name: Install kubectl and Helm
+        run: |
+          curl -fsSL "https://dl.k8s.io/release/$(curl -fsSL https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" -o /usr/local/bin/kubectl
+          chmod +x /usr/local/bin/kubectl
+          curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+
+      - name: Configure kubeconfig
+        run: aws eks update-kubeconfig --name tech-challenge --region "${AWS_REGION}"
+
+      - name: Build and push PHP image
+        working-directory: infra
+        run: |
+          ECR_URI="$(terraform output -raw ecr_repository_url)"
+          echo "ECR_URI=${ECR_URI}" >> "$GITHUB_ENV"
+          aws ecr get-login-password --region "${AWS_REGION}" \
+            | docker login --username AWS --password-stdin "${ECR_URI}"
+          docker build -t "${ECR_URI}:${GITHUB_SHA}" -t "${ECR_URI}:latest" ..
+          docker push "${ECR_URI}:${GITHUB_SHA}"
+          docker push "${ECR_URI}:latest"
+
+      - name: Install metrics-server
+        run: |
+          helm repo add metrics-server https://kubernetes-sigs.github.io/metrics-server/
+          helm repo update
+          helm upgrade --install metrics-server metrics-server/metrics-server \
+            --namespace kube-system \
+            --set args={--kubelet-insecure-tls} \
+            --wait --timeout 3m
+
+      - name: Helm upgrade
+        run: |
+          helm upgrade --install tech-challenge charts/tech-challenge \
+            --namespace tech-challenge --create-namespace \
+            -f charts/tech-challenge/values-aws.yaml \
+            --set "php.image=${ECR_URI}:${GITHUB_SHA}" \
+            --wait --timeout 10m
+
+      - name: Wait for MySQL and PHP
+        run: |
+          kubectl wait --namespace tech-challenge --for=condition=ready pod -l app=mysql --timeout=300s
+          kubectl wait --namespace tech-challenge --for=condition=ready pod -l app=php --timeout=180s
+
+      - name: Run database migrations
+        run: kubectl exec --namespace tech-challenge deploy/php -- php src/cmd/migrations/migrate.php

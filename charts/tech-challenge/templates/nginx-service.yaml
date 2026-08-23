@@ -5,6 +5,10 @@ metadata:
   labels:
     app: nginx
     {{- include "tech-challenge.labels" . | nindent 4 }}
+  {{- with .Values.nginx.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
   selector:
     app: nginx

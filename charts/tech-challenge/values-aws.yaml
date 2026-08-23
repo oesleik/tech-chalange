@@ -1,11 +1,62 @@
 # AWS real
+
 php:
-  image: TODO_ALTERAR.dkr.ecr.us-east-1.amazonaws.com/tech-challenge-php:latest
+  # ACCOUNT_ID é só placeholder, o valor real é sobrescrito em CI
+  image: ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/tech-challenge-php:latest
   imagePullPolicy: Always
+  replicaCount: 1
+  hpa:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 4
+    cpuAverageUtilization: 70
+    memoryAverageUtilization: 80
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "50m"
+    limits:
+      memory: "256Mi"
+      cpu: "250m"
 
 nginx:
+  replicaCount: 1
+  hpa:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 3
+    cpuAverageUtilization: 70
+  resources:
+    requests:
+      memory: "32Mi"
+      cpu: "20m"
+    limits:
+      memory: "64Mi"
+      cpu: "100m"
   service:
-    type: LoadBalancer
+    type: NodePort
+    port: 80
+    nodePort: 30080
+
+mysql:
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "50m"
+    limits:
+      memory: "384Mi"
+      cpu: "250m"
+  persistence:
+    size: 8Gi
+    storageClassName: gp3
+    storageClass:
+      create: true
+      default: true
+      name: gp3
+      provisioner: ebs.csi.aws.com
+      parameters:
+        type: gp3
+        encrypted: "true"
 
 phpmyadmin:
   enabled: false
