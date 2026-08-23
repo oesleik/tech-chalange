@@ -226,6 +226,7 @@ cat > /tmp/gha-apply-inline.json <<EOF
         "ec2:DescribeSecurityGroups", "ec2:CreateSecurityGroup", "ec2:DeleteSecurityGroup",
         "ec2:AuthorizeSecurityGroupIngress", "ec2:AuthorizeSecurityGroupEgress",
         "ec2:RevokeSecurityGroupIngress", "ec2:RevokeSecurityGroupEgress",
+        "ec2:DescribeSecurityGroupRules", "ec2:ModifySecurityGroupRules",
         "ec2:DescribeNetworkInterfaces", "ec2:CreateNetworkInterface",
         "ec2:DeleteNetworkInterface", "ec2:DescribeVpcAttribute",
         "ec2:DescribePrefixLists", "ec2:DescribeImages", "ec2:DescribeLaunchTemplates",
