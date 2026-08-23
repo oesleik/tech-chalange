@@ -347,7 +347,7 @@ gh variable set AWS_ROLE_ARN_APPLY --repo "${GH_OWNER}/${GH_REPO}" --body "arn:a
 | tfvars | `env/ministack.tfvars` | `env/aws.tfvars` |
 | Backend | local (sem `backend.tf`) | S3 gerado no workflow |
 | ECR, EBS CSI | não criados (`use_ministack = true`) | criados |
-| Instance type | default `t3.micro` | `aws.tfvars` + override no **AWS deploy** |
+| Instance type | default `t3.small` | `aws.tfvars` + override no **AWS deploy** |
 
 Não rode `apply -var-file=env/aws.tfvars` apontando para o MiniStack, nem o inverso com o state S3.
 
