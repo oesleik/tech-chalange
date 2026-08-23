@@ -8,4 +8,7 @@ coverage/
 infra/.terraform/
 infra/*.tfstate
 infra/*.tfstate.backup
+infra/.terraform.tfstate.lock.info
+infra/backend.tf
+infra/env/backend-aws.hcl
 crash.log

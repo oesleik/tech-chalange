@@ -27,6 +27,7 @@ Para Docker Compose, consulte o `README.md` principal. Decisões em [ADR-004](..
 9. [Persistência](#9-persistência-dos-dados)
 10. [AWS real (EKS)](#10-aws-real-eks)
 11. [O que o MiniStack valida e o que não](#11-o-que-o-ministack-valida-e-o-que-nao)
+12. [Runbook AWS](./runbook_aws.md)
 
 ---
 
@@ -55,7 +56,7 @@ charts/tech-challenge/
 ├── values.yaml                 # defaults
 ├── values-minikube.yaml
 ├── values-aws-local.yaml
-├── values-aws.yaml             # placeholder da AWS real
+├── values-aws.yaml
 ├── files/nginx-default.conf
 └── templates/                  # Deployments, Services, HPA, Secret, ConfigMaps
 ```
@@ -174,16 +175,22 @@ Não misture Minikube e MiniStack ao mesmo tempo: `aws-local-up` tenta parar os 
 
 ## 8. HPA - Auto-scaling
 
-| Componente | Min pods | Max pods | Escala por CPU | Escala por memória |
-|---|---|---|---|---|
-| PHP-FPM | 2 | 10 | > 70% de 250m | > 80% de 256Mi |
-| Nginx | 2 | 5 | > 70% de 100m | não configurado |
+| Alvo | PHP | Nginx |
+|---|---|---|
+| Minikube / defaults | 2–10 | 2–5 |
+| AWS (`values-aws`) | 1–4 | 1–3 |
 
-Minikube: addon `metrics-server`. k3s: bundled/metrics conforme a imagem; HPA pode ficar sem métricas se o metrics-server não estiver no k3s do MiniStack.
+Métrica: CPU 70% (PHP também memória 80%).
+
+HPA só reage com **metrics-server**. Minikube: addon. MiniStack: depende do k3s. EKS: o CI instala o chart em `kube-system` (`--kubelet-insecure-tls`).
 
 ```bash
 kubectl get hpa -n tech-challenge
 ```
+
+`TARGETS` tem que mostrar `%`, não `<unknown>`. Sem métrica o HPA não escala.
+
+HPA muda **réplicas do Deployment**, não cria EC2. Com `t3.micro`, scale-up pode deixar pods **Pending**. No **AWS deploy**, o input `node_instance_type` (`t3.small` / `t3.medium`) é o jeito de ver pods extras *Running* sem desligar o HPA.
 
 Load test no Minikube:
 
@@ -210,20 +217,14 @@ MySQL via PVC.
 
 ## 10. AWS real (EKS)
 
-Não edite templates na mão. O chart já tem `values-aws.yaml`:
+Setup inicial manual (OIDC do GitHub Actions, bucket de state): [runbook_aws.md](./runbook_aws.md).
 
-- imagem ECR (`TODO_ALTERAR...`) e `imagePullPolicy: Always`
-- Service Nginx `LoadBalancer`
-- phpMyAdmin desligado
+CI:
 
-O que ainda não está pronto:
+- **PR** (`infra/**`): `terraform plan` - não aplica
+- **AWS deploy** (trigger manual): apply + ECR + Helm + migrations
+- **AWS destroy** (trigger manual): derruba o EKS e para o custo
 
-1. Terraform `apply -var-file=env/aws.tfvars` numa conta AWS (gera custo de control plane + nodes)
-2. Repositório ECR e push da imagem (imagem continua fora do Terraform)
-3. `aws eks update-kubeconfig` (comando real, não o adapter MiniStack)
-4. AWS Load Balancer Controller - `type: LoadBalancer` **não** vira ALB sozinho no EKS moderno
-5. Storage class EBS se o default do cluster não provisionar o PVC do MySQL
-6. GitHub Actions
 
 Resumo:
 
@@ -233,7 +234,7 @@ Resumo:
 | IaC | - | Terraform `ministack.tfvars` | Mesmo HCL, `aws.tfvars` |
 | Workload | Helm values-minikube | Helm values-aws-local | Helm values-aws |
 | Imagem | docker-env + build | build host + import k3s | push ECR |
-| Nginx | NodePort + port-forward | NodePort + port-forward | LoadBalancer (+ controller) |
+| Nginx | NodePort + port-forward | NodePort + port-forward | NodePort 30080 no IP do node |
 | phpMyAdmin | sim | não | não |
 | Secrets | Secret K8s | Secret K8s | Secret K8s |
 | kubeconfig | minikube | adapter `docker exec` | `aws eks update-kubeconfig` |

@@ -154,3 +154,5 @@ Há dois fluxos locais, documentados em [`docs/infrastructure/guia_infraestrutur
 
 - **Minikube** (dia a dia): `make k8s-up`
 - **MiniStack** (simulação AWS local, com Terraform + EKS/k3s): `make aws-local-up`
+
+AWS real (EKS): bootstrap e CI em [`docs/infrastructure/runbook_aws.md`](./docs/infrastructure/runbook_aws.md).

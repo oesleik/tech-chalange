@@ -33,3 +33,15 @@ resource "aws_eks_node_group" "this" {
     aws_iam_role_policy_attachment.eks_ecr_read,
   ]
 }
+
+# Sem NLB (custo fixo). API no NodePort 30080 no IP público do node.
+resource "aws_vpc_security_group_ingress_rule" "nodeport_http" {
+  count = var.use_ministack ? 0 : 1
+
+  security_group_id = aws_eks_cluster.this.vpc_config[0].cluster_security_group_id
+  description       = "NodePort HTTP"
+  cidr_ipv4         = "0.0.0.0/0"
+  from_port         = 30080
+  ip_protocol       = "tcp"
+  to_port           = 30080
+}
