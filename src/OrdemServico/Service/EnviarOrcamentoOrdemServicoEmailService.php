@@ -8,20 +8,21 @@ use App\Clientes\Domain\Entity\Cliente;
 use App\Core\Auth\OrdemServico\JwtOrdemServicoService;
 use App\Core\Config\AppConfig;
 use App\Core\Email\EmailService;
-use App\OrdemServico\Model\OrdemServicoModel;
+use App\OrdemServico\Application\Gateway\ItensOrdemServicoGatewayInterface;
+use App\OrdemServico\Domain\Entity\OrdemServico;
 
 class EnviarOrcamentoOrdemServicoEmailService {
     public function __construct(
-        private ItensOrdemServicoService $itensOrdemServicoService,
+        private ItensOrdemServicoGatewayInterface $itensOrdemServicoGateway,
         private JwtOrdemServicoService $jwtOrdemServicoService,
         private EmailService $emailService,
         private AppConfig $appConfig,
     ) {}
 
-    public function enviar(OrdemServicoModel $ordemServico, Cliente $cliente): void {
-        $idOrdemServico = $ordemServico->getId();
-        $pecas    = $this->itensOrdemServicoService->obterPecasPorIdOrdemServico($idOrdemServico);
-        $servicos = $this->itensOrdemServicoService->obterServicosPorIdOrdemServico($idOrdemServico);
+    public function enviar(OrdemServico $ordemServico, Cliente $cliente): void {
+        $idOrdemServico = $ordemServico->id();
+        $pecas    = $this->itensOrdemServicoGateway->buscarPecasPorOrdemServico($idOrdemServico);
+        $servicos = $this->itensOrdemServicoGateway->buscarServicosPorOrdemServico($idOrdemServico);
 
         $token = $this->jwtOrdemServicoService->generate([
             'id_ordem_servico' => $idOrdemServico,
@@ -31,7 +32,7 @@ class EnviarOrcamentoOrdemServicoEmailService {
         $urlAprovada  = "{$baseUrl}/email/ordens-servico/aprovada?token={$token}";
         $urlRejeitada = "{$baseUrl}/email/ordens-servico/rejeitada?token={$token}";
 
-        $valorTotal = $ordemServico->getValorTotal();
+        $valorTotal = $ordemServico->valorTotal();
         $valorFormatado = 'R$ ' . number_format($valorTotal, 2, ',', '.');
 
         $html = $this->montarHtmlEmail(
@@ -66,8 +67,8 @@ class EnviarOrcamentoOrdemServicoEmailService {
     }
 
     /**
-     * @param \App\OrdemServico\Model\PecaOrdemServicoModel[]    $pecas
-     * @param \App\OrdemServico\Model\ServicoOrdemServicoModel[] $servicos
+     * @param \App\OrdemServico\Domain\Entity\PecaOrdemServico[]    $pecas
+     * @param \App\OrdemServico\Domain\Entity\ServicoOrdemServico[] $servicos
      */
     private function montarHtmlEmail(
         string $nomeCliente,
@@ -80,8 +81,8 @@ class EnviarOrcamentoOrdemServicoEmailService {
     ): string {
         $linhasPecas = '';
         foreach ($pecas as $peca) {
-            $valorUnitarioFormatado = $this->formatarMoeda($peca->getValorUnitario());
-            $subtotalFormatado = $this->formatarMoeda($peca->getSubtotal());
+            $valorUnitarioFormatado = $this->formatarMoeda($peca->valorUnitario());
+            $subtotalFormatado = $this->formatarMoeda($peca->subtotal());
 
             $linhasPecas .= sprintf(
                 '<tr>
@@ -90,8 +91,8 @@ class EnviarOrcamentoOrdemServicoEmailService {
                     <td style="padding:8px;border-bottom:1px solid #eee;text-align:right;">%s</td>
                     <td style="padding:8px;border-bottom:1px solid #eee;text-align:right;font-weight:bold;">%s</td>
                 </tr>',
-                $peca->getIdPeca(),
-                $peca->getQuantidade(),
+                $peca->idPeca(),
+                $peca->quantidade(),
                 $valorUnitarioFormatado,
                 $subtotalFormatado,
             );
@@ -99,8 +100,8 @@ class EnviarOrcamentoOrdemServicoEmailService {
 
         $linhasServicos = '';
         foreach ($servicos as $servico) {
-            $valorUnitarioFormatado = $this->formatarMoeda($servico->getValorUnitario());
-            $subtotalFormatado = $this->formatarMoeda($servico->getSubtotal());
+            $valorUnitarioFormatado = $this->formatarMoeda($servico->valorUnitario());
+            $subtotalFormatado = $this->formatarMoeda($servico->subtotal());
 
             $linhasServicos .= sprintf(
                 '<tr>
@@ -109,8 +110,8 @@ class EnviarOrcamentoOrdemServicoEmailService {
                     <td style="padding:8px;border-bottom:1px solid #eee;text-align:right;">%s</td>
                     <td style="padding:8px;border-bottom:1px solid #eee;text-align:right;font-weight:bold;">%s</td>
                 </tr>',
-                $servico->getIdServico(),
-                $servico->getQuantidade(),
+                $servico->idServico(),
+                $servico->quantidade(),
                 $valorUnitarioFormatado,
                 $subtotalFormatado,
             );

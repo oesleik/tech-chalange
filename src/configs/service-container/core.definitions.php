@@ -47,6 +47,38 @@ use App\Estoque\Presentation\Http\Controller\RegistrarBaixaEstoqueControllerInte
 use App\Estoque\Presentation\Http\Controller\RegistrarBaixaEstoqueController;
 use App\Estoque\Presentation\Http\Controller\ConsultarEstoquePorPecaControllerInterface;
 use App\Estoque\Presentation\Http\Controller\ConsultarEstoquePorPecaController;
+use App\OrdemServico\Application\Gateway\ItensOrdemServicoGatewayInterface;
+use App\OrdemServico\Application\Gateway\OrdemServicoGatewayInterface;
+use App\OrdemServico\Application\UseCase\AtualizarSituacao\AtualizarSituacaoUseCase;
+use App\OrdemServico\Application\UseCase\AtualizarSituacao\AtualizarSituacaoUseCaseInterface;
+use App\OrdemServico\Application\UseCase\CriarOrdemServico\CriarOrdemServicoUseCase;
+use App\OrdemServico\Application\UseCase\CriarOrdemServico\CriarOrdemServicoUseCaseInterface;
+use App\OrdemServico\Application\UseCase\EditarItensOrdemServico\EditarPecasOrdemServicoUseCase;
+use App\OrdemServico\Application\UseCase\EditarItensOrdemServico\EditarPecasOrdemServicoUseCaseInterface;
+use App\OrdemServico\Application\UseCase\EditarItensOrdemServico\EditarServicosOrdemServicoUseCase;
+use App\OrdemServico\Application\UseCase\EditarItensOrdemServico\EditarServicosOrdemServicoUseCaseInterface;
+use App\OrdemServico\Application\UseCase\GerarRelatorioMediaTempo\GerarRelatorioMediaTempoUseCase;
+use App\OrdemServico\Application\UseCase\GerarRelatorioMediaTempo\GerarRelatorioMediaTempoUseCaseInterface;
+use App\OrdemServico\Application\UseCase\GerarRelatorioMediaTempo\RelatorioMediaTempoRepositoryInterface;
+use App\OrdemServico\Application\UseCase\ListarOrdensServico\ListarOrdensServicoUseCase;
+use App\OrdemServico\Application\UseCase\ListarOrdensServico\ListarOrdensServicoUseCaseInterface;
+use App\OrdemServico\Application\UseCase\ObterOrdemServico\ObterOrdemServicoUseCase;
+use App\OrdemServico\Application\UseCase\ObterOrdemServico\ObterOrdemServicoUseCaseInterface;
+use App\OrdemServico\Application\UseCase\ObterProximaOrdemServico\ObterProximaOrdemServicoUseCase;
+use App\OrdemServico\Application\UseCase\ObterProximaOrdemServico\ObterProximaOrdemServicoUseCaseInterface;
+use App\OrdemServico\Infrastructure\Persistence\ItensOrdemServicoGateway;
+use App\OrdemServico\Infrastructure\Persistence\OrdemServicoGateway;
+use App\OrdemServico\Infrastructure\Persistence\RelatorioMediaTempoRepository;
+use App\OrdemServico\Presentation\Http\Controller\AtualizarSituacaoController;
+use App\OrdemServico\Presentation\Http\Controller\AtualizarSituacaoEmailController;
+use App\OrdemServico\Presentation\Http\Controller\ConsultarOrdemServicoPorVeiculoEClienteController;
+use App\OrdemServico\Presentation\Http\Controller\CriarOrdemServicoController;
+use App\OrdemServico\Presentation\Http\Controller\EditarItensOrdemServicoController;
+use App\OrdemServico\Presentation\Http\Controller\EnviarOrcamentoOrdemServicoEmailController;
+use App\OrdemServico\Presentation\Http\Controller\ListarOrdensServicoController;
+use App\OrdemServico\Presentation\Http\Controller\ObterOrdemServicoController;
+use App\OrdemServico\Presentation\Http\Controller\ObterProximaOrdemServicoController;
+use App\OrdemServico\Presentation\Http\Controller\RelatoriosOrdemServicoController;
 
 return [
     Symfony\Component\Validator\Validator\ValidatorInterface::class => fn() => Symfony\Component\Validator\Validation::createValidatorBuilder()->getValidator(),
@@ -138,6 +170,86 @@ return [
     ),
     ConsultarEstoquePorPecaControllerInterface::class => fn(\DI\Container $c) => new ConsultarEstoquePorPecaController(
         $c->get(ConsultarEstoquePorPecaUseCaseInterface::class),
+        $c->get(PresenterInterface::class),
+    ),
+
+    // OrdemServico — Gateways
+    OrdemServicoGatewayInterface::class => fn(\DI\Container $c) => new OrdemServicoGateway($c->get(AppDatabase::class)),
+    ItensOrdemServicoGatewayInterface::class => fn(\DI\Container $c) => new ItensOrdemServicoGateway(
+        $c->get(AppDatabase::class),
+        $c->get(App\Core\Database\TransactionHandler::class),
+        $c->get(OrdemServicoGatewayInterface::class),
+    ),
+    RelatorioMediaTempoRepositoryInterface::class => fn(\DI\Container $c) => new RelatorioMediaTempoRepository($c->get(AppDatabase::class)),
+
+    // OrdemServico — Use Cases
+    CriarOrdemServicoUseCaseInterface::class => fn(\DI\Container $c) => new CriarOrdemServicoUseCase($c->get(OrdemServicoGatewayInterface::class)),
+    ListarOrdensServicoUseCaseInterface::class => fn(\DI\Container $c) => new ListarOrdensServicoUseCase($c->get(OrdemServicoGatewayInterface::class)),
+    ObterOrdemServicoUseCaseInterface::class => fn(\DI\Container $c) => new ObterOrdemServicoUseCase(
+        $c->get(OrdemServicoGatewayInterface::class),
+        $c->get(ItensOrdemServicoGatewayInterface::class),
+    ),
+    ObterProximaOrdemServicoUseCaseInterface::class => fn(\DI\Container $c) => new ObterProximaOrdemServicoUseCase(
+        $c->get(OrdemServicoGatewayInterface::class),
+        $c->get(ItensOrdemServicoGatewayInterface::class),
+    ),
+    AtualizarSituacaoUseCaseInterface::class => fn(\DI\Container $c) => new AtualizarSituacaoUseCase($c->get(OrdemServicoGatewayInterface::class)),
+    EditarPecasOrdemServicoUseCaseInterface::class => fn(\DI\Container $c) => new EditarPecasOrdemServicoUseCase(
+        $c->get(OrdemServicoGatewayInterface::class),
+        $c->get(ItensOrdemServicoGatewayInterface::class),
+    ),
+    EditarServicosOrdemServicoUseCaseInterface::class => fn(\DI\Container $c) => new EditarServicosOrdemServicoUseCase(
+        $c->get(OrdemServicoGatewayInterface::class),
+        $c->get(ItensOrdemServicoGatewayInterface::class),
+    ),
+    GerarRelatorioMediaTempoUseCaseInterface::class => fn(\DI\Container $c) => new GerarRelatorioMediaTempoUseCase($c->get(RelatorioMediaTempoRepositoryInterface::class)),
+
+    // OrdemServico — Controllers
+    CriarOrdemServicoController::class => fn(\DI\Container $c) => new CriarOrdemServicoController(
+        $c->get(CriarOrdemServicoUseCaseInterface::class),
+        $c->get(PresenterInterface::class),
+    ),
+    ListarOrdensServicoController::class => fn(\DI\Container $c) => new ListarOrdensServicoController(
+        $c->get(ListarOrdensServicoUseCaseInterface::class),
+        $c->get(PresenterInterface::class),
+    ),
+    ObterOrdemServicoController::class => fn(\DI\Container $c) => new ObterOrdemServicoController(
+        $c->get(ObterOrdemServicoUseCaseInterface::class),
+        $c->get(PresenterInterface::class),
+    ),
+    ObterProximaOrdemServicoController::class => fn(\DI\Container $c) => new ObterProximaOrdemServicoController(
+        $c->get(ObterProximaOrdemServicoUseCaseInterface::class),
+        $c->get(PresenterInterface::class),
+        $c->get(App\Core\Config\AppConfig::class),
+    ),
+    AtualizarSituacaoController::class => fn(\DI\Container $c) => new AtualizarSituacaoController(
+        $c->get(AtualizarSituacaoUseCaseInterface::class),
+        $c->get(PresenterInterface::class),
+    ),
+    AtualizarSituacaoEmailController::class => fn(\DI\Container $c) => new AtualizarSituacaoEmailController(
+        $c->get(AtualizarSituacaoController::class),
+    ),
+    EditarItensOrdemServicoController::class => fn(\DI\Container $c) => new EditarItensOrdemServicoController(
+        $c->get(EditarPecasOrdemServicoUseCaseInterface::class),
+        $c->get(EditarServicosOrdemServicoUseCaseInterface::class),
+        $c->get(ObterOrdemServicoUseCaseInterface::class),
+        $c->get(PresenterInterface::class),
+    ),
+    EnviarOrcamentoOrdemServicoEmailController::class => fn(\DI\Container $c) => new EnviarOrcamentoOrdemServicoEmailController(
+        $c->get(App\OrdemServico\Service\EnviarOrcamentoOrdemServicoEmailService::class),
+        $c->get(OrdemServicoGatewayInterface::class),
+        $c->get(ObterClienteUseCaseInterface::class),
+        $c->get(PresenterInterface::class),
+    ),
+    RelatoriosOrdemServicoController::class => fn(\DI\Container $c) => new RelatoriosOrdemServicoController(
+        $c->get(GerarRelatorioMediaTempoUseCaseInterface::class),
+        $c->get(PresenterInterface::class),
+    ),
+    ConsultarOrdemServicoPorVeiculoEClienteController::class => fn(\DI\Container $c) => new ConsultarOrdemServicoPorVeiculoEClienteController(
+        $c->get(ListarClientesUseCaseInterface::class),
+        $c->get(App\Veiculos\Application\UseCase\ObterVeiculoPorPlaca\ObterVeiculoPorPlacaUseCase::class),
+        $c->get(OrdemServicoGatewayInterface::class),
+        $c->get(ItensOrdemServicoGatewayInterface::class),
         $c->get(PresenterInterface::class),
     ),
 ];
