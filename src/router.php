@@ -26,12 +26,12 @@ $app->addErrorMiddleware(
 // Rotas públicas
 $app->get('/', [BaseController::class, 'index']);
 $app->get('/health', [BaseController::class, 'health']);
-$app->get('/consulta/ordem-servico', App\OrdemServico\Controller\ConsultarOrdemServicoPorVeiculoEClienteController::class);
+$app->get('/consulta/ordem-servico', App\OrdemServico\Presentation\Http\Router\ConsultarOrdemServicoPorVeiculoEClienteRouter::class);
 
 // Rota pública validada por token, um JWT específico da Ordem de Serviço
 $app->group('/email', function (RouteCollectorProxy $group): void {
-    $group->get('/ordens-servico/aprovada', [App\OrdemServico\Controller\AtualizarSituacaoEmailController::class, "atualizarParaAprovada"]);
-    $group->get('/ordens-servico/rejeitada', [App\OrdemServico\Controller\AtualizarSituacaoEmailController::class, "atualizarParaRejeitada"]);
+    $group->get('/ordens-servico/aprovada', [App\OrdemServico\Presentation\Http\Router\AtualizarSituacaoEmailRouter::class, 'atualizarParaAprovada']);
+    $group->get('/ordens-servico/rejeitada', [App\OrdemServico\Presentation\Http\Router\AtualizarSituacaoEmailRouter::class, 'atualizarParaRejeitada']);
 })->add(JwtOrdemServicoMiddleware::class);
 
 // Rotas protegidas
@@ -66,25 +66,25 @@ $app->group('', function (RouteCollectorProxy $group): void {
     });
 
     $group->group("/ordens-servico", function (RouteCollectorProxy $group): void {
-        $group->get("/", App\OrdemServico\Controller\ListarOrdensServicoController::class);
-        $group->post("/", App\OrdemServico\Controller\CriarOrdemServicoController::class);
-        $group->get("/{id:[0-9]+}", App\OrdemServico\Controller\ObterOrdemServicoController::class);
+        $group->get("/", App\OrdemServico\Presentation\Http\Router\ListarOrdensServicoRouter::class);
+        $group->post("/", App\OrdemServico\Presentation\Http\Router\CriarOrdemServicoRouter::class);
+        $group->get("/proxima", App\OrdemServico\Presentation\Http\Router\ObterProximaOrdemServicoRouter::class);
+        $group->get("/{id:[0-9]+}", App\OrdemServico\Presentation\Http\Router\ObterOrdemServicoRouter::class);
 
-        $group->get("/proxima", App\OrdemServico\Controller\ObterProximaOrdemServicoController::class);
-        $group->put("/{id:[0-9]+}/em-diagnostico", [App\OrdemServico\Controller\AtualizarSituacaoController::class, "atualizarParaEmDiagnostico"]);
-        $group->put("/{id:[0-9]+}/aguardando-aprovacao", [App\OrdemServico\Controller\AtualizarSituacaoController::class, "atualizarParaAguardandoAprovacao"]);
-        $group->put("/{id:[0-9]+}/em-execucao", [App\OrdemServico\Controller\AtualizarSituacaoController::class, "atualizarParaEmExecucao"]);
-        $group->put("/{id:[0-9]+}/finalizada", [App\OrdemServico\Controller\AtualizarSituacaoController::class, "atualizarParaFinalizada"]);
-        $group->put("/{id:[0-9]+}/entregue", [App\OrdemServico\Controller\AtualizarSituacaoController::class, "atualizarParaEntregue"]);
+        $group->put("/{id:[0-9]+}/em-diagnostico", [App\OrdemServico\Presentation\Http\Router\AtualizarSituacaoRouter::class, "atualizarParaEmDiagnostico"]);
+        $group->put("/{id:[0-9]+}/aguardando-aprovacao", [App\OrdemServico\Presentation\Http\Router\AtualizarSituacaoRouter::class, "atualizarParaAguardandoAprovacao"]);
+        $group->put("/{id:[0-9]+}/em-execucao", [App\OrdemServico\Presentation\Http\Router\AtualizarSituacaoRouter::class, "atualizarParaEmExecucao"]);
+        $group->put("/{id:[0-9]+}/finalizada", [App\OrdemServico\Presentation\Http\Router\AtualizarSituacaoRouter::class, "atualizarParaFinalizada"]);
+        $group->put("/{id:[0-9]+}/entregue", [App\OrdemServico\Presentation\Http\Router\AtualizarSituacaoRouter::class, "atualizarParaEntregue"]);
 
-        $group->post("/{id:[0-9]+}/pecas", [App\OrdemServico\Controller\EditarItensOrdemServicoController::class, "adicionarPecas"]);
-        $group->put("/{id:[0-9]+}/pecas", [App\OrdemServico\Controller\EditarItensOrdemServicoController::class, "atualizarPecas"]);
-        $group->post("/{id:[0-9]+}/servicos", [App\OrdemServico\Controller\EditarItensOrdemServicoController::class, "adicionarServicos"]);
-        $group->put("/{id:[0-9]+}/servicos", [App\OrdemServico\Controller\EditarItensOrdemServicoController::class, "atualizarServicos"]);
+        $group->post("/{id:[0-9]+}/pecas", [App\OrdemServico\Presentation\Http\Router\EditarItensOrdemServicoRouter::class, "adicionarPecas"]);
+        $group->put("/{id:[0-9]+}/pecas", [App\OrdemServico\Presentation\Http\Router\EditarItensOrdemServicoRouter::class, "atualizarPecas"]);
+        $group->post("/{id:[0-9]+}/servicos", [App\OrdemServico\Presentation\Http\Router\EditarItensOrdemServicoRouter::class, "adicionarServicos"]);
+        $group->put("/{id:[0-9]+}/servicos", [App\OrdemServico\Presentation\Http\Router\EditarItensOrdemServicoRouter::class, "atualizarServicos"]);
 
-        $group->post("/{id:[0-9]+}/enviar-orcamento", App\OrdemServico\Controller\EnviarOrcamentoOrdemServicoEmailController::class);
+        $group->post("/{id:[0-9]+}/enviar-orcamento", App\OrdemServico\Presentation\Http\Router\EnviarOrcamentoOrdemServicoEmailRouter::class);
 
-        $group->get("/relatorios/media_tempo_servicos", [App\OrdemServico\Controller\RelatoriosOrdemServicoController::class, "relatorioMediaTempoServicos"]);
+        $group->get("/relatorios/media_tempo_servicos", [App\OrdemServico\Presentation\Http\Router\RelatoriosOrdemServicoRouter::class, "relatorioMediaTempoServicos"]);
     });
 
     $group->group('/estoque', function (RouteCollectorProxy $g): void {
