@@ -18,13 +18,13 @@ spec:
     metadata:
       labels:
         app: mysql
+      annotations:
+        checksum/mysql-config: {{ include (print $.Template.BasePath "/mysql-configmap.yaml") . | sha256sum }}
+        checksum/mysql-init-file: {{ include (print $.Template.BasePath "/mysql-init-secret.yaml") . | sha256sum }}
     spec:
       containers:
         - name: mysql
           image: {{ .Values.mysql.image }}
-          args:
-            - --innodb-dedicated-server={{ if .Values.mysql.innodbDedicatedServer }}ON{{ else }}OFF{{ end }}
-            - --innodb-buffer-pool-size={{ .Values.mysql.innodbBufferPoolSize }}
           ports:
             - containerPort: 3306
           env:
@@ -51,14 +51,19 @@ spec:
           volumeMounts:
             - name: mysql-data
               mountPath: /var/lib/mysql
-          # liveness = se falhar, o K8s reinicia o container
+            - name: mysql-config
+              mountPath: /etc/mysql/conf.d/k8s.cnf
+              subPath: k8s.cnf
+              readOnly: true
+            - name: mysql-init-file
+              mountPath: /etc/mysql/init-file
+              readOnly: true
           livenessProbe:
             exec:
               command: ["mysqladmin", "ping", "-h", "localhost"]
             initialDelaySeconds: 30
             periodSeconds: 10
             failureThreshold: 5
-          # readiness = se falhar, o K8s para de mandar trafego para este pod
           readinessProbe:
             exec:
               command: ["mysqladmin", "ping", "-h", "localhost"]
@@ -70,3 +75,9 @@ spec:
         - name: mysql-data
           persistentVolumeClaim:
             claimName: mysql-pvc
+        - name: mysql-config
+          configMap:
+            name: mysql-config
+        - name: mysql-init-file
+          secret:
+            secretName: mysql-init-file

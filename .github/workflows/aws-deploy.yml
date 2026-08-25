@@ -124,16 +124,25 @@ jobs:
 
       - name: Helm upgrade
         env:
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_ROOT_PASSWORD: ${{ secrets.DB_ROOT_PASSWORD }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
           OS_EMAIL_ACTION_TOKEN_SECRET: ${{ secrets.OS_EMAIL_ACTION_TOKEN_SECRET }}
+          MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
+          MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
         run: |
           python3 -c '
           import json, os, pathlib
+          keys = (
+            "DB_PASSWORD",
+            "DB_ROOT_PASSWORD",
+            "JWT_SECRET",
+            "OS_EMAIL_ACTION_TOKEN_SECRET",
+            "MAIL_USERNAME",
+            "MAIL_PASSWORD",
+          )
           pathlib.Path("/tmp/helm-app-secrets.json").write_text(json.dumps({
-            "secrets": {
-              "JWT_SECRET": os.environ["JWT_SECRET"],
-              "OS_EMAIL_ACTION_TOKEN_SECRET": os.environ["OS_EMAIL_ACTION_TOKEN_SECRET"],
-            }
+            "secrets": {k: os.environ[k] for k in keys}
           }))
           '
           helm upgrade --install tech-challenge charts/tech-challenge \
