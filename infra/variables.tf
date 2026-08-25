@@ -48,8 +48,8 @@ variable "availability_zones" {
 
 variable "node_instance_types" {
   type        = list(string)
-  default     = ["t3.small"]
-  description = "Tipo(s) do node EKS. Padrão t3.small (t3.micro não comporta os pods). No CI, o workflow AWS deploy pode sobrescrever (t3.medium) para teste de HPA."
+  default     = ["t3.medium"]
+  description = "Tipo(s) do node EKS"
 }
 
 variable "node_desired_size" {

@@ -5,12 +5,12 @@ on:
   workflow_dispatch:
     inputs:
       node_instance_type:
-        description: "Node EKS. t3.small = padrão; t3.medium para ver HPA com pods extras Running"
+        description: "Node EKS. t3.medium = padrão; t3.large para ver HPA com pods extras Running"
         type: choice
-        default: t3.small
+        default: t3.medium
         options:
-          - t3.small
           - t3.medium
+          - t3.large
 
 concurrency:
   group: aws-infra
