@@ -22,6 +22,9 @@ spec:
       containers:
         - name: mysql
           image: {{ .Values.mysql.image }}
+          args:
+            - --innodb-dedicated-server={{ if .Values.mysql.innodbDedicatedServer }}ON{{ else }}OFF{{ end }}
+            - --innodb-buffer-pool-size={{ .Values.mysql.innodbBufferPoolSize }}
           ports:
             - containerPort: 3306
           env:

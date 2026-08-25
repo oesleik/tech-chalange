@@ -236,7 +236,7 @@ Resumo:
 | Imagem | docker-env + build | build host + import k3s | push ECR |
 | Nginx | NodePort + port-forward | NodePort + port-forward | NodePort 30080 no IP do node |
 | phpMyAdmin | sim | não | não |
-| Secrets | Secret K8s | Secret K8s | Secret K8s |
+| Secrets | placeholders no chart | placeholders no chart | GitHub Secrets |
 | kubeconfig | minikube | adapter `docker exec` | `aws eks update-kubeconfig` |
 
 ---
