@@ -13,6 +13,7 @@ CI em PR: [`.github/workflows/iac.yml`](../../.github/workflows/iac.yml) (role *
 | Bucket S3 + tabela DynamoDB (state/lock) | CLI (setup) |
 | IdP `token.actions.githubusercontent.com` + roles `gha-plan` / `gha-apply` | CLI (setup) |
 | Variables do Actions (`TF_STATE_*`, `AWS_ROLE_ARN_*`) | `gh variable set` ou via interface no GitHub |
+| Secrets do Actions (`JWT_SECRET`, `OS_EMAIL_ACTION_TOKEN_SECRET`) | `gh secret set` ou via interface no GitHub |
 | Cluster EKS + node group + ECR + EBS CSI | workflow **AWS deploy** (trigger manual) |
 
 ---
@@ -336,6 +337,21 @@ gh variable set AWS_ROLE_ARN_APPLY --repo "${GH_OWNER}/${GH_REPO}" --body "arn:a
 | `TF_STATE_LOCK_TABLE` | lock DynamoDB |
 | `AWS_ROLE_ARN_PLAN` | workflow **IaC** |
 | `AWS_ROLE_ARN_APPLY` | **AWS deploy** e **AWS destroy** |
+
+---
+
+## GitHub: secrets (JWT)
+
+```bash
+# Gere valores novos para o cluster (não reutilize o .env local).
+gh secret set JWT_SECRET --repo "${GH_OWNER}/${GH_REPO}"
+gh secret set OS_EMAIL_ACTION_TOKEN_SECRET --repo "${GH_OWNER}/${GH_REPO}"
+```
+
+| Secret | Uso |
+|---|---|
+| `JWT_SECRET` | JWT de admin |
+| `OS_EMAIL_ACTION_TOKEN_SECRET` | JWT para e-mail da OS |
 
 ---
 

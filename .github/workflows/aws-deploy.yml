@@ -123,10 +123,23 @@ jobs:
             --wait --timeout 3m
 
       - name: Helm upgrade
+        env:
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          OS_EMAIL_ACTION_TOKEN_SECRET: ${{ secrets.OS_EMAIL_ACTION_TOKEN_SECRET }}
         run: |
+          python3 -c '
+          import json, os, pathlib
+          pathlib.Path("/tmp/helm-app-secrets.json").write_text(json.dumps({
+            "secrets": {
+              "JWT_SECRET": os.environ["JWT_SECRET"],
+              "OS_EMAIL_ACTION_TOKEN_SECRET": os.environ["OS_EMAIL_ACTION_TOKEN_SECRET"],
+            }
+          }))
+          '
           helm upgrade --install tech-challenge charts/tech-challenge \
             --namespace tech-challenge --create-namespace \
             -f charts/tech-challenge/values-aws.yaml \
+            -f /tmp/helm-app-secrets.json \
             --set "php.image=${ECR_URI}:${GITHUB_SHA}" \
             --wait --timeout 10m
 
