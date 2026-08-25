@@ -13,7 +13,7 @@ CI em PR: [`.github/workflows/iac.yml`](../../.github/workflows/iac.yml) (role *
 | Bucket S3 + tabela DynamoDB (state/lock) | CLI (setup) |
 | IdP `token.actions.githubusercontent.com` + roles `gha-plan` / `gha-apply` | CLI (setup) |
 | Variables do Actions (`TF_STATE_*`, `AWS_ROLE_ARN_*`) | `gh variable set` ou via interface no GitHub |
-| Secrets do Actions (`JWT_SECRET`, `OS_EMAIL_ACTION_TOKEN_SECRET`) | `gh secret set` ou via interface no GitHub |
+| Secrets do Actions (`DB_*`, `JWT_*`, `MAIL_*`) | `gh secret set` ou via interface no GitHub |
 | Cluster EKS + node group + ECR + EBS CSI | workflow **AWS deploy** (trigger manual) |
 
 ---
@@ -340,18 +340,29 @@ gh variable set AWS_ROLE_ARN_APPLY --repo "${GH_OWNER}/${GH_REPO}" --body "arn:a
 
 ---
 
-## GitHub: secrets (JWT)
+## GitHub: secrets (aplicação)
 
 ```bash
-# Gere valores novos para o cluster (não reutilize o .env local).
+# Valores novos para o cluster (não reutilize o .env local).
+# gh secret set sem --body pede o valor no terminal.
+gh secret set DB_PASSWORD --repo "${GH_OWNER}/${GH_REPO}"
+gh secret set DB_ROOT_PASSWORD --repo "${GH_OWNER}/${GH_REPO}"
 gh secret set JWT_SECRET --repo "${GH_OWNER}/${GH_REPO}"
 gh secret set OS_EMAIL_ACTION_TOKEN_SECRET --repo "${GH_OWNER}/${GH_REPO}"
+gh secret set MAIL_USERNAME --repo "${GH_OWNER}/${GH_REPO}"
+gh secret set MAIL_PASSWORD --repo "${GH_OWNER}/${GH_REPO}"
 ```
 
 | Secret | Uso |
 |---|---|
-| `JWT_SECRET` | JWT de admin |
-| `OS_EMAIL_ACTION_TOKEN_SECRET` | JWT para e-mail da OS |
+| `DB_PASSWORD` | Usuário `app_user` (PHP, `init-file` MySQL) |
+| `DB_ROOT_PASSWORD` | Root do MySQL |
+| `JWT_SECRET` | JWT administrativo |
+| `OS_EMAIL_ACTION_TOKEN_SECRET` | JWT dos links de e-mail da OS |
+| `MAIL_USERNAME` | SMTP |
+| `MAIL_PASSWORD` | SMTP |
+
+Minikube/MiniStack continuam com os placeholders de `values.yaml`.
 
 ---
 

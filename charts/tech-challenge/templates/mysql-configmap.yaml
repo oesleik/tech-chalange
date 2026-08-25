@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-config
+  labels:
+    {{- include "tech-challenge.labels" . | nindent 4 }}
+data:
+  k8s.cnf: |
+    [mysqld]
+    skip-name-resolve
+    innodb_dedicated_server = {{ if .Values.mysql.innodbDedicatedServer }}ON{{ else }}OFF{{ end }}
+    innodb_buffer_pool_size = {{ .Values.mysql.innodbBufferPoolSize }}
+    init-file = /etc/mysql/init-file/grant.sql

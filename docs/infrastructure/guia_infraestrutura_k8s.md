@@ -80,6 +80,8 @@ No Docker Compose, Nginx e PHP compartilhavam o mesmo volume com o código. No K
 
 O chart cria o Secret `app-secrets` a partir de `.Values.secrets`. Os values locais usam placeholders de desenvolvimento.
 
+No EKS o workflow **AWS deploy** sobrescreve o bloco inteiro (`DB_*`, `JWT_*`, `MAIL_*`) com GitHub Secrets. Setup: [runbook_aws.md](./runbook_aws.md).
+
 Não commite senhas reais.
 
 ---
