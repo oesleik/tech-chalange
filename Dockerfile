@@ -33,6 +33,10 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
 RUN pecl install pcov
 RUN docker-php-ext-enable pcov
 
+# extensao OpenTelemetry — captura automatica de traces, metricas e logs
+RUN pecl install opentelemetry
+RUN docker-php-ext-enable opentelemetry
+
 # Instala Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 

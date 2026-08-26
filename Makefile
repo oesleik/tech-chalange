@@ -243,3 +243,28 @@ aws-local-logs-php: ## Logs do PHP no MiniStack
 
 aws-local-logs-nginx: ## Logs do Nginx no MiniStack
 	$(AWS_LOCAL_KUBECTL) logs -n $(K8S_NS) -l app=nginx -f
+
+COMPOSE_OTEL = docker compose -f docker-compose.yml -f docker-compose.observability.yml
+
+##@ Observabilidade
+
+otel-up: ## Inicia ambiente completo com observabilidade
+	$(COMPOSE_OTEL) up -d --build
+
+otel-down: ## Para ambiente completo com observabilidade
+	$(COMPOSE_OTEL) down
+
+otel-status: ## Ver status dos containers de observabilidade
+	docker compose -f docker-compose.observability.yml ps
+
+otel-logs: ## Ver logs do OTel Collector
+	docker compose -f docker-compose.observability.yml logs -f otel-collector
+
+open-jaeger: ## Abrir Jaeger UI (traces)
+	xdg-open http://localhost:16686
+
+open-grafana: ## Abrir Grafana (metricas e logs) — admin/admin
+	xdg-open http://localhost:3000
+
+open-prometheus: ## Abrir Prometheus (metricas raw)
+	xdg-open http://localhost:9090
