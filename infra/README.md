@@ -4,7 +4,9 @@ Código único. O alvo muda só pelo tfvars.
 
 ```bash
 # AWS local (MiniStack precisa estar rodando)
-terraform -chdir=infra init
+printf '%s\n' 'terraform {' '  backend "local" {}' '}' > infra/backend.tf
+printf '%s\n' 'path = "terraform.tfstate"' > infra/env/backend-ministack.hcl
+terraform -chdir=infra init -backend-config=env/backend-ministack.hcl
 terraform -chdir=infra apply -var-file=env/ministack.tfvars
 
 # AWS real (state remoto S3)

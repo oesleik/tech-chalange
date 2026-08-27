@@ -12,6 +12,6 @@ terraform {
     }
   }
 
-  # MiniStack: sem bloco backend -> state local (terraform.tfstate).
-  # AWS/CI: o workflow gera backend.tf (S3) na hora do init. Ver docs/infrastructure/runbook_aws.md
+  # MiniStack: Makefile gera backend.tf (local) + env/backend-ministack.hcl.
+  # AWS/CI: o workflow gera backend.tf (S3). Ver docs/infrastructure/runbook_aws.md
 }

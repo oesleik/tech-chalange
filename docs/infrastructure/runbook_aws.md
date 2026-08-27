@@ -371,7 +371,7 @@ Minikube/MiniStack continuam com os placeholders de `values.yaml`.
 | | MiniStack (`make aws-local-up`) | AWS / CI |
 |---|---|---|
 | tfvars | `env/ministack.tfvars` | `env/aws.tfvars` |
-| Backend | local (sem `backend.tf`) | S3 gerado no workflow |
+| Backend | `backend.tf` local gerado no `make aws-local-up` | S3 gerado no workflow |
 | ECR, EBS CSI | não criados (`use_ministack = true`) | criados |
 | Instance type | default `t3.medium` | `aws.tfvars` + override no **AWS deploy** |
 

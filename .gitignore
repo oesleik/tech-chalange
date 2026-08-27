@@ -11,4 +11,5 @@ infra/*.tfstate.backup
 infra/.terraform.tfstate.lock.info
 infra/backend.tf
 infra/env/backend-aws.hcl
+infra/env/backend-ministack.hcl
 crash.log
