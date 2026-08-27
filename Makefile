@@ -201,7 +201,7 @@ aws-local-up: ## MiniStack + Terraform EKS (k3s) + Helm (values-aws-local)
 	@echo "Subindo MiniStack..."
 	$(MINISTACK_COMPOSE) up -d --wait
 	@echo "Aplicando Terraform (env/ministack.tfvars)..."
-	terraform -chdir=infra init -input=false
+	terraform -chdir=infra init -input=false -reconfigure
 	terraform -chdir=infra apply -input=false -auto-approve -var-file=env/ministack.tfvars
 	@$(MAKE) aws-local-kubeconfig
 	@echo "Buildando imagem PHP no Docker do host..."
