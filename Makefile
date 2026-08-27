@@ -201,7 +201,9 @@ aws-local-up: ## MiniStack + Terraform EKS (k3s) + Helm (values-aws-local)
 	@echo "Subindo MiniStack..."
 	$(MINISTACK_COMPOSE) up -d --wait
 	@echo "Aplicando Terraform (env/ministack.tfvars)..."
-	terraform -chdir=infra init -input=false -reconfigure
+	printf '%s\n' 'terraform {' '  backend "local" {}' '}' > infra/backend.tf
+	printf '%s\n' 'path = "terraform.tfstate"' > infra/env/backend-ministack.hcl
+	terraform -chdir=infra init -input=false -backend-config=env/backend-ministack.hcl
 	terraform -chdir=infra apply -input=false -auto-approve -var-file=env/ministack.tfvars
 	@$(MAKE) aws-local-kubeconfig
 	@echo "Buildando imagem PHP no Docker do host..."
@@ -217,6 +219,9 @@ aws-local-kubeconfig: ## Adapter: extrai kubeconfig do k3s (NAO e aws eks update
 	bash scripts/ministack-kubeconfig.sh
 
 aws-local-down: ## Terraform destroy + para MiniStack (k3s some com o cluster)
+	-printf '%s\n' 'terraform {' '  backend "local" {}' '}' > infra/backend.tf
+	-printf '%s\n' 'path = "terraform.tfstate"' > infra/env/backend-ministack.hcl
+	-terraform -chdir=infra init -input=false -backend-config=env/backend-ministack.hcl
 	-terraform -chdir=infra destroy -input=false -auto-approve -var-file=env/ministack.tfvars
 	$(MINISTACK_COMPOSE) down
 	rm -f "$(AWS_LOCAL_KUBECONFIG)"
