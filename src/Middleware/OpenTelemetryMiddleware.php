@@ -13,12 +13,10 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Slim\Routing\RouteContext;
 
-final class OpenTelemetryMiddleware implements MiddlewareInterface
-{
+final class OpenTelemetryMiddleware implements MiddlewareInterface {
     private readonly Logger $logger;
 
-    public function __construct()
-    {
+    public function __construct() {
         $this->logger = new Logger('tech-challenge-api');
 
         $this->logger->pushHandler(
@@ -34,8 +32,8 @@ final class OpenTelemetryMiddleware implements MiddlewareInterface
         RequestHandlerInterface $handler
     ): ResponseInterface {
         error_log(
-            'OTEL MIDDLEWARE EXECUTOU: ' .
-            $request->getUri()->getPath()
+            'OTEL MIDDLEWARE EXECUTOU: '
+            . $request->getUri()->getPath()
         );
 
         $start = hrtime(true);
@@ -93,8 +91,8 @@ final class OpenTelemetryMiddleware implements MiddlewareInterface
         int $statusCode
     ): void {
         error_log(
-            'OTEL COUNTER: ' .
-            (isset($GLOBALS['otel_request_counter'])
+            'OTEL COUNTER: '
+            . (isset($GLOBALS['otel_request_counter'])
                 ? get_class($GLOBALS['otel_request_counter'])
                 : 'NAO EXISTE')
         );
@@ -152,8 +150,7 @@ final class OpenTelemetryMiddleware implements MiddlewareInterface
         );
     }
 
-    private function getRoute(ServerRequestInterface $request): string
-    {
+    private function getRoute(ServerRequestInterface $request): string {
         try {
             $route = RouteContext::fromRequest($request)->getRoute();
 

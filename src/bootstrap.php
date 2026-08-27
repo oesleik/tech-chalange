@@ -46,7 +46,7 @@ $tracerProvider = TracerProvider::builder()
     ->setResource($resource)
     ->addSpanProcessor(
         BatchSpanProcessor::builder(
-            (new SpanExporterFactory($transportFactory))->create()
+            new SpanExporterFactory($transportFactory)->create()
         )->build()
     )
     ->setSampler(new AlwaysOnSampler())
@@ -59,7 +59,7 @@ $meterProvider = MeterProvider::builder()
     ->setResource($resource)
     ->addReader(
         new ExportingReader(
-            (new MetricExporterFactory($transportFactory))->create()
+            new MetricExporterFactory($transportFactory)->create()
         )
     )
     ->build();
@@ -71,7 +71,7 @@ $loggerProvider = LoggerProvider::builder()
     ->setResource($resource)
     ->addLogRecordProcessor(
         new BatchLogRecordProcessor(
-            (new LogsExporterFactory($transportFactory))->create(),
+            new LogsExporterFactory($transportFactory)->create(),
             Clock::getDefault()
         )
     )
