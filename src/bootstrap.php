@@ -21,6 +21,8 @@ use OpenTelemetry\SDK\Sdk;
 use OpenTelemetry\SDK\Trace\Sampler\AlwaysOnSampler;
 use OpenTelemetry\SDK\Trace\SpanProcessor\BatchSpanProcessor;
 use OpenTelemetry\SDK\Trace\TracerProvider;
+use Monolog\Logger;
+use OpenTelemetry\Contrib\Logs\Monolog\Handler as OpenTelemetryMonologHandler;
 
 if (getenv('OTEL_PHP_AUTOLOAD_ENABLED') !== 'true') {
     return;
@@ -74,6 +76,20 @@ $loggerProvider = LoggerProvider::builder()
         )
     )
     ->build();
+
+$logger = new Logger('tech-challenge-api');
+
+$logger->pushHandler(
+    new OpenTelemetryMonologHandler(
+        $loggerProvider,
+        Logger::DEBUG
+    )
+);
+
+$logger->info('OpenTelemetry logging funcionando', [
+    'test' => 'grafana-loki',
+    'environment' => getenv('APP_ENV') ?: 'production',
+]);
 
 /*
  * REGISTRA OS PROVIDERS GLOBALMENTE

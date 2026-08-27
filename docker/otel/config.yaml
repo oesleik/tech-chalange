@@ -11,7 +11,7 @@ processors:
 
 exporters:
   # Jaeger agora aceita OTLP HTTP na porta 4318 interna
-  otlphttp/jaeger:
+  otlp_http/jaeger:
     endpoint: http://jaeger:4318
     tls:
       insecure: true
@@ -20,7 +20,7 @@ exporters:
     endpoint: 0.0.0.0:8889
     namespace: tech_challenge
 
-  otlphttp/loki:
+  otlp_http/loki:
     endpoint: http://loki:3100/otlp
     tls:
       insecure: true
@@ -33,12 +33,12 @@ service:
     traces:
       receivers:  [otlp]
       processors: [batch]
-      exporters:  [otlphttp/jaeger]
+      exporters:  [otlp_http/jaeger]
     metrics:
       receivers:  [otlp]
       processors: [batch]
       exporters:  [prometheus, debug]
     logs:
-      receivers:  [otlp]
+      receivers: [otlp]
       processors: [batch]
-      exporters:  [otlphttp/loki]
+      exporters: [otlp_http/loki, debug]

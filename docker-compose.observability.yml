@@ -46,6 +46,8 @@ services:
       - "3100:3100"
     networks:
       - app_network
+    volumes:
+      - ./docker/loki/local-config.yaml:/etc/loki/local-config.yaml:ro
 
   grafana:
     image: grafana/grafana:latest
