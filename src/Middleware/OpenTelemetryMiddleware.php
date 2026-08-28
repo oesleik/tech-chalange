@@ -31,11 +31,6 @@ final class OpenTelemetryMiddleware implements MiddlewareInterface {
         ServerRequestInterface $request,
         RequestHandlerInterface $handler
     ): ResponseInterface {
-        error_log(
-            'OTEL MIDDLEWARE EXECUTOU: '
-            . $request->getUri()->getPath()
-        );
-
         $start = hrtime(true);
 
         try {
@@ -90,32 +85,17 @@ final class OpenTelemetryMiddleware implements MiddlewareInterface {
         string $route,
         int $statusCode
     ): void {
-        error_log(
-            'OTEL COUNTER: '
-            . (isset($GLOBALS['otel_request_counter'])
-                ? get_class($GLOBALS['otel_request_counter'])
-                : 'NAO EXISTE')
-        );
-
         $counter = $GLOBALS['otel_request_counter'] ?? null;
 
         if ($counter === null) {
-            error_log('OTEL COUNTER NAO EXISTE - RETORNANDO');
-
             return;
         }
-
-        error_log(
-            "OTEL ADD: method={$method} route={$route} status={$statusCode}"
-        );
 
         $counter->add(1, [
             'http.method' => $method,
             'http.route' => $route,
             'http.status_code' => $statusCode,
         ]);
-
-        error_log('OTEL ADD EXECUTADO');
     }
 
     private function recordError(
