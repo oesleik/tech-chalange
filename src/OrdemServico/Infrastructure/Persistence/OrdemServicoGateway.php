@@ -27,9 +27,22 @@ final class OrdemServicoGateway implements OrdemServicoGatewayInterface {
 
     public function listar(FiltroOrdemServico $filtro): array {
         [$where, $params] = $this->montarWhere($filtro);
-        $queryWhere = $where ? "WHERE $where" : '';
+        $terminalCondition = 'situacao NOT IN (?, ?)';
+        $terminalParams = [SituacaoOrdemServicoEnum::FINALIZADA->value, SituacaoOrdemServicoEnum::ENTREGUE->value];
+        $where = $where ? "($where) AND $terminalCondition" : $terminalCondition;
+        $params = array_merge($params, $terminalParams);
+        $queryWhere = "WHERE $where";
 
-        $query = "SELECT * FROM " . self::TABELA . " $queryWhere ORDER BY data_solicitacao DESC";
+        $query = "SELECT * FROM " . self::TABELA . " $queryWhere
+            ORDER BY CASE situacao
+                WHEN 'EmExecucao' THEN 1
+                WHEN 'AguardandoAprovacao' THEN 2
+                WHEN 'EmDiagnostico' THEN 3
+                WHEN 'Recebida' THEN 4
+                WHEN 'Aprovada' THEN 5
+                WHEN 'Rejeitada' THEN 6
+                ELSE 99
+            END, data_solicitacao ASC";
 
         if ($filtro->limit > 0) {
             $query .= ' LIMIT ' . $filtro->limit;

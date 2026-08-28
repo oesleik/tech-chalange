@@ -43,13 +43,18 @@ final class OrdemServicoGatewayTest extends TestCase {
         $stmt = $this->createMock(PDOStatement::class);
         $stmt->expects($this->once())
             ->method('execute')
-            ->with([SituacaoOrdemServicoEnum::APROVADA->value, 10, 20]);
+            ->with([SituacaoOrdemServicoEnum::APROVADA->value, 10, 20, SituacaoOrdemServicoEnum::FINALIZADA->value, SituacaoOrdemServicoEnum::ENTREGUE->value]);
         $stmt->method('fetch')->willReturnOnConsecutiveCalls($this->linha(), false);
 
         $pdo = $this->createMock(AppDatabase::class);
         $pdo->expects($this->once())
             ->method('prepare')
-            ->with($this->stringContains('LIMIT 1'))
+            ->with($this->logicalAnd(
+                $this->stringContains('situacao NOT IN (?, ?)'),
+                $this->stringContains('ORDER BY CASE situacao'),
+                $this->stringContains('data_solicitacao ASC'),
+                $this->stringContains('LIMIT 1'),
+            ))
             ->willReturn($stmt);
 
         $resultado = new OrdemServicoGateway($pdo)->listar(new FiltroOrdemServico(
@@ -60,6 +65,25 @@ final class OrdemServicoGatewayTest extends TestCase {
         ));
 
         $this->assertCount(1, $resultado);
+    }
+
+    public function testListarSemFiltrosExcluiFinalizadasEEntregues(): void {
+        $stmt = $this->createMock(PDOStatement::class);
+        $stmt->expects($this->once())->method('execute')
+            ->with([SituacaoOrdemServicoEnum::FINALIZADA->value, SituacaoOrdemServicoEnum::ENTREGUE->value]);
+        $stmt->method('fetch')->willReturn(false);
+
+        $pdo = $this->createMock(AppDatabase::class);
+        $pdo->expects($this->once())->method('prepare')
+            ->with($this->logicalAnd(
+                $this->stringContains('situacao NOT IN (?, ?)'),
+                $this->stringContains('ORDER BY CASE situacao'),
+            ))
+            ->willReturn($stmt);
+
+        $resultado = new OrdemServicoGateway($pdo)->listar(new FiltroOrdemServico());
+
+        $this->assertSame([], $resultado);
     }
 
     public function testInserirRetornaEntidadeComIdGerado(): void {
