@@ -187,7 +187,10 @@ return [
     RelatorioMediaTempoRepositoryInterface::class => fn(\DI\Container $c) => new RelatorioMediaTempoRepository($c->get(AppDatabase::class)),
 
     // OrdemServico — Use Cases
-    CriarOrdemServicoUseCaseInterface::class => fn(\DI\Container $c) => new CriarOrdemServicoUseCase($c->get(OrdemServicoGatewayInterface::class)),
+    CriarOrdemServicoUseCaseInterface::class => fn(\DI\Container $c) => new CriarOrdemServicoUseCase(
+        $c->get(OrdemServicoGatewayInterface::class),
+        $c->get(ItensOrdemServicoGatewayInterface::class),
+    ),
     ListarOrdensServicoUseCaseInterface::class => fn(\DI\Container $c) => new ListarOrdensServicoUseCase($c->get(OrdemServicoGatewayInterface::class)),
     ObterOrdemServicoUseCaseInterface::class => fn(\DI\Container $c) => new ObterOrdemServicoUseCase(
         $c->get(OrdemServicoGatewayInterface::class),

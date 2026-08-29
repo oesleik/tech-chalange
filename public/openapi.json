@@ -23,23 +23,27 @@
                     {
                         "name": "cpf_cnpj",
                         "in": "query",
-                        "description": "CPF ou CNPJ para filtrar clientes",
+                        "description": "Filtra pelo CPF ou CNPJ do cliente",
                         "required": false,
                         "schema": {
-                            "type": "string"
+                            "type": "string",
+                            "example": "123.456.789-09"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Lista de clientes encontrados",
+                        "description": "Lista de clientes",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ListarClientesResponse"
+                                    "$ref": "#/components/schemas/ListagemClientesResponseDTO"
                                 }
                             }
                         }
+                    },
+                    "400": {
+                        "description": "Parâmetro inválido"
                     }
                 }
             },
@@ -54,41 +58,27 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/CriarClienteRequest"
+                                "$ref": "#/components/schemas/CriarClienteInputDTO"
                             }
                         }
                     }
                 },
                 "responses": {
-                    "200": {
-                        "description": "Cliente encontrado",
+                    "201": {
+                        "description": "Cliente criado com sucesso",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ClienteResponse"
+                                    "$ref": "#/components/schemas/ClienteResponseDTO"
                                 }
                             }
                         }
                     },
                     "400": {
-                        "description": "Validation error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ValidationErrorResponse"
-                                }
-                            }
-                        }
+                        "description": "Dados inválidos"
                     },
                     "409": {
-                        "description": "Conflict error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ValidationErrorResponse"
-                                }
-                            }
-                        }
+                        "description": "Cliente já cadastrado"
                     }
                 }
             }
@@ -106,7 +96,8 @@
                         "in": "path",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "integer",
+                            "example": 1
                         }
                     }
                 ],
@@ -116,7 +107,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ClienteResponse"
+                                    "$ref": "#/components/schemas/ClienteResponseDTO"
                                 }
                             }
                         }
@@ -138,7 +129,8 @@
                         "in": "path",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "integer",
+                            "example": 1
                         }
                     }
                 ],
@@ -147,44 +139,30 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/EditarClienteRequest"
+                                "$ref": "#/components/schemas/EditarClienteInputDTO"
                             }
                         }
                     }
                 },
                 "responses": {
                     "200": {
-                        "description": "Cliente encontrado",
+                        "description": "Cliente atualizado com sucesso",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ClienteResponse"
+                                    "$ref": "#/components/schemas/ClienteResponseDTO"
                                 }
                             }
                         }
                     },
                     "400": {
-                        "description": "Validation error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ValidationErrorResponse"
-                                }
-                            }
-                        }
+                        "description": "Dados inválidos"
                     },
                     "404": {
                         "description": "Cliente não encontrado"
                     },
                     "409": {
-                        "description": "Conflict error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ValidationErrorResponse"
-                                }
-                            }
-                        }
+                        "description": "Cliente já cadastrado"
                     }
                 }
             }
@@ -340,7 +318,7 @@
                 "tags": [
                     "Ordens de Serviço - Situação"
                 ],
-                "summary": "Atualizar ordem de serviço para em diagnóstico",
+                "summary": "Atualizar para em diagnóstico",
                 "operationId": "atualizarParaEmDiagnostico",
                 "parameters": [
                     {
@@ -354,20 +332,20 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Situação atualizada com sucesso",
+                        "description": "Situação atualizada",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/OrdemServicoResumidaResponse"
+                                    "$ref": "#/components/schemas/OrdemServicoResumidaResponseDTO"
                                 }
                             }
                         }
                     },
                     "404": {
-                        "description": "Ordem de Serviço não encontrada"
+                        "description": "Não encontrada"
                     },
                     "409": {
-                        "description": "Ordem de Serviço não atualizada"
+                        "description": "Transição não permitida"
                     }
                 }
             }
@@ -377,7 +355,7 @@
                 "tags": [
                     "Ordens de Serviço - Situação"
                 ],
-                "summary": "Atualizar ordem de serviço para aguardando aprovação",
+                "summary": "Atualizar para aguardando aprovação",
                 "operationId": "atualizarParaAguardandoAprovacao",
                 "parameters": [
                     {
@@ -391,20 +369,20 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Situação atualizada com sucesso",
+                        "description": "Situação atualizada",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/OrdemServicoResumidaResponse"
+                                    "$ref": "#/components/schemas/OrdemServicoResumidaResponseDTO"
                                 }
                             }
                         }
                     },
                     "404": {
-                        "description": "Ordem de Serviço não encontrada"
+                        "description": "Não encontrada"
                     },
                     "409": {
-                        "description": "Ordem de Serviço não atualizada"
+                        "description": "Transição não permitida"
                     }
                 }
             }
@@ -414,7 +392,7 @@
                 "tags": [
                     "Ordens de Serviço - Situação"
                 ],
-                "summary": "Atualizar ordem de serviço para em execução",
+                "summary": "Atualizar para em execução",
                 "operationId": "atualizarParaEmExecucao",
                 "parameters": [
                     {
@@ -428,20 +406,20 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Situação atualizada com sucesso",
+                        "description": "Situação atualizada",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/OrdemServicoResumidaResponse"
+                                    "$ref": "#/components/schemas/OrdemServicoResumidaResponseDTO"
                                 }
                             }
                         }
                     },
                     "404": {
-                        "description": "Ordem de Serviço não encontrada"
+                        "description": "Não encontrada"
                     },
                     "409": {
-                        "description": "Ordem de Serviço não atualizada"
+                        "description": "Transição não permitida"
                     }
                 }
             }
@@ -451,7 +429,7 @@
                 "tags": [
                     "Ordens de Serviço - Situação"
                 ],
-                "summary": "Atualizar ordem de serviço para finalizada",
+                "summary": "Atualizar para finalizada",
                 "operationId": "atualizarParaFinalizada",
                 "parameters": [
                     {
@@ -465,20 +443,20 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Situação atualizada com sucesso",
+                        "description": "Situação atualizada",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/OrdemServicoResumidaResponse"
+                                    "$ref": "#/components/schemas/OrdemServicoResumidaResponseDTO"
                                 }
                             }
                         }
                     },
                     "404": {
-                        "description": "Ordem de Serviço não encontrada"
+                        "description": "Não encontrada"
                     },
                     "409": {
-                        "description": "Ordem de Serviço não atualizada"
+                        "description": "Transição não permitida"
                     }
                 }
             }
@@ -488,7 +466,7 @@
                 "tags": [
                     "Ordens de Serviço - Situação"
                 ],
-                "summary": "Atualizar ordem de serviço para entregue",
+                "summary": "Atualizar para entregue",
                 "operationId": "atualizarParaEntregue",
                 "parameters": [
                     {
@@ -502,20 +480,20 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Situação atualizada com sucesso",
+                        "description": "Situação atualizada",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/OrdemServicoResumidaResponse"
+                                    "$ref": "#/components/schemas/OrdemServicoResumidaResponseDTO"
                                 }
                             }
                         }
                     },
                     "404": {
-                        "description": "Ordem de Serviço não encontrada"
+                        "description": "Não encontrada"
                     },
                     "409": {
-                        "description": "Ordem de Serviço não atualizada"
+                        "description": "Transição não permitida"
                     }
                 }
             }
@@ -525,37 +503,20 @@
                 "tags": [
                     "Ordens de Serviço - Situação"
                 ],
-                "summary": "Atualizar ordem de serviço para aprovada",
+                "summary": "Atualizar ordem para aprovada via e-mail",
                 "operationId": "atualizarParaAprovada",
-                "parameters": [
-                    {
-                        "name": "token",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
                 "responses": {
                     "200": {
-                        "description": "Ordem de Serviço atualizada com sucesso",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/OrdemServicoResumidaResponse"
-                                }
-                            }
-                        }
+                        "description": "Situação atualizada"
                     },
                     "404": {
-                        "description": "Ordem de Serviço não encontrada"
+                        "description": "Não encontrada"
                     },
                     "409": {
-                        "description": "Situação atual da Ordem de Serviço não permite aprovação"
+                        "description": "Transição não permitida"
                     },
                     "422": {
-                        "description": "Ordem de serviço não identificada"
+                        "description": "OS não identificada"
                     }
                 },
                 "security": []
@@ -566,37 +527,20 @@
                 "tags": [
                     "Ordens de Serviço - Situação"
                 ],
-                "summary": "Atualizar ordem de serviço para rejeitada",
+                "summary": "Atualizar ordem para rejeitada via e-mail",
                 "operationId": "atualizarParaRejeitada",
-                "parameters": [
-                    {
-                        "name": "token",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
                 "responses": {
                     "200": {
-                        "description": "Ordem de Serviço atualizada com sucesso",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/OrdemServicoResumidaResponse"
-                                }
-                            }
-                        }
+                        "description": "Situação atualizada"
                     },
                     "404": {
-                        "description": "Ordem de Serviço não encontrada"
+                        "description": "Não encontrada"
                     },
                     "409": {
-                        "description": "Situação atual da Ordem de Serviço não permite aprovação"
+                        "description": "Transição não permitida"
                     },
                     "422": {
-                        "description": "Ordem de serviço não identificada"
+                        "description": "OS não identificada"
                     }
                 },
                 "security": []
@@ -607,14 +551,13 @@
                 "tags": [
                     "Consulta Pública"
                 ],
-                "summary": "Consulta pública de Ordem de Serviço por CPF/CNPJ e placa do veículo",
-                "description": "Rota pública. Retorna a Ordem de Serviço mais recente vinculada ao cliente (CPF ou CNPJ) e ao veículo (placa) informados.",
+                "summary": "Consulta pública de OS por CPF/CNPJ e placa",
+                "description": "Rota pública. Retorna a OS mais recente do cliente e veículo informados.",
                 "operationId": "consultarOrdemServicoPorVeiculo",
                 "parameters": [
                     {
                         "name": "cpf_cnpj",
                         "in": "query",
-                        "description": "CPF (11 dígitos) ou CNPJ (14 dígitos) do cliente, com ou sem formatação",
                         "required": true,
                         "schema": {
                             "type": "string",
@@ -624,7 +567,6 @@
                     {
                         "name": "placa",
                         "in": "query",
-                        "description": "Placa do veículo (formato antigo AAA-1234 ou Mercosul AAA1A23)",
                         "required": true,
                         "schema": {
                             "type": "string",
@@ -634,20 +576,20 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Ordem de Serviço encontrada",
+                        "description": "OS encontrada",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/OrdemServicoCompletaResponse"
+                                    "$ref": "#/components/schemas/OrdemServicoCompletaResponseDTO"
                                 }
                             }
                         }
                     },
                     "400": {
-                        "description": "Parâmetros inválidos — CPF/CNPJ ou placa com formato incorreto"
+                        "description": "Parâmetros inválidos"
                     },
                     "404": {
-                        "description": "Cliente, veículo ou Ordem de Serviço não encontrados"
+                        "description": "Cliente, veículo ou OS não encontrados"
                     }
                 }
             }
@@ -663,26 +605,14 @@
                     {
                         "name": "situacao",
                         "in": "query",
-                        "description": "Filtro por situação da ordem de serviço",
                         "required": false,
                         "schema": {
-                            "type": "string",
-                            "enum": [
-                                "Recebida",
-                                "EmDiagnostico",
-                                "AguardandoAprovacao",
-                                "Aprovada",
-                                "Rejeitada",
-                                "EmExecucao",
-                                "Finalizada",
-                                "Entregue"
-                            ]
+                            "type": "string"
                         }
                     },
                     {
                         "name": "id_cliente",
                         "in": "query",
-                        "description": "Filtro por cliente da ordem de serviço",
                         "required": false,
                         "schema": {
                             "type": "integer"
@@ -691,7 +621,6 @@
                     {
                         "name": "id_veiculo",
                         "in": "query",
-                        "description": "Filtro por veículo da ordem de serviço",
                         "required": false,
                         "schema": {
                             "type": "integer"
@@ -700,17 +629,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Lista de Ordens de Serviço",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/OrdemServicoResumidaResponse"
-                                    }
-                                }
-                            }
-                        }
+                        "description": "Lista de Ordens de Serviço"
                     },
                     "400": {
                         "description": "Filtros inválidos"
@@ -728,7 +647,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/CriarOrdemServicoRequest"
+                                "$ref": "#/components/schemas/CriarOrdemServicoInputDTO"
                             }
                         }
                     }
@@ -739,20 +658,13 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/OrdemServicoResumidaResponse"
+                                    "$ref": "#/components/schemas/OrdemServicoResumidaResponseDTO"
                                 }
                             }
                         }
                     },
                     "400": {
-                        "description": "Erro de validação",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ValidationErrorResponse"
-                                }
-                            }
-                        }
+                        "description": "Erro de validação"
                     }
                 }
             }
@@ -762,7 +674,7 @@
                 "tags": [
                     "Ordens de Serviço - Peças e Serviços"
                 ],
-                "summary": "Atualizar peças da ordem de serviço (substitui todas as peças atuais)",
+                "summary": "Atualizar peças (substitui todas as atuais)",
                 "operationId": "atualizarPecasOrdemServico",
                 "parameters": [
                     {
@@ -774,42 +686,25 @@
                         }
                     }
                 ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/PecasOrdemServicoRequest"
-                            }
-                        }
-                    }
-                },
                 "responses": {
                     "200": {
-                        "description": "Situação atualizada com sucesso",
+                        "description": "Itens atualizados",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/OrdemServicoCompletaResponse"
+                                    "$ref": "#/components/schemas/OrdemServicoCompletaResponseDTO"
                                 }
                             }
                         }
                     },
                     "400": {
-                        "description": "Validation error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ValidationErrorResponse"
-                                }
-                            }
-                        }
+                        "description": "Dados inválidos"
                     },
                     "404": {
-                        "description": "Ordem de serviço não encontrada"
+                        "description": "Não encontrada"
                     },
                     "422": {
-                        "description": "Não foi possível editar os itens da ordem de serviço"
+                        "description": "Ordem já finalizada"
                     }
                 }
             },
@@ -817,7 +712,7 @@
                 "tags": [
                     "Ordens de Serviço - Peças e Serviços"
                 ],
-                "summary": "Adicionar peças na ordem de serviço",
+                "summary": "Adicionar peças",
                 "operationId": "adicionarPecasOrdemServico",
                 "parameters": [
                     {
@@ -829,42 +724,25 @@
                         }
                     }
                 ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/PecasOrdemServicoRequest"
-                            }
-                        }
-                    }
-                },
                 "responses": {
                     "200": {
-                        "description": "Situação atualizada com sucesso",
+                        "description": "Itens atualizados",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/OrdemServicoCompletaResponse"
+                                    "$ref": "#/components/schemas/OrdemServicoCompletaResponseDTO"
                                 }
                             }
                         }
                     },
                     "400": {
-                        "description": "Validation error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ValidationErrorResponse"
-                                }
-                            }
-                        }
+                        "description": "Dados inválidos"
                     },
                     "404": {
-                        "description": "Ordem de serviço não encontrada"
+                        "description": "Não encontrada"
                     },
                     "422": {
-                        "description": "Não foi possível editar os itens da ordem de serviço"
+                        "description": "Ordem já finalizada"
                     }
                 }
             }
@@ -874,7 +752,7 @@
                 "tags": [
                     "Ordens de Serviço - Peças e Serviços"
                 ],
-                "summary": "Atualizar serviços da ordem de serviço (substitui todos os serviços atuais)",
+                "summary": "Atualizar serviços (substitui todos os atuais)",
                 "operationId": "atualizarServicosOrdemServico",
                 "parameters": [
                     {
@@ -886,42 +764,25 @@
                         }
                     }
                 ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/ServicosOrdemServicoRequest"
-                            }
-                        }
-                    }
-                },
                 "responses": {
                     "200": {
-                        "description": "Situação atualizada com sucesso",
+                        "description": "Itens atualizados",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/OrdemServicoCompletaResponse"
+                                    "$ref": "#/components/schemas/OrdemServicoCompletaResponseDTO"
                                 }
                             }
                         }
                     },
                     "400": {
-                        "description": "Validation error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ValidationErrorResponse"
-                                }
-                            }
-                        }
+                        "description": "Dados inválidos"
                     },
                     "404": {
-                        "description": "Ordem de serviço não encontrada"
+                        "description": "Não encontrada"
                     },
                     "422": {
-                        "description": "Não foi possível editar os itens da ordem de serviço"
+                        "description": "Ordem já finalizada"
                     }
                 }
             },
@@ -929,7 +790,7 @@
                 "tags": [
                     "Ordens de Serviço - Peças e Serviços"
                 ],
-                "summary": "Adicionar serviços na ordem de serviço",
+                "summary": "Adicionar serviços",
                 "operationId": "adicionarServicosOrdemServico",
                 "parameters": [
                     {
@@ -941,42 +802,25 @@
                         }
                     }
                 ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/ServicosOrdemServicoRequest"
-                            }
-                        }
-                    }
-                },
                 "responses": {
                     "200": {
-                        "description": "Situação atualizada com sucesso",
+                        "description": "Itens atualizados",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/OrdemServicoCompletaResponse"
+                                    "$ref": "#/components/schemas/OrdemServicoCompletaResponseDTO"
                                 }
                             }
                         }
                     },
                     "400": {
-                        "description": "Validation error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ValidationErrorResponse"
-                                }
-                            }
-                        }
+                        "description": "Dados inválidos"
                     },
                     "404": {
-                        "description": "Ordem de serviço não encontrada"
+                        "description": "Não encontrada"
                     },
                     "422": {
-                        "description": "Não foi possível editar os itens da ordem de serviço"
+                        "description": "Ordem já finalizada"
                     }
                 }
             }
@@ -986,7 +830,7 @@
                 "tags": [
                     "Ordens de Serviço"
                 ],
-                "summary": "Envia o orçamento da Ordem de Serviço por e-mail ao cliente",
+                "summary": "Envia o orçamento da OS por e-mail ao cliente",
                 "operationId": "enviarOrcamentoEmail",
                 "parameters": [
                     {
@@ -1003,10 +847,7 @@
                         "description": "E-mail enviado com sucesso"
                     },
                     "404": {
-                        "description": "Ordem de Serviço não encontrada"
-                    },
-                    "500": {
-                        "description": "Falha ao enviar o e-mail"
+                        "description": "OS ou cliente não encontrados"
                     }
                 }
             }
@@ -1034,7 +875,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/OrdemServicoCompletaResponse"
+                                    "$ref": "#/components/schemas/OrdemServicoCompletaResponseDTO"
                                 }
                             }
                         }
@@ -1050,21 +891,21 @@
                 "tags": [
                     "Ordens de Serviço"
                 ],
-                "summary": "Obter próxima ordem de serviço na fila (aguardando diagnóstico ou aprovada)",
+                "summary": "Obter próxima ordem de serviço na fila",
                 "operationId": "obterProximaOrdemServico",
                 "responses": {
                     "200": {
-                        "description": "Detalhes da Ordem de Serviço",
+                        "description": "Próxima Ordem de Serviço",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ProximaOrdemServicoResponse"
+                                    "$ref": "#/components/schemas/ProximaOrdemServicoResponseDTO"
                                 }
                             }
                         }
                     },
                     "204": {
-                        "description": "Nenhuma Ordem de Serviço pendente ou pronta para trabalhar"
+                        "description": "Nenhuma Ordem de Serviço pendente"
                     }
                 }
             }
@@ -1074,18 +915,11 @@
                 "tags": [
                     "Ordens de Serviço - Relatórios"
                 ],
-                "summary": "Relatório sobre média de tempo por serviço na execução de ordens de serviço",
+                "summary": "Relatório sobre média de tempo por serviço",
                 "operationId": "relatorioMediaTempoServicos",
                 "responses": {
                     "200": {
-                        "description": "Relatório sobre a média de tempo de execução por serviço",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/RelatorioMediaTempoServicosResponse"
-                                }
-                            }
-                        }
+                        "description": "Relatório gerado"
                     }
                 }
             }
@@ -1565,7 +1399,7 @@
     },
     "components": {
         "schemas": {
-            "ClienteResponse": {
+            "ClienteResponseDTO": {
                 "properties": {
                     "id": {
                         "type": "integer",
@@ -1577,32 +1411,11 @@
                     },
                     "cpf_cnpj": {
                         "type": "string",
-                        "example": "12*.***.***-89"
+                        "example": "123.456.789-09"
                     },
                     "email": {
                         "type": "string",
-                        "example": "fu********@example.com"
-                    },
-                    "telefone": {
-                        "type": "string",
-                        "example": "*********78"
-                    }
-                },
-                "type": "object"
-            },
-            "CriarClienteRequest": {
-                "properties": {
-                    "nome": {
-                        "type": "string",
-                        "example": "Fulano de Tal"
-                    },
-                    "cpf_cnpj": {
-                        "type": "string",
-                        "example": "123.456.789-89"
-                    },
-                    "email": {
-                        "type": "string",
-                        "example": "fulanodetal@example.com"
+                        "example": "fulano@example.com"
                     },
                     "telefone": {
                         "type": "string",
@@ -1611,7 +1424,34 @@
                 },
                 "type": "object"
             },
-            "EditarClienteRequest": {
+            "CriarClienteInputDTO": {
+                "required": [
+                    "nome",
+                    "cpf_cnpj",
+                    "email",
+                    "telefone"
+                ],
+                "properties": {
+                    "nome": {
+                        "type": "string",
+                        "example": "Fulano de Tal"
+                    },
+                    "cpf_cnpj": {
+                        "type": "string",
+                        "example": "123.456.789-09"
+                    },
+                    "email": {
+                        "type": "string",
+                        "example": "fulano@example.com"
+                    },
+                    "telefone": {
+                        "type": "string",
+                        "example": "5412345678"
+                    }
+                },
+                "type": "object"
+            },
+            "EditarClienteInputDTO": {
                 "properties": {
                     "nome": {
                         "type": "string",
@@ -1620,12 +1460,12 @@
                     },
                     "cpf_cnpj": {
                         "type": "string",
-                        "example": "123.456.789-89",
+                        "example": "123.456.789-09",
                         "nullable": true
                     },
                     "email": {
                         "type": "string",
-                        "example": "fulanodetal@example.com",
+                        "example": "fulano@example.com",
                         "nullable": true
                     },
                     "telefone": {
@@ -1636,12 +1476,12 @@
                 },
                 "type": "object"
             },
-            "ListarClientesResponse": {
+            "ListagemClientesResponseDTO": {
                 "properties": {
                     "clientes": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/ClienteResponse"
+                            "$ref": "#/components/schemas/ClienteResponseDTO"
                         }
                     }
                 },
@@ -1731,102 +1571,64 @@
                 },
                 "type": "object"
             },
-            "ConsultarOrdemServicoPorVeiculoEClienteRequest": {
-                "properties": {
-                    "cpf_cnpj": {
-                        "type": "string",
-                        "example": "123.456.789-09"
-                    },
-                    "placa": {
-                        "type": "string",
-                        "example": "ABC-1234"
-                    }
-                },
-                "type": "object"
-            },
-            "CriarOrdemServicoRequest": {
+            "CriarOrdemServicoInputDTO": {
+                "required": [
+                    "id_cliente",
+                    "id_veiculo"
+                ],
                 "properties": {
                     "id_cliente": {
                         "type": "integer",
-                        "example": 456
+                        "example": 10
                     },
                     "id_veiculo": {
                         "type": "integer",
-                        "example": 789
-                    }
-                },
-                "type": "object"
-            },
-            "ListarOrdensServicoResponse": {
-                "properties": {
-                    "ordens_servico": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/OrdemServicoResumidaResponse"
-                        }
-                    }
-                },
-                "type": "object"
-            },
-            "OrdemServicoCompletaResponse": {
-                "properties": {
-                    "id": {
-                        "type": "integer",
-                        "example": 123
-                    },
-                    "id_cliente": {
-                        "type": "integer",
-                        "example": 456
-                    },
-                    "id_veiculo": {
-                        "type": "integer",
-                        "example": 789
-                    },
-                    "situacao": {
-                        "type": "string",
-                        "enum": [
-                            "Recebida",
-                            "EmDiagnostico",
-                            "AguardandoAprovacao",
-                            "Aprovada",
-                            "Rejeitada",
-                            "EmExecucao",
-                            "Finalizada",
-                            "Entregue"
-                        ]
-                    },
-                    "valor_total": {
-                        "type": "number",
-                        "format": "float",
-                        "example": 500
-                    },
-                    "data_solicitacao": {
-                        "type": "string",
-                        "format": "date-time",
-                        "example": "2026-06-14 10:30:00"
-                    },
-                    "data_aprovacao": {
-                        "type": "string",
-                        "format": "date-time",
-                        "example": "2026-06-14 11:00:00",
-                        "nullable": true
+                        "example": 20
                     },
                     "pecas": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/PecaOrdemServicoResponse"
+                            "required": [
+                                "id_peca",
+                                "quantidade"
+                            ],
+                            "properties": {
+                                "id_peca": {
+                                    "type": "integer",
+                                    "example": 3
+                                },
+                                "quantidade": {
+                                    "type": "integer",
+                                    "example": 2
+                                }
+                            },
+                            "type": "object"
                         }
                     },
                     "servicos": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/ServicoOrdemServicoResponse"
+                            "required": [
+                                "id_servico",
+                                "quantidade"
+                            ],
+                            "properties": {
+                                "id_servico": {
+                                    "type": "integer",
+                                    "example": 4
+                                },
+                                "quantidade": {
+                                    "type": "integer",
+                                    "example": 1
+                                }
+                            },
+                            "type": "object"
                         }
                     }
                 },
                 "type": "object"
             },
-            "OrdemServicoResumidaResponse": {
+            "OrdemServicoCompletaResponseDTO": {
                 "properties": {
                     "id": {
                         "type": "integer",
@@ -1842,16 +1644,54 @@
                     },
                     "situacao": {
                         "type": "string",
-                        "enum": [
-                            "Recebida",
-                            "EmDiagnostico",
-                            "AguardandoAprovacao",
-                            "Aprovada",
-                            "Rejeitada",
-                            "EmExecucao",
-                            "Finalizada",
-                            "Entregue"
-                        ]
+                        "example": "Recebida"
+                    },
+                    "valor_total": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 500
+                    },
+                    "data_solicitacao": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "data_aprovacao": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "pecas": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/PecaOrdemServicoResponseDTO"
+                        }
+                    },
+                    "servicos": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ServicoOrdemServicoResponseDTO"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "OrdemServicoResumidaResponseDTO": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 123
+                    },
+                    "id_cliente": {
+                        "type": "integer",
+                        "example": 456
+                    },
+                    "id_veiculo": {
+                        "type": "integer",
+                        "example": 789
+                    },
+                    "situacao": {
+                        "type": "string",
+                        "example": "Recebida"
                     },
                     "valor_total": {
                         "type": "number",
@@ -1872,29 +1712,7 @@
                 },
                 "type": "object"
             },
-            "OrdensServicoFiltros": {
-                "properties": {
-                    "situacao": {
-                        "description": "Situação da Ordem de Serviço",
-                        "example": "Aprovada",
-                        "nullable": true
-                    },
-                    "id_cliente": {
-                        "description": "ID do Cliente",
-                        "type": "integer",
-                        "example": 123,
-                        "nullable": true
-                    },
-                    "id_veiculo": {
-                        "description": "ID do Veículo",
-                        "type": "integer",
-                        "example": 456,
-                        "nullable": true
-                    }
-                },
-                "type": "object"
-            },
-            "PecaOrdemServicoRequest": {
+            "PecaOrdemServicoResponseDTO": {
                 "properties": {
                     "id_peca": {
                         "type": "integer",
@@ -1902,30 +1720,12 @@
                     },
                     "quantidade": {
                         "type": "integer",
-                        "example": 1
+                        "example": 2
                     }
                 },
                 "type": "object"
             },
-            "PecaOrdemServicoResponse": {
-                "allOf": [
-                    {
-                        "$ref": "#/components/schemas/PecaOrdemServicoRequest"
-                    }
-                ]
-            },
-            "PecasOrdemServicoRequest": {
-                "properties": {
-                    "pecas": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/PecaOrdemServicoRequest"
-                        }
-                    }
-                },
-                "type": "object"
-            },
-            "ProximaOrdemServicoResponse": {
+            "ProximaOrdemServicoResponseDTO": {
                 "properties": {
                     "tipo_servico": {
                         "type": "string",
@@ -1935,7 +1735,7 @@
                         ]
                     },
                     "ordem_servico": {
-                        "$ref": "#/components/schemas/OrdemServicoCompletaResponse"
+                        "$ref": "#/components/schemas/OrdemServicoCompletaResponseDTO"
                     },
                     "links": {
                         "type": "array",
@@ -1946,18 +1746,20 @@
                 },
                 "type": "object"
             },
-            "RelatorioMediaTempoServicosResponse": {
+            "ServicoOrdemServicoResponseDTO": {
                 "properties": {
-                    "servicos": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/ServicoRelatorioMediaTempoServicosResponse"
-                        }
+                    "id_servico": {
+                        "type": "integer",
+                        "example": 123
+                    },
+                    "quantidade": {
+                        "type": "integer",
+                        "example": 2
                     }
                 },
                 "type": "object"
             },
-            "ServicoRelatorioMediaTempoServicosResponse": {
+            "ServicoRelatorioMediaTempoResponseDTO": {
                 "properties": {
                     "id_servico": {
                         "type": "integer",
@@ -1995,37 +1797,6 @@
                         "type": "number",
                         "format": "float",
                         "example": 2.2
-                    }
-                },
-                "type": "object"
-            },
-            "ServicoOrdemServicoRequest": {
-                "properties": {
-                    "id_servico": {
-                        "type": "integer",
-                        "example": 123
-                    },
-                    "quantidade": {
-                        "type": "integer",
-                        "example": 1
-                    }
-                },
-                "type": "object"
-            },
-            "ServicoOrdemServicoResponse": {
-                "allOf": [
-                    {
-                        "$ref": "#/components/schemas/ServicoOrdemServicoRequest"
-                    }
-                ]
-            },
-            "ServicosOrdemServicoRequest": {
-                "properties": {
-                    "servicos": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/ServicoOrdemServicoRequest"
-                        }
                     }
                 },
                 "type": "object"
