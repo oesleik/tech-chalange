@@ -56,6 +56,13 @@ services:
       - MAIL_ENCRYPTION=${MAIL_ENCRYPTION:-tls}
       - MAIL_FROM_ADDRESS=${MAIL_FROM_ADDRESS:-no-reply@tech-challenge.com}
       - MAIL_FROM_NAME=${MAIL_FROM_NAME:-Tech Challenge}
+      - OTEL_PHP_AUTOLOAD_ENABLED=${OTEL_PHP_AUTOLOAD_ENABLED:-true}
+      - OTEL_SERVICE_NAME=${OTEL_SERVICE_NAME:-tech-challenge-api}
+      - OTEL_TRACES_SAMPLER=${OTEL_TRACES_SAMPLER:-always_on}
+      - OTEL_EXPORTER_OTLP_PROTOCOL=${OTEL_EXPORTER_OTLP_PROTOCOL:-http/protobuf}
+      - OTEL_EXPORTER_OTLP_ENDPOINT=${OTEL_EXPORTER_OTLP_ENDPOINT:-http://otel-collector:4318}
+      - OTEL_LOGS_EXPORTER=${OTEL_LOGS_EXPORTER:-otlp}
+      - OTEL_METRICS_EXPORTER=${OTEL_METRICS_EXPORTER:-otlp}
     depends_on:
       mysql:
         condition: service_healthy

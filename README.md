@@ -156,3 +156,19 @@ Há dois fluxos locais, documentados em [`docs/infrastructure/guia_infraestrutur
 - **MiniStack** (simulação AWS local, com Terraform + EKS/k3s): `make aws-local-up`
 
 AWS real (EKS): bootstrap e CI em [`docs/infrastructure/runbook_aws.md`](./docs/infrastructure/runbook_aws.md).
+
+## 📊 Documentação sobre observabilidade
+
+A solução de observabilidade com **OpenTelemetry, Prometheus, Grafana, Loki e Jaeger** está documentada em [`docs/observabilidade/observabilidade.md`](./docs/observabilidade/observabilidade.md).
+
+Para subir o ambiente:
+
+```bash
+make otel-up
+```
+
+Principais interfaces locais:
+
+- **Grafana:** http://localhost:3000
+- **Prometheus:** http://localhost:9090
+- **Jaeger:** http://localhost:16686
