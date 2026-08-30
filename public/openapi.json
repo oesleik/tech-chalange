@@ -1065,11 +1065,11 @@
                 "operationId": "listarServicos",
                 "responses": {
                     "200": {
-                        "description": "Lista de serviços encontradas",
+                        "description": "Lista de serviços encontrados",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ListarServicosResponse"
+                                    "$ref": "#/components/schemas/ListarServicosResponseDTO"
                                 }
                             }
                         }
@@ -1087,7 +1087,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/CriarServicoRequest"
+                                "$ref": "#/components/schemas/CriarServicoRequestBody"
                             }
                         }
                     }
@@ -1098,20 +1098,13 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ServicoResponse"
+                                    "$ref": "#/components/schemas/ServicoResponseDTO"
                                 }
                             }
                         }
                     },
                     "400": {
-                        "description": "Validation error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ValidationErrorResponse"
-                                }
-                            }
-                        }
+                        "description": "Erro de validação"
                     }
                 }
             }
@@ -1139,7 +1132,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ServicoResponse"
+                                    "$ref": "#/components/schemas/ServicoResponseDTO"
                                 }
                             }
                         }
@@ -1170,7 +1163,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/EditarServicoRequest"
+                                "$ref": "#/components/schemas/EditarServicoRequestBody"
                             }
                         }
                     }
@@ -1181,20 +1174,13 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ServicoResponse"
+                                    "$ref": "#/components/schemas/ServicoResponseDTO"
                                 }
                             }
                         }
                     },
                     "400": {
-                        "description": "Validation error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ValidationErrorResponse"
-                                }
-                            }
-                        }
+                        "description": "Erro de validação"
                     },
                     "404": {
                         "description": "Serviço não encontrado"
@@ -1862,7 +1848,8 @@
                 },
                 "type": "object"
             },
-            "CriarServicoRequest": {
+            "CriarServicoRequestBody": {
+                "description": "Existe apenas para gerar o schema OpenAPI do corpo da requisição.\nO parse/validação real acontece em CriarServicoMapper.",
                 "properties": {
                     "descricao": {
                         "type": "string",
@@ -1876,7 +1863,8 @@
                 },
                 "type": "object"
             },
-            "EditarServicoRequest": {
+            "EditarServicoRequestBody": {
+                "description": "Existe apenas para gerar o schema OpenAPI do corpo da requisição.\nO parse/validação real acontece em EditarServicoMapper.",
                 "properties": {
                     "descricao": {
                         "type": "string",
@@ -1892,18 +1880,18 @@
                 },
                 "type": "object"
             },
-            "ListarServicosResponse": {
+            "ListarServicosResponseDTO": {
                 "properties": {
                     "servicos": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/ServicoResponse"
+                            "$ref": "#/components/schemas/ServicoResponseDTO"
                         }
                     }
                 },
                 "type": "object"
             },
-            "ServicoResponse": {
+            "ServicoResponseDTO": {
                 "properties": {
                     "id": {
                         "type": "integer",
