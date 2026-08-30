@@ -37,7 +37,6 @@ A Fase 1 estabeleceu o MVP funcional. A **Fase 2** evolui a aplicação para **q
 Nesta fase, foram adotadas as seguintes capacidades arquiteturais:
 
 - **Clean Architecture:** modularização do domínio e separação entre Presentation, Application, Domain e Infrastructure.
-- **Qualidade automatizada:** testes, análise estática e integração contínua.
 - **Conteinerização e orquestração:** execução com Docker e Kubernetes, com escalabilidade horizontal.
 - **Infraestrutura como código:** provisionamento e implantação com Terraform e Helm.
 - **Observabilidade:** instrumentação com OpenTelemetry, métricas, logs e traces.
