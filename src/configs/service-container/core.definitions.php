@@ -13,6 +13,8 @@ use App\Veiculos\Application\Gateway\VeiculoGatewayInterface;
 use App\Veiculos\Infrastructure\Persistence\VeiculoGateway;
 use App\Peca\Application\Gateway\PecaGatewayInterface;
 use App\Peca\Infrastructure\Persistence\PecaGateway;
+use App\Servicos\Application\Gateway\ServicoGatewayInterface;
+use App\Servicos\Infrastructure\Persistence\ServicoGateway;
 use App\Clientes\Application\Gateway\ClienteGatewayInterface;
 use App\Clientes\Infrastructure\Persistence\ClienteGateway;
 use Psr\Http\Message\ResponseFactoryInterface;
@@ -128,6 +130,7 @@ return [
     ClienteGatewayInterface::class => fn(\DI\Container $c) => new ClienteGateway($c->get(DbConnectionInterface::class)),
     VeiculoGatewayInterface::class => fn(\DI\Container $c) => new VeiculoGateway($c->get(DbConnectionInterface::class)),
     PecaGatewayInterface::class => fn(\DI\Container $c) => new PecaGateway($c->get(DbConnectionInterface::class)),
+    ServicoGatewayInterface::class => fn(\DI\Container $c) => new ServicoGateway($c->get(DbConnectionInterface::class)),
     CriarClienteUseCaseInterface::class => fn(\DI\Container $c) => new CriarClienteUseCase($c->get(ClienteGatewayInterface::class)),
     EditarClienteUseCaseInterface::class => fn(\DI\Container $c) => new EditarClienteUseCase($c->get(ClienteGatewayInterface::class)),
     ListarClientesUseCaseInterface::class => fn(\DI\Container $c) => new ListarClientesUseCase($c->get(ClienteGatewayInterface::class)),
