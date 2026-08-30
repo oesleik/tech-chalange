@@ -288,14 +288,3 @@ O pipeline bloqueia o merge caso o Quality Gate falhe, garantindo que apenas có
 Varredura de segurança dinâmica (DAST) executada em modo passivo via container Docker, seguindo as diretrizes do OWASP Top 10. Integrada ao pipeline de CI/CD, analisa a superfície de ataque da API em execução. Complementa os controles estáticos do SonarCloud com uma perspectiva de segurança em tempo de execução.
 
 ---
-
-## Diagramas de Arquitetura para a aplicação ser escalável conforme solicitado no Challenge da Fase 2
-
-
-### Pipeline de CI/CD (GitHub Actions)
-
-![Pipeline de CI/CD (GitHub Actions)](./pipeline_ci_cd.png)
-
-### Fluxo de Estados da Ordem de Serviço
-
-![Fluxo da OS](./fluxo_execution_os.png)
