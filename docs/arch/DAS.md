@@ -36,85 +36,85 @@ A Fase 1 estabeleceu o MVP funcional. A **Fase 2** evolui a aplicação para **q
 
 #### 1. **Refatoração com Clean Architecture**
 
-- ✅ Separação explícita: **Domain** (regras de negócio) → **Application** (orquestração) → **Infrastructure** (persistência) → **Presentation** (HTTP)
-- ✅ 6 módulos independentes: Clientes, Veículos, Peças, Serviços, Estoque, OrdemServico
-- ✅ Gateways (interfaces) para abstrair persistência
-- ✅ Entidades imutáveis com Value Objects (CPF, CNPJ, Placa, Email)
-- ✅ Use Cases desacoplados, testáveis sem dependências HTTP
+- Separação explícita: **Domain** (regras de negócio) → **Application** (orquestração) → **Infrastructure** (persistência) → **Presentation** (HTTP)
+- 6 módulos independentes: Clientes, Veículos, Peças, Serviços, Estoque, OrdemServico
+- Gateways (interfaces) para abstrair persistência
+- Entidades imutáveis com Value Objects (CPF, CNPJ, Placa, Email)
+- Use Cases desacoplados, testáveis sem dependências HTTP
 
 **Impacto:** Testes agora mocka Gateways (80%+ cobertura); mudanças em uma camada não quebram outras.
 
 #### 2. **Testes Automatizados (80% coverage)**
 
-- ✅ **PHPUnit:** Testes unitários + integração
-- ✅ **Cobertura:** Domain (100%), Use Cases (100%), Gateways (mocked)
-- ✅ **CI Integrada:** Testes rodam a cada commit (GitHub Actions)
-- ✅ **SonarCloud:** Quality Gate bloqueia merge se cobertura cair
+- **PHPUnit:** Testes unitários + integração
+- **Cobertura:** Domain (100%), Use Cases (100%), Gateways (mocked)
+- **CI Integrada:** Testes rodam a cada commit (GitHub Actions)
+- **SonarCloud:** Quality Gate bloqueia merge se cobertura cair
 
 **Impacto:** Confiabilidade para refatorar sem medo.
 
 #### 3. **Conteinerização Completa**
 
-- ✅ **Dockerfile:** PHP 8.4-FPM com OpenTelemetry, pcov, composer
-- ✅ **docker-compose.yml:** Stack dev (PHP + Nginx + MySQL + phpMyAdmin)
-- ✅ **docker-compose.ministack.yml:** Emulador AWS local
-- ✅ **docker-compose.observability.yml:** OTel + Prometheus + Grafana + Jaeger + Loki
+- **Dockerfile:** PHP 8.4-FPM com OpenTelemetry, pcov, composer
+- **docker-compose.yml:** Stack dev (PHP + Nginx + MySQL + phpMyAdmin)
+- **docker-compose.ministack.yml:** Emulador AWS local
+- **docker-compose.observability.yml:** OTel + Prometheus + Grafana + Jaeger + Loki
 
 **Impacto:** Ambiente reproduzível, sem "funciona na minha máquina".
 
 #### 4. **Orquestração Kubernetes (3 ambientes)**
 
-- ✅ **Minikube** (dev): `make k8s-up` — cluster local, phpMyAdmin incluído
-- ✅ **MiniStack** (AWS emulado): `make aws-local-up` — Terraform + k3s, sem custo
-- ✅ **EKS** (produção): Terraform + Helm + ECR, via GitHub Actions
+- **Minikube** (dev): `make k8s-up` — cluster local, phpMyAdmin incluído
+- **MiniStack** (AWS emulado): `make aws-local-up` — Terraform + k3s, sem custo
+- **EKS** (produção): Terraform + Helm + ECR, via GitHub Actions
 
 **Impacto:** Caminho claro da dev para prod, sem surpresas.
 
 #### 5. **Auto-scaling com HPA (Horizontal Pod Autoscaler)**
 
-- ✅ **PHP:** 1-4 réplicas, target CPU 70% / Memory 80%
-- ✅ **Nginx:** 1-3 réplicas, target CPU 70%
-- ✅ **Métricas:** Metrics Server (Minikube) / k3s (MiniStack) / EKS nativo
-- ✅ **Validação:** `kubectl get hpa -w` mostra scaling em tempo real durante load test
+- **PHP:** 1-4 réplicas, target CPU 70% / Memory 80%
+- **Nginx:** 1-3 réplicas, target CPU 70%
+- **Métricas:** Metrics Server (Minikube) / k3s (MiniStack) / EKS nativo
+- **Validação:** `kubectl get hpa -w` mostra scaling em tempo real durante load test
 
 **Impacto:** Sistema escala automaticamente em picos de carga (horários de pico).
 
 #### 6. **Infraestrutura como Código (Terraform)**
 
-- ✅ **VPC:** 10.0.0.0/16, subnets públicas/privadas
-- ✅ **IAM:** Roles, policies, IRSA (EKS + GitHub Actions OIDC)
-- ✅ **EKS:** Cluster + node group (t3.medium/large), security groups
-- ✅ **EBS CSI:** Persistent volumes gp3 (encrypted)
-- ✅ **ECR:** Registry privado para imagens Docker
-- ✅ **Código único:** `env/ministack.tfvars` (local) vs `env/aws.tfvars` (prod)
+- **VPC:** 10.0.0.0/16, subnets públicas/privadas
+- **IAM:** Roles, policies, IRSA (EKS + GitHub Actions OIDC)
+- **EKS:** Cluster + node group (t3.medium/large), security groups
+- **EBS CSI:** Persistent volumes gp3 (encrypted)
+- **ECR:** Registry privado para imagens Docker
+- **Código único:** `env/ministack.tfvars` (local) vs `env/aws.tfvars` (prod)
 
 **Impacto:** Infraestrutura reproduzível, auditável, versionada.
 
 #### 7. **CI/CD Pipeline (GitHub Actions)**
 
-- ✅ **ci.yml:** Lint (PHPStan) → Testes (PHPUnit) → Build Docker → SonarCloud
-- ✅ **iac.yml:** Terraform plan em PR (comenta resultado)
-- ✅ **aws-deploy.yml:** Manual trigger → Terraform apply + ECR push + Helm install
-- ✅ **aws-destroy.yml:** Manual trigger → Cleanup (para custos)
+- **ci.yml:** Lint (PHPStan) → Testes (PHPUnit) → Build Docker → SonarCloud
+- **iac.yml:** Terraform plan em PR (comenta resultado)
+- **aws-deploy.yml:** Manual trigger → Terraform apply + ECR push + Helm install
+-  **aws-destroy.yml:** Manual trigger → Cleanup (para custos)
 
 **Impacto:** Automação total; deploy reproducível com um clique.
 
 #### 8. **Observabilidade (OpenTelemetry)**
 
-- ✅ **Traces:** Jaeger coleta spans de requisições HTTP
-- ✅ **Logs:** Loki agrega logs de todos os pods
-- ✅ **Métricas:** Prometheus scrape de /metrics; Grafana visualiza painéis
-- ✅ **Integrado:** PHP com extensão opentelemetry, middleware que captura spans
+-  **Traces:** Jaeger coleta spans de requisições HTTP
+-  **Logs:** Loki agrega logs de todos os pods
+-  **Métricas:** Prometheus scrape de /metrics; Grafana visualiza painéis
+-  **Integrado:** PHP com extensão opentelemetry, middleware que captura spans
 
 **Impacto:** Debug em produção sem logs; troubleshoot latência e erros.
 
 #### 9. **Segurança**
 
-- ✅ **OWASP ZAP:** Scan passivo (DAST) a cada commit
-- ✅ **SonarCloud:** Security hotspots (SAST)
-- ✅ **JWT duplo:** Admin (JWT padrão) + Email (token com claim de OS)
-- ✅ **Secrets K8s:** DB pass, JWT keys em Secrets, não em ConfigMaps
-- ✅ **IRSA (EKS):** IAM roles vinculadas a pods, sem credenciais hardcoded
+- **OWASP ZAP:** Scan passivo (DAST) a cada commit
+- **SonarCloud:** Security hotspots (SAST)
+- **JWT duplo:** Admin (JWT padrão) + Email (token com claim de OS)
+- **Secrets K8s:** DB pass, JWT keys em Secrets, não em ConfigMaps
+- **IRSA (EKS):** IAM roles vinculadas a pods, sem credenciais hardcoded
 
 
 ---
@@ -288,14 +288,14 @@ Deve ser gerado e entregue um relatório com os resultados do scan de vulnerabil
 ---
 
 #### C2 - Diagrama de containers - API Server
-[plantuml](https://www.plantuml.com/plantuml/uml/PLF1RjD04BtxAuQSN47YIgrGwQabTPAYj3MsgufJjF4EoTBrhjbTcqI8Zq4SaBWYlY0_ncmSLscQIsP6-zxCl7c-i8uPLvSoU2LK8MkEi7IkikTHPDYtmKAuPJslBPf2AuVA3GfTHfLaocFwrd4fvj7mj9_uqltDD2gPTMYeD1iIWWc5Pb1v_c1w-UdkFfzDur4-Iw_7apmy2e84ZTKg_5ohGcZ5ZD1le3TgiyrFIdkKZz4WLHXemr5Pu0WqKICsltNlgACefA3va9uFsyWZBokZ6yBLOF0B2iVWBeE6cB1VCY497MHh6hYSnIiNegyHAjkH-qPn-v2giV90ATGZa0ZmuI47fc7NTe_flQuLPsOTSbqyeY7arJQ027R1K9ULjeI1xm7GxqcfK2s4MX7Yrl_tzeCK6zeJWHPQhGUGQeSqZS6ljR0qw-OVMfZaUKA3FAUibXN1aqdI7oKtlJQ4iy4fK0gl8PEYXDDjtUW2hVMa2yEsAYjSRFuM_YODauApxT88kAge7p2uJAuXZRFyiEdLFEHpehnPPn-dlIw0Tpxqvn8a5736DNMXJY_F2jW9QudxHn2aA9-Rf5CgVQO0gxr9HS68rZVpYi3vsJ54xRruAHGH4bldbuwfymeH_TBGNVebnvvpFCiEt8gSOiMiFRYAfnWnwuRZwxPpUv6jFjFD7q0WjHlMok4VUwNEJqwEt-u_VxAcbgBmFaPoepVeqvZ39IjfxOEF8yWcTm_qpOtZswkGqWjKl2xbVm00)
+[plantuml](https://www.plantuml.com/plantuml/uml/RLFFRjDE4BxxAURdawiVYIkrGgMdbjJv0qbZR5SLfsXZ3ybIUzVihaqYnCCW3aXS4K-G5sFMZgiaa4CyEvhlcs-_cRtHXYbJ5Rdp7nTfNcK8QsDAVUtxYdtkhxXPLyjAeqgbC2XCFvM5N-PCM4nFcopdItzmsGjjwc4szGkc3IfABGQ4O5oWwfUMtvdUlfy_98jfC4mMqMGqJhmpnmbHQIcy3vL8kHHCSVa2t65xsdsZeqld4Iga30EfCXGQI2GfgldkXtJFEeeqvqWIgNpGHXPvMofP4wu2XH-H6mRp66fYmbx1U4ve9zwIu68HR8o7DaUeU4zk6mLj8MK3OO4v5qz09i2RnmIOX7tR0wRNiX8PKrila-aJAaBUDG7uyBPQeX9eKBjdyCK1-Zsxv8aL5nkglhTVzp28i4Qb4UWocsqV8ccGb2ZyL75DEdU_KSCuIK8ISKnPhak2X-EmDmndRXl2LVyIw0Z_Gvpp0YwRl98fQcr9Luer3WjSxNwbTXurotd6cWiZuAQaVi3WDfn05CJ9QTExfPSjYNAsZTzDtIw0LpQqe-9a4cGiavh-zJz62jYPgedxg-D4c1ylIETKTEG0gmo1UCg8rZQpZi3rrJduxQooWWiYj6nx_ewfsnCY-YwXc_BV70TROrdsuDRa24kczSbKBCMGQJCOJVQTc-B6d-dk9o2GspLhxR35rgdhYulpbuVbpsifSvxQ7KRQn6OvEvc3DIlesYSFmud7yqTwRwFW_exUsWsAZ1xY7m00)
 
 ![C2 - Diagrama de containers - API Server](C4_C2-container-api-server.png)
 
 ---
 
 #### C3 - Diagrama de componentes - PHP FPM (Slim 4)
-[plantuml](https://www.plantuml.com/plantuml/uml/VLNDRYD54BxFKnG-EL92BhaW8RGRExi4uTqGe-LebQTBazhjdw6xnx51I3m4Ry01YMl44_XDU1AgfsVyCpPxYEAkgVg-gkhlctaL8lhO65rymRRKZIBuUd9pFRbPJ9ofdIKRlocAo54Jx28mPQmy6hY2XsyVhjuyp62ksS1DKKoSZSYM_E9k7SUsOhk-XD6xz7yaFnvfHJuGrDwjDobmPqiqR9yGFFtSSE3jNzj_AC2A4TvWY9EtzwEBFUfqsUAgfPJEDlCVleUl4iejsjA18b2eN4YH1w7X4BT_sv9H4EQR4CcqnMIGjQJCoQ-4hgsxkqh1tD2Asv1c-mc---b7AJwOwjOrLg7VZEkdMhBxyV_z_Ozk1QCB-BKe062_hh7y-Ktjs4OfgPkbvlAQhQBrbuAIIIK1senqlBSiNMl-1S51sNF3z1v80bZNEwuXatTD99yMtVw0QvYnKfgUqLD2pdMGdhAjKcI6DJ62Tn43a81BSmXcLnMWqcw974x9i8bF2_Ci8BAc0T7nwOCCen0m1BOO6u-NK6faanXfNRD7kVO_7IW7qNqYc_S-v4kRy4vhya4m9_lJA1sre5D8Win2Asb91Wvr9GG4YZHLQA16Z-02b1XSa2WqmVqF9PPnuIauBThjYIK6Zrti37qUkEUqpfjqdVsK11at2lCuzKSXobK9Xz06kZZj8oIjbXHwsShFCwptfjPa91yDUAeyjeDPghOl9JiObvxHm_lv9M3jtGfb6ayVYIFwCvorSadXq_S9-Xr6NhcUwBNm1mVeO7dil1EGZyznqJNVwQJh_qpxRyaZ4ApQtMKX14WbOrI6BL1kEs_njE5ix0EsREhF4CwIjP8cE6Gv06Ntk-n-TSGeXByLnIFf_hLsPElzoofb73xQUVBMkHYYnpfqMVsJlP5UP_kHwGmfx94gLjYNx5AF5_lXO6S3y6FNJ4b6BP-ERT5L76KUA6xQMWRqzgMIviubdxD9RkbG_NlLTnXx3j5QBolCKXgc30PEMidZ3czfM3TKnTp9YZdT--6RFfTbpRTVb_Hj4MDwfhwL0L1xx3uO2DHgJJ9VaLMDqVy1)
+[plantuml](https://www.plantuml.com/plantuml/uml/RLHDTnf74BppApgSfFU4kFYId9m0bfKd335oVEGri-sba_aOJyzAaBpyzqml2sWD9sQ6gQhkwjfvBnbJRfmT_CJUsAQY9bdOvXpbb_4uuUjzpNdRR1gXP8BFvFEz2MuSBNg5ZIHNbZVZoRlHKe--p9_63YLJAaVhIN0nUCL4bHXapfPWobWdT0WLmUa62OpWrsZPeC40ou_BqOVbV32O555aJsazs-KRNxFVtS7ma_uEo-8plL0IWfZ2Rgy7Cs_GiTyY9FhUiB09910n8PnOxuUtPzxffcMkDWKytw_-U1eU5_2pBfUKX2MJDwoS5Wq7ZrOvLljoxbeuEMHRRgyelHH9ROr6UdQeAIUgiJiHo0cz77XObEXDbx-5nbUOzZSOkK0l72akhImxU3UyXNy7072sy8QApZu6zhaWOxCfq37xYdRtSHkFXUoXlQ7RHy-6qV8_weqvbW3JHo10mADq9wY5zlLIQ3A9Ja4N2SOmvwgoz8g9bF-00_sNVTtwYf7Knf1HW3e9S2UKG6t31baknR39sxLxBII_Vtt-GQY_-nCjLmWemXvpa_0EZ4LsgaYxoAbjgWgGmz_aeT1TggaRALXBIVkRd7T3tLeK8T6H739eQ4CEJf5JUeAABDNekkm969GW6en6mfNsOkj5vk1rxEUTAdmHKhXwFNrUQ1yFc4k_Us2VANr3GsrXY_Iz8ScNUb2LfGjLOyCLQwlWa5LssYwwf71c5InkDWIBpLzaiYhFTeQY5YR3pXbjNI1HdR3LyrG7mrTwPFyjeUJKcDmaqW3s3fIlwwleEeonTNyvNTpfa83Ky3cofTIcrqLBhl2stTOT44WzqLhQ3vzscPB7jkd_1eFFP8zlIEzZkVfggCW7b3nvU2neXRx5dC9__egwMyT_kiIUlc8WroK_bX-gkKBv0TAFtPGaekaNrG5Et1UUTkblizrTxh7sW_ReNuB1NbOwKE_UCI5T9zsmkvlz4leAlJ6TmwfItSGE9Elf1KsrUVFw0gatqjYCEXPzfg-B7n_YcNzXXA8hM9EN5ZH_NkfZk_gu-Bf-cZtCFarlRWVloLUDi_y3)
 
 ![C3 - Diagrama de componentes - PHP FPM (Slim 4)](C4_C3-componente-php-fpm.png)
 
@@ -365,10 +365,6 @@ Varredura de segurança dinâmica (DAST) executada em modo passivo via container
 
 ![Diagrama da Aplicação](./components_arch.png)
 
-### Infraestrutura: Kubernetes + AWS + HPA
-
-![Infraestrutura com AWS, K8S e HPA](./infra_aws_k8s.png)
-
 ### Pipeline de CI/CD (GitHub Actions)
 
 ![Pipeline de CI/CD (GitHub Actions)](./pipeline_ci_cd.png)
@@ -401,27 +397,27 @@ Varredura de segurança dinâmica (DAST) executada em modo passivo via container
 
 A solução implementada é **production-ready**, preparada para:
 
-### 🎯 **Requisitos Funcionais**
-- ✅ **23 RFs implementados:** CRUD clientes/veículos/peças, fluxo completo de OS (6 estados), orçamento via email com aprovação/rejeição, listagem com ordenação, relatórios
-- ✅ **APIs documentadas:** Swagger/OpenAPI com todos os endpoints
+###  **Requisitos Funcionais**
+-  **23 RFs implementados:** CRUD clientes/veículos/peças, fluxo completo de OS (6 estados), orçamento via email com aprovação/rejeição, listagem com ordenação, relatórios
+-  **APIs documentadas:** Swagger/OpenAPI com todos os endpoints
 
-### 🛡️ **Requisitos Não-Funcionais**
-- ✅ **RNF07-08:** 80%+ cobertura de testes (PHPUnit + SonarCloud)
-- ✅ **RNF09:** Clean Architecture + DDD com 6 módulos independentes
-- ✅ **RNF10:** Swagger/OpenAPI 3.x completo
-- ✅ **RNF11-12:** Dockerfile + docker-compose (dev + observabilidade)
-- ✅ **RNF14:** Envio de emails transacionais (Mailtrap/SMTP)
-- ✅ **RNF15:** Repositório privado (acesso `soat-architecture`)
-- ✅ **RNF16:** README detalhado com instruções
+###  **Requisitos Não-Funcionais**
+-  **RNF07-08:** 80%+ cobertura de testes (PHPUnit + SonarCloud)
+-  **RNF09:** Clean Architecture + DDD com 6 módulos independentes
+-  **RNF10:** Swagger/OpenAPI 3.x completo
+-  **RNF11-12:** Dockerfile + docker-compose (dev + observabilidade)
+-  **RNF14:** Envio de emails transacionais (Mailtrap/SMTP)
+-  **RNF15:** Repositório privado (acesso `soat-architecture`)
+-  **RNF16:** README detalhado com instruções
 
-### 📈 **Adições Fase 2 (Evolução Sustentável)**
-- ✅ **Escalabilidade:** HPA automático (CPU/Memory-based)
-- ✅ **Resiliência:** Kubernetes + health checks + rolling updates
-- ✅ **Observabilidade:** Traces distribuídos (Jaeger), logs centralizados (Loki), métricas (Prometheus)
-- ✅ **DevOps:** Terraform + GitHub Actions + OIDC + Secrets
-- ✅ **Qualidade:** SonarCloud + OWASP ZAP + CI gate (merge bloqueado se falhar)
+###  **Adições Fase 2 (Evolução Sustentável)**
+-  **Escalabilidade:** HPA automático (CPU/Memory-based)
+-  **Resiliência:** Kubernetes + health checks + rolling updates
+-  **Observabilidade:** Traces distribuídos (Jaeger), logs centralizados (Loki), métricas (Prometheus)
+-  **DevOps:** Terraform + GitHub Actions + OIDC + Secrets
+-  **Qualidade:** SonarCloud + OWASP ZAP + CI gate (merge bloqueado se falhar)
 
-### 🚀 **Caminho para Produção**
+###  **Caminho para Produção**
 1. **Dev:** `make k8s-up` (Minikube local)
 2. **Staging:** `make aws-local-up` (MiniStack — AWS emulado)
 3. **Produção:** GitHub Actions manual trigger → EKS + ECR + Helm
