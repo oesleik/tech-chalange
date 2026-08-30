@@ -59,11 +59,11 @@ $app->group('', function (RouteCollectorProxy $group): void {
         $g->patch('/{id:[0-9]+}', App\Peca\Presentation\Http\Router\EditarPecaRouter::class);
     });
 
-    $group->group("/servicos", function (RouteCollectorProxy $group): void {
-        $group->get("/", App\Servicos\Controller\ListarServicosController::class);
-        $group->post("/", App\Servicos\Controller\CriarServicoController::class);
-        $group->get("/{id:[0-9]+}", App\Servicos\Controller\ObterServicoController::class);
-        $group->patch("/{id:[0-9]+}", App\Servicos\Controller\EditarServicoController::class);
+    $group->group('/servicos', function (RouteCollectorProxy $g): void {
+        $g->get('/', App\Servicos\Presentation\Http\Router\ListarServicosRouter::class);
+        $g->post('/', App\Servicos\Presentation\Http\Router\CriarServicoRouter::class);
+        $g->get('/{id:[0-9]+}', App\Servicos\Presentation\Http\Router\ObterServicoRouter::class);
+        $g->patch('/{id:[0-9]+}', App\Servicos\Presentation\Http\Router\EditarServicoRouter::class);
     });
 
     $group->group("/ordens-servico", function (RouteCollectorProxy $group): void {
