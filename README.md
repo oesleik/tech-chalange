@@ -175,20 +175,6 @@ src/{Modulo}/
         └── DTO/          # Mappers
 ```
 
-**Exemplo: Criar uma Ordem de Serviço**
-
-```
-POST /ordens-servico
-├─ 🔐 JWT Middleware (valida token)
-├─ 🔀 CriarOrdemServicoRouter
-│  └─ 🎮 CriarOrdemServicoController
-│     └─ 📤 CriarOrdemServicoUseCase
-│        ├─ 🔍 Valida cliente (via ClienteGateway)
-│        ├─ 🔍 Valida veículo (via VeiculoGateway)
-│        ├─ 🏗️  Cria Entity OrdenServico
-│        └─ 💾 Persiste (via OrdemServicoGateway → MySQL)
-└─ ✅ Retorna: {id, status: "Recebida", ...}
-```
 
 ### Infraestrutura: Kubernetes com Auto-scaling (HPA)
 
