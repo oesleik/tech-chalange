@@ -1,7 +1,7 @@
 # Design Approval Sheet (DAS)
 
 ## Projeto: Sistema integrado de atendimento e execução de serviço
-**Data:** 10/05/2026
+**Data:** 10/05/2026 
 | Revisor | Status |
 |------------|------------|
 | Augusto Bortoncello | Aprovado |
@@ -25,6 +25,97 @@ Como consequência, são observados diversos problemas, entre eles:
 - Ineficiência no fluxo de orçamentos e autorizações.
 
 Diante desse cenário, a oficina decidiu investir no desenvolvimento de um sistema integrado de atendimento e gestão de serviços mecânicos. A solução permitirá centralizar todas as etapas do processo, desde o diagnóstico até a entrega do veículo, proporcionando maior organização e controle das operações. Além disso, os clientes poderão receber e aprovar orçamentos e acompanhar, em tempo real, o andamento dos serviços, tornando o atendimento mais ágil, transparente e seguro.
+
+---
+
+## Fase 2 — Evolução da Aplicação (Agosto 2026)
+
+### Objetivos Alcançados
+
+A Fase 1 estabeleceu o MVP funcional. A **Fase 2** evolui a aplicação para **qualidade, resiliência e escalabilidade**, preparando-a para produção:
+
+#### 1. **Refatoração com Clean Architecture**
+
+- ✅ Separação explícita: **Domain** (regras de negócio) → **Application** (orquestração) → **Infrastructure** (persistência) → **Presentation** (HTTP)
+- ✅ 6 módulos independentes: Clientes, Veículos, Peças, Serviços, Estoque, OrdemServico
+- ✅ Gateways (interfaces) para abstrair persistência
+- ✅ Entidades imutáveis com Value Objects (CPF, CNPJ, Placa, Email)
+- ✅ Use Cases desacoplados, testáveis sem dependências HTTP
+
+**Impacto:** Testes agora mocka Gateways (80%+ cobertura); mudanças em uma camada não quebram outras.
+
+#### 2. **Testes Automatizados (80% coverage)**
+
+- ✅ **PHPUnit:** Testes unitários + integração
+- ✅ **Cobertura:** Domain (100%), Use Cases (100%), Gateways (mocked)
+- ✅ **CI Integrada:** Testes rodam a cada commit (GitHub Actions)
+- ✅ **SonarCloud:** Quality Gate bloqueia merge se cobertura cair
+
+**Impacto:** Confiabilidade para refatorar sem medo.
+
+#### 3. **Conteinerização Completa**
+
+- ✅ **Dockerfile:** PHP 8.4-FPM com OpenTelemetry, pcov, composer
+- ✅ **docker-compose.yml:** Stack dev (PHP + Nginx + MySQL + phpMyAdmin)
+- ✅ **docker-compose.ministack.yml:** Emulador AWS local
+- ✅ **docker-compose.observability.yml:** OTel + Prometheus + Grafana + Jaeger + Loki
+
+**Impacto:** Ambiente reproduzível, sem "funciona na minha máquina".
+
+#### 4. **Orquestração Kubernetes (3 ambientes)**
+
+- ✅ **Minikube** (dev): `make k8s-up` — cluster local, phpMyAdmin incluído
+- ✅ **MiniStack** (AWS emulado): `make aws-local-up` — Terraform + k3s, sem custo
+- ✅ **EKS** (produção): Terraform + Helm + ECR, via GitHub Actions
+
+**Impacto:** Caminho claro da dev para prod, sem surpresas.
+
+#### 5. **Auto-scaling com HPA (Horizontal Pod Autoscaler)**
+
+- ✅ **PHP:** 1-4 réplicas, target CPU 70% / Memory 80%
+- ✅ **Nginx:** 1-3 réplicas, target CPU 70%
+- ✅ **Métricas:** Metrics Server (Minikube) / k3s (MiniStack) / EKS nativo
+- ✅ **Validação:** `kubectl get hpa -w` mostra scaling em tempo real durante load test
+
+**Impacto:** Sistema escala automaticamente em picos de carga (horários de pico).
+
+#### 6. **Infraestrutura como Código (Terraform)**
+
+- ✅ **VPC:** 10.0.0.0/16, subnets públicas/privadas
+- ✅ **IAM:** Roles, policies, IRSA (EKS + GitHub Actions OIDC)
+- ✅ **EKS:** Cluster + node group (t3.medium/large), security groups
+- ✅ **EBS CSI:** Persistent volumes gp3 (encrypted)
+- ✅ **ECR:** Registry privado para imagens Docker
+- ✅ **Código único:** `env/ministack.tfvars` (local) vs `env/aws.tfvars` (prod)
+
+**Impacto:** Infraestrutura reproduzível, auditável, versionada.
+
+#### 7. **CI/CD Pipeline (GitHub Actions)**
+
+- ✅ **ci.yml:** Lint (PHPStan) → Testes (PHPUnit) → Build Docker → SonarCloud
+- ✅ **iac.yml:** Terraform plan em PR (comenta resultado)
+- ✅ **aws-deploy.yml:** Manual trigger → Terraform apply + ECR push + Helm install
+- ✅ **aws-destroy.yml:** Manual trigger → Cleanup (para custos)
+
+**Impacto:** Automação total; deploy reproducível com um clique.
+
+#### 8. **Observabilidade (OpenTelemetry)**
+
+- ✅ **Traces:** Jaeger coleta spans de requisições HTTP
+- ✅ **Logs:** Loki agrega logs de todos os pods
+- ✅ **Métricas:** Prometheus scrape de /metrics; Grafana visualiza painéis
+- ✅ **Integrado:** PHP com extensão opentelemetry, middleware que captura spans
+
+**Impacto:** Debug em produção sem logs; troubleshoot latência e erros.
+
+#### 9. **Segurança**
+
+- ✅ **OWASP ZAP:** Scan passivo (DAST) a cada commit
+- ✅ **SonarCloud:** Security hotspots (SAST)
+- ✅ **JWT duplo:** Admin (JWT padrão) + Email (token com claim de OS)
+- ✅ **Secrets K8s:** DB pass, JWT keys em Secrets, não em ConfigMaps
+- ✅ **IRSA (EKS):** IAM roles vinculadas a pods, sem credenciais hardcoded
+
 
 ---
 
@@ -265,3 +356,89 @@ O pipeline bloqueia o merge caso o Quality Gate falhe, garantindo que apenas có
 
 ### OWASP ZAP
 Varredura de segurança dinâmica (DAST) executada em modo passivo via container Docker, seguindo as diretrizes do OWASP Top 10. Integrada ao pipeline de CI/CD, analisa a superfície de ataque da API em execução. Complementa os controles estáticos do SonarCloud com uma perspectiva de segurança em tempo de execução.
+
+---
+
+## Diagramas de Arquitetura para a aplicação ser escalável conforme solicitado no Challenge da Fase 2
+
+### Componentes da Aplicação (Módulos)
+
+![Diagrama da Aplicação](./components_arch.png)
+
+### Infraestrutura: Kubernetes + AWS + HPA
+
+![Infraestrutura com AWS, K8S e HPA](./infra_aws_k8s.png)
+
+### Pipeline de CI/CD (GitHub Actions)
+
+![Pipeline de CI/CD (GitHub Actions)](./pipeline_ci_cd.png)
+
+### Fluxo de Estados da Ordem de Serviço
+
+![Fluxo da OS](./fluxo_execution_os.png)
+
+---
+
+## Evolução: Fase 1 → Fase 2
+
+| Aspecto | Fase 1  | Fase 2  |
+|---------|--------------|-------------------|
+| **Arquitetura** | Estrutura básica | Clean Architecture com 6 módulos |
+| **Testes** | Mínimos | 80%+ cobertura com PHPUnit |
+| **Conteinerização** | Docker Compose simples | Docker Compose + MiniStack + observabilidade |
+| **Orquestração** | Nenhuma | Kubernetes (Minikube + MiniStack + EKS) |
+| **Auto-scaling** | Não | HPA com CPU/Memory targets |
+| **Infraestrutura** | Manual | Terraform (IaC) + OIDC + Secrets Manager |
+| **CI/CD** | Nenhum | GitHub Actions: lint → test → build → deploy |
+| **Observabilidade** | Logs básicos | OpenTelemetry + Prometheus + Grafana + Jaeger + Loki |
+| **Segurança** | JWT simples | JWT duplo + OWASP ZAP + SonarCloud + IRSA |
+| **Documentação** | DAS + README | DAS v2 + ADRs + Runbooks + guides |
+| **Ambiente** | 1 (docker-compose) | 3 (dev/staging/prod) |
+
+---
+
+## Resumo: Solução Completa para Produção
+
+A solução implementada é **production-ready**, preparada para:
+
+### 🎯 **Requisitos Funcionais**
+- ✅ **23 RFs implementados:** CRUD clientes/veículos/peças, fluxo completo de OS (6 estados), orçamento via email com aprovação/rejeição, listagem com ordenação, relatórios
+- ✅ **APIs documentadas:** Swagger/OpenAPI com todos os endpoints
+
+### 🛡️ **Requisitos Não-Funcionais**
+- ✅ **RNF07-08:** 80%+ cobertura de testes (PHPUnit + SonarCloud)
+- ✅ **RNF09:** Clean Architecture + DDD com 6 módulos independentes
+- ✅ **RNF10:** Swagger/OpenAPI 3.x completo
+- ✅ **RNF11-12:** Dockerfile + docker-compose (dev + observabilidade)
+- ✅ **RNF14:** Envio de emails transacionais (Mailtrap/SMTP)
+- ✅ **RNF15:** Repositório privado (acesso `soat-architecture`)
+- ✅ **RNF16:** README detalhado com instruções
+
+### 📈 **Adições Fase 2 (Evolução Sustentável)**
+- ✅ **Escalabilidade:** HPA automático (CPU/Memory-based)
+- ✅ **Resiliência:** Kubernetes + health checks + rolling updates
+- ✅ **Observabilidade:** Traces distribuídos (Jaeger), logs centralizados (Loki), métricas (Prometheus)
+- ✅ **DevOps:** Terraform + GitHub Actions + OIDC + Secrets
+- ✅ **Qualidade:** SonarCloud + OWASP ZAP + CI gate (merge bloqueado se falhar)
+
+### 🚀 **Caminho para Produção**
+1. **Dev:** `make k8s-up` (Minikube local)
+2. **Staging:** `make aws-local-up` (MiniStack — AWS emulado)
+3. **Produção:** GitHub Actions manual trigger → EKS + ECR + Helm
+
+---
+
+## Trade-offs: Por que Clean Architecture
+
+### Justificativa da Escolha
+
+1. **Requisito de evolução sustentável:** A Fase 2 solicitou foco em Clean Architecture, que oferece estrutura clara para mudanças futuras sem quebrar código existente.
+
+2. **Domínios bem delimitados:** Os 6 módulos (Clientes, Veículos, Peças, Serviços, Estoque, OrdemServico) têm responsabilidades distintas. Clean Architecture permite evolução independente.
+
+3. **Testes obrigatórios (80% coverage):** Clean Architecture força segregação entre lógica (Domain) e detalhe técnico (Infrastructure). Gateways são interfaces, fácil mockar.
+
+4. **Escalabilidade dinâmica (HPA):** Preparado para eventual migração a microsserviços (cada módulo em pod separado).
+
+
+

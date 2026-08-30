@@ -148,6 +148,63 @@ Domínios e Contextos Delimitados) estão em [`docs/ddd/`](./docs/ddd/README.md)
 - **ADRs:** [`docs/adr/`](./docs/adr/README.md)
 - **DAS:** [`docs/arch/DAS.md`](./docs/arch/DAS.md)
 
+### Visão Geral da Solução
+
+A aplicação segue **Clean Architecture** com separação entre **Domínio, Aplicação, Infraestrutura e Apresentação**. Cada módulo (Clientes, Veículos, Peças, Serviços, Estoque, OrdemServico) é independente, facilitando testes e manutenção.
+
+#### Arquitetura por Módulo
+
+Cada módulo segue a estrutura:
+
+```
+src/{Modulo}/
+├── Domain/               # Regras de negócio
+│   ├── Entity/           # Agregados
+│   ├── ValueObject/      # CPF, Placa, etc
+│   └── Exception/        # Erros do domínio
+├── Application/          # Orquestração
+│   ├── UseCase/          # {Acao}{Recurso}UseCase
+│   ├── Gateway/          # Interfaces de persistência
+│   └── DTO/              # Input/Output
+├── Infrastructure/       # Implementações
+│   └── Persistence/      # {Recurso}Gateway → MySQL
+└── Presentation/         # HTTP
+    └── Http/
+        ├── Router/       # Definição de rotas
+        ├── Controller/   # Entrada HTTP
+        └── DTO/          # Mappers
+```
+
+**Exemplo: Criar uma Ordem de Serviço**
+
+```
+POST /ordens-servico
+├─ 🔐 JWT Middleware (valida token)
+├─ 🔀 CriarOrdemServicoRouter
+│  └─ 🎮 CriarOrdemServicoController
+│     └─ 📤 CriarOrdemServicoUseCase
+│        ├─ 🔍 Valida cliente (via ClienteGateway)
+│        ├─ 🔍 Valida veículo (via VeiculoGateway)
+│        ├─ 🏗️  Cria Entity OrdenServico
+│        └─ 💾 Persiste (via OrdemServicoGateway → MySQL)
+└─ ✅ Retorna: {id, status: "Recebida", ...}
+```
+
+### Infraestrutura: Kubernetes com Auto-scaling (HPA)
+
+#### Escalabilidade Automática
+
+A aplicação usa **Horizontal Pod Autoscaler (HPA)** para escalar automaticamente conforme a carga:
+
+**Ambientes:**
+
+| Ambiente | Cluster | Replicas (min-max) | Onde testar |
+|----------|---------|-------------------|-------------|
+| **Local (dev)** | Minikube | 2-10 | `make k8s-up` |
+| **AWS Local** | MiniStack (k3s) | 1-4 | `make aws-local-up` |
+| **AWS Prod** | EKS | 1-4 | GitHub Actions (manual) |
+
+
 ## Kubernetes e AWS local
 
 Há dois fluxos locais, documentados em [`docs/infrastructure/guia_infraestrutura_k8s.md`](./docs/infrastructure/guia_infraestrutura_k8s.md) e [ADR-004](./docs/adr/004-minikube-ministack-eks.md):
