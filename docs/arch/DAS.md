@@ -41,7 +41,6 @@ Nesta fase, foram adotadas as seguintes capacidades arquiteturais:
 - **Conteinerização e orquestração:** execução com Docker e Kubernetes, com escalabilidade horizontal.
 - **Infraestrutura como código:** provisionamento e implantação com Terraform e Helm.
 - **Observabilidade:** instrumentação com OpenTelemetry, métricas, logs e traces.
-- **Segurança:** autenticação JWT, gestão de segredos e verificações automatizadas.
 
 Os detalhes de implementação e as decisões específicas estão documentados nos ADRs, diagramas de arquitetura e guias operacionais do projeto.
 
