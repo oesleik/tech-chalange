@@ -28,16 +28,12 @@ OpenTelemetry Collector
 
 ## Arquivos
 
-A configuração fica separada da aplicação:
-
 ```text
 docker/
 ├── grafana/provisioning/
 ├── loki/local-config.yaml
 ├── otel/config.yaml
 └── prometheus/prometheus.yml
-
-docker-compose.observability.yml
 ```
 
 O middleware da aplicação está em:
