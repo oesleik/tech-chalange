@@ -1,7 +1,7 @@
 # Design Approval Sheet (DAS)
 
 ## Projeto: Sistema integrado de atendimento e execução de serviço
-**Data:** 10/05/2026
+**Data:** 10/05/2026 
 | Revisor | Status |
 |------------|------------|
 | Augusto Bortoncello | Aprovado |
@@ -25,6 +25,24 @@ Como consequência, são observados diversos problemas, entre eles:
 - Ineficiência no fluxo de orçamentos e autorizações.
 
 Diante desse cenário, a oficina decidiu investir no desenvolvimento de um sistema integrado de atendimento e gestão de serviços mecânicos. A solução permitirá centralizar todas as etapas do processo, desde o diagnóstico até a entrega do veículo, proporcionando maior organização e controle das operações. Além disso, os clientes poderão receber e aprovar orçamentos e acompanhar, em tempo real, o andamento dos serviços, tornando o atendimento mais ágil, transparente e seguro.
+
+---
+
+## Fase 2 — Evolução da Aplicação (Agosto 2026)
+
+### Objetivos Alcançados
+
+A Fase 1 estabeleceu o MVP funcional. A **Fase 2** evolui a aplicação para **qualidade, resiliência e escalabilidade**, preparando-a para produção:
+
+Nesta fase, foram adotadas as seguintes capacidades arquiteturais:
+
+- **Clean Architecture:** modularização do domínio e separação entre Presentation, Application, Domain e Infrastructure.
+- **Conteinerização e orquestração:** execução com Docker e Kubernetes, com escalabilidade horizontal.
+- **Infraestrutura como código:** provisionamento e implantação com Terraform e Helm.
+- **Observabilidade:** instrumentação com OpenTelemetry, métricas, logs e traces.
+
+Os detalhes de implementação e as decisões específicas estão documentados nos ADRs, diagramas de arquitetura e guias operacionais do projeto.
+
 
 ---
 
@@ -182,6 +200,7 @@ Deve ser gerado e entregue um relatório com os resultados do scan de vulnerabil
 - **Symfony Validator:** [ADR-002](../adr/002-symfony-validator.md)
 - **Slim:** [ADR-003](../adr/003-framework-slim.md)
 - **Minikube / MiniStack / EKS:** [ADR-004](../adr/004-minikube-ministack-eks.md)
+- **Clean Architecture:** [ADR-005](../adr/005-clean-architecture.md)
 
 ---
 
@@ -197,14 +216,14 @@ Deve ser gerado e entregue um relatório com os resultados do scan de vulnerabil
 ---
 
 #### C2 - Diagrama de containers - API Server
-[plantuml](https://www.plantuml.com/plantuml/uml/PLF1RjD04BtxAuQSN47YIgrGwQabTPAYj3MsgufJjF4EoTBrhjbTcqI8Zq4SaBWYlY0_ncmSLscQIsP6-zxCl7c-i8uPLvSoU2LK8MkEi7IkikTHPDYtmKAuPJslBPf2AuVA3GfTHfLaocFwrd4fvj7mj9_uqltDD2gPTMYeD1iIWWc5Pb1v_c1w-UdkFfzDur4-Iw_7apmy2e84ZTKg_5ohGcZ5ZD1le3TgiyrFIdkKZz4WLHXemr5Pu0WqKICsltNlgACefA3va9uFsyWZBokZ6yBLOF0B2iVWBeE6cB1VCY497MHh6hYSnIiNegyHAjkH-qPn-v2giV90ATGZa0ZmuI47fc7NTe_flQuLPsOTSbqyeY7arJQ027R1K9ULjeI1xm7GxqcfK2s4MX7Yrl_tzeCK6zeJWHPQhGUGQeSqZS6ljR0qw-OVMfZaUKA3FAUibXN1aqdI7oKtlJQ4iy4fK0gl8PEYXDDjtUW2hVMa2yEsAYjSRFuM_YODauApxT88kAge7p2uJAuXZRFyiEdLFEHpehnPPn-dlIw0Tpxqvn8a5736DNMXJY_F2jW9QudxHn2aA9-Rf5CgVQO0gxr9HS68rZVpYi3vsJ54xRruAHGH4bldbuwfymeH_TBGNVebnvvpFCiEt8gSOiMiFRYAfnWnwuRZwxPpUv6jFjFD7q0WjHlMok4VUwNEJqwEt-u_VxAcbgBmFaPoepVeqvZ39IjfxOEF8yWcTm_qpOtZswkGqWjKl2xbVm00)
+[plantuml](https://www.plantuml.com/plantuml/uml/RLFFRjDE4BxxAURdawiVYIkrGgMdbjJv0qbZR5SLfsXZ3ybIUzVihaqYnCCW3aXS4K-G5sFMZgiaa4CyEvhlcs-_cRtHXYbJ5Rdp7nTfNcK8QsDAVUtxYdtkhxXPLyjAeqgbC2XCFvM5N-PCM4nFcopdItzmsGjjwc4szGkc3IfABGQ4O5oWwfUMtvdUlfy_98jfC4mMqMGqJhmpnmbHQIcy3vL8kHHCSVa2t65xsdsZeqld4Iga30EfCXGQI2GfgldkXtJFEeeqvqWIgNpGHXPvMofP4wu2XH-H6mRp66fYmbx1U4ve9zwIu68HR8o7DaUeU4zk6mLj8MK3OO4v5qz09i2RnmIOX7tR0wRNiX8PKrila-aJAaBUDG7uyBPQeX9eKBjdyCK1-Zsxv8aL5nkglhTVzp28i4Qb4UWocsqV8ccGb2ZyL75DEdU_KSCuIK8ISKnPhak2X-EmDmndRXl2LVyIw0Z_Gvpp0YwRl98fQcr9Luer3WjSxNwbTXurotd6cWiZuAQaVi3WDfn05CJ9QTExfPSjYNAsZTzDtIw0LpQqe-9a4cGiavh-zJz62jYPgedxg-D4c1ylIETKTEG0gmo1UCg8rZQpZi3rrJduxQooWWiYj6nx_ewfsnCY-YwXc_BV70TROrdsuDRa24kczSbKBCMGQJCOJVQTc-B6d-dk9o2GspLhxR35rgdhYulpbuVbpsifSvxQ7KRQn6OvEvc3DIlesYSFmud7yqTwRwFW_exUsWsAZ1xY7m00)
 
 ![C2 - Diagrama de containers - API Server](C4_C2-container-api-server.png)
 
 ---
 
 #### C3 - Diagrama de componentes - PHP FPM (Slim 4)
-[plantuml](https://www.plantuml.com/plantuml/uml/VLNDRYD54BxFKnG-EL92BhaW8RGRExi4uTqGe-LebQTBazhjdw6xnx51I3m4Ry01YMl44_XDU1AgfsVyCpPxYEAkgVg-gkhlctaL8lhO65rymRRKZIBuUd9pFRbPJ9ofdIKRlocAo54Jx28mPQmy6hY2XsyVhjuyp62ksS1DKKoSZSYM_E9k7SUsOhk-XD6xz7yaFnvfHJuGrDwjDobmPqiqR9yGFFtSSE3jNzj_AC2A4TvWY9EtzwEBFUfqsUAgfPJEDlCVleUl4iejsjA18b2eN4YH1w7X4BT_sv9H4EQR4CcqnMIGjQJCoQ-4hgsxkqh1tD2Asv1c-mc---b7AJwOwjOrLg7VZEkdMhBxyV_z_Ozk1QCB-BKe062_hh7y-Ktjs4OfgPkbvlAQhQBrbuAIIIK1senqlBSiNMl-1S51sNF3z1v80bZNEwuXatTD99yMtVw0QvYnKfgUqLD2pdMGdhAjKcI6DJ62Tn43a81BSmXcLnMWqcw974x9i8bF2_Ci8BAc0T7nwOCCen0m1BOO6u-NK6faanXfNRD7kVO_7IW7qNqYc_S-v4kRy4vhya4m9_lJA1sre5D8Win2Asb91Wvr9GG4YZHLQA16Z-02b1XSa2WqmVqF9PPnuIauBThjYIK6Zrti37qUkEUqpfjqdVsK11at2lCuzKSXobK9Xz06kZZj8oIjbXHwsShFCwptfjPa91yDUAeyjeDPghOl9JiObvxHm_lv9M3jtGfb6ayVYIFwCvorSadXq_S9-Xr6NhcUwBNm1mVeO7dil1EGZyznqJNVwQJh_qpxRyaZ4ApQtMKX14WbOrI6BL1kEs_njE5ix0EsREhF4CwIjP8cE6Gv06Ntk-n-TSGeXByLnIFf_hLsPElzoofb73xQUVBMkHYYnpfqMVsJlP5UP_kHwGmfx94gLjYNx5AF5_lXO6S3y6FNJ4b6BP-ERT5L76KUA6xQMWRqzgMIviubdxD9RkbG_NlLTnXx3j5QBolCKXgc30PEMidZ3czfM3TKnTp9YZdT--6RFfTbpRTVb_Hj4MDwfhwL0L1xx3uO2DHgJJ9VaLMDqVy1)
+[plantuml](https://www.plantuml.com/plantuml/uml/RLHDTret4DtpAwQid7ECsMJJhj82STnZ0Wrsi-GCqkGnhJuKVTZGdlxtQXuFy0jiGDARU-_CdP4-f8mn5si6Fx5JfcWgqS0svv1-6OyZljurdBTbKn95vLqcb--Kj-DWq0bibB8sl1bFte-MSlGyVnnRJ9bYFLfFl0tU2IQ8n21pDWHJnYQYHT04fmXAC89VWs652ZqiFor77vVpmM1IHP4TnVLibszSmsvt2yFFyZ-iYo_qGZ4HXEXtUpcOEOMMtHOXqlV2YPMd104ZmedrRlZkp3lTjCnwKy7p_UgFn-5n0J_BSbdvEMLoYeNJe6Blq0Z7Qb_FRGidYsngz8hYIvMKqcWaPuUSSgG6kvC4EQ9B1nvEGlIcojzySHhZ_WO3L-Y58zMbbM4BxuVluDy109mjlA6gim-UNQx8K3OLEcQdQNSNjk6Oo1xQ2Da-E5QCXlyHRzGn1PW-00427gKxGKcqhnTzoPIa2xA8C8OvQste5IC9_m47yfLTq_gAWSH6dp41TH9WJwW4ZV4Rv7GfXYLlr_Qralp-zUa7eVxkJpIi4J0bTfXBn5jG1jcA8kq2nxOexI7xlyb1fRjK4pUYDuQYr3SvxuQoDPMRahJaC8EADcJXD792Jw39K8Escxq42fDFCXWb-IlbXTQBpDv9syyxKNXE973nUlgqa3hkCTTwzy0kK_o6Yjh45l5xePGlzK3NfVMw67_5MkqjiiXEsqKtAPnP1AkRXM2n-OjK5kNPJb6Gn5f5SKPAJn2fYTZgEMgyuYiriljMGt8iAfT8Ce2z0-7hwggw5aDetLzE5xVI920nV8viABRJQuCXMtdRQfiE22IUI2xjnQTTfkYmBVg_mU0BcUCRqhiiLryD4Vc8AK_k7ofQe6ynX-7ltQ8kwlZbDB7TBGQotUI7-aSDQqm_GFfZDwKKKFMJwW2zmFxiFBWNhx3N_WxKYpislKkkwz-ro8ksFIS4r1WoQYztzeNnF8WTnNfwqMwzUVES0acngPYCuhEykotk0dLyMMTEP2ovX4tzQK7pfwMydgjFYw_hnzdzxFFqvjtW0pbThFaV)
 
 ![C3 - Diagrama de componentes - PHP FPM (Slim 4)](C4_C3-componente-php-fpm.png)
 
@@ -265,3 +284,5 @@ O pipeline bloqueia o merge caso o Quality Gate falhe, garantindo que apenas có
 
 ### OWASP ZAP
 Varredura de segurança dinâmica (DAST) executada em modo passivo via container Docker, seguindo as diretrizes do OWASP Top 10. Integrada ao pipeline de CI/CD, analisa a superfície de ataque da API em execução. Complementa os controles estáticos do SonarCloud com uma perspectiva de segurança em tempo de execução.
+
+---
