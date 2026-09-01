@@ -11,6 +11,11 @@ Stack completa containerizada pronta para desenvolvimento com:
 - Nginx
 - phpMyAdmin
 
+## Fases anteriores
+- Documentos de entregas das fases anteriores em [docs/entregas/](./docs/entregas/)
+- [Vídeo entrega fase 1](https://www.youtube.com/watch?v=ov2wa36pA7E)
+- [Vídeo entrega fase 2](https://www.youtube.com/watch?v=xzyHejsCoEs)
+
 ## 📋 Pré-requisitos
 
 Ter o **Docker** e o **Docker Compose** instalados na máquina.
