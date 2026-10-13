@@ -86,6 +86,27 @@ jobs:
         working-directory: infra
         run: terraform init -backend-config=env/backend-aws.hcl
 
+      # O volume EBS do MySQL é criado pelo EBS CSI (PVC), não pelo Terraform.
+      # Precisa apagar o PVC com o cluster e o driver ainda de pé; senão o volume fica órfão.
+      - name: Delete app namespace (releases EBS volumes)
+        run: |
+          if ! aws eks describe-cluster --name tech-challenge --region "${AWS_REGION}" >/dev/null 2>&1; then
+            echo "Cluster não existe, nada a limpar."
+            exit 0
+          fi
+          curl -fsSL "https://dl.k8s.io/release/$(curl -fsSL https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" -o /usr/local/bin/kubectl
+          chmod +x /usr/local/bin/kubectl
+          aws eks update-kubeconfig --name tech-challenge --region "${AWS_REGION}"
+
+          kubectl delete namespace tech-challenge --ignore-not-found --wait --timeout=5m \
+            || echo "::warning::Falha ao apagar o namespace. Confira volumes órfãos em EC2 > Volumes."
+
+          # Com reclaimPolicy Delete, o PV some depois que o CSI apaga o volume na AWS.
+          if [ -n "$(kubectl get pv -o name)" ]; then
+            kubectl wait --for=delete pv --all --timeout=5m \
+              || echo "::warning::PV não foi apagado. Confira volumes órfãos em EC2 > Volumes."
+          fi
+
       - name: Terraform destroy
         working-directory: infra
         run: terraform destroy -auto-approve -var-file=env/aws.tfvars

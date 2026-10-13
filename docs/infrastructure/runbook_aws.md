@@ -15,6 +15,11 @@ CI em PR: [`.github/workflows/iac.yml`](../../.github/workflows/iac.yml) (role *
 | Variables do Actions (`TF_STATE_*`, `AWS_ROLE_ARN_*`) | `gh variable set` ou via interface no GitHub |
 | Secrets do Actions (`DB_*`, `JWT_*`, `MAIL_*`) | `gh secret set` ou via interface no GitHub |
 | Cluster EKS + node group + ECR + EBS CSI | workflow **AWS deploy** (trigger manual) |
+| API Gateway (HTTP API) + VPC Link + NLB interno | workflow **AWS deploy** (URL no summary do job / `terraform output api_gateway_url`) |
+
+> Role `tech-challenge-gha-apply` já criada antes do API Gateway? Rode de novo só o `aws iam put-role-policy` da seção abaixo (statement `ApiGatewayNlb` + service-linked roles).
+
+O NodePort `30080` **não** é acessível pela internet: o SG dos nodes só aceita o SG do NLB interno, que só aceita o SG do VPC Link. O NLB cobra por hora enquanto existir (~US$ 0,0225/h); some no **AWS destroy**.
 
 ---
 
@@ -260,7 +265,9 @@ cat > /tmp/gha-apply-inline.json <<EOF
         "StringEquals": {
           "iam:AWSServiceName": [
             "eks.amazonaws.com",
-            "eks-nodegroup.amazonaws.com"
+            "eks-nodegroup.amazonaws.com",
+            "elasticloadbalancing.amazonaws.com",
+            "ops.apigateway.amazonaws.com"
           ]
         }
       }
@@ -282,6 +289,27 @@ cat > /tmp/gha-apply-inline.json <<EOF
         "ecr:GetAuthorizationToken", "ecr:BatchCheckLayerAvailability",
         "ecr:GetDownloadUrlForLayer", "ecr:BatchGetImage", "ecr:PutImage",
         "ecr:InitiateLayerUpload", "ecr:UploadLayerPart", "ecr:CompleteLayerUpload"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "ApiGatewayNlb",
+      "Effect": "Allow",
+      "Action": [
+        "apigateway:GET", "apigateway:POST", "apigateway:PUT",
+        "apigateway:PATCH", "apigateway:DELETE",
+        "elasticloadbalancing:*",
+        "ec2:GetSecurityGroupsForVpc",
+        "autoscaling:AttachLoadBalancerTargetGroups",
+        "autoscaling:DetachLoadBalancerTargetGroups",
+        "autoscaling:DescribeAutoScalingGroups",
+        "autoscaling:DescribeLoadBalancerTargetGroups",
+        "logs:CreateLogGroup", "logs:DeleteLogGroup", "logs:DescribeLogGroups",
+        "logs:PutRetentionPolicy", "logs:DeleteRetentionPolicy",
+        "logs:TagResource", "logs:UntagResource", "logs:ListTagsForResource",
+        "logs:CreateLogDelivery", "logs:GetLogDelivery", "logs:UpdateLogDelivery",
+        "logs:DeleteLogDelivery", "logs:ListLogDeliveries",
+        "logs:PutResourcePolicy", "logs:DescribeResourcePolicies"
       ],
       "Resource": "*"
     },
@@ -383,8 +411,12 @@ Não rode `apply -var-file=env/aws.tfvars` apontando para o MiniStack, nem o inv
 
 O item caro é o **control plane EKS** enquanto o cluster existir. Workflow **AWS destroy** (confirm = `destroy`) é o caminho do CI.
 
-Equivalente local, com backend S3 já configurado:
+Equivalente local, com backend S3 já configurado. Apague o namespace **antes**: o volume EBS do MySQL vem do PVC (EBS CSI), não do Terraform, e fica órfão (cobrando) se o cluster morrer com o PVC ainda existindo.
 
 ```bash
+kubectl delete namespace tech-challenge --wait --timeout=5m
+kubectl wait --for=delete pv --all --timeout=5m
 terraform -chdir=infra destroy -var-file=env/aws.tfvars
 ```
+
+Conferir sobras: EC2 > Volumes, estado **available**, tag `kubernetes.io/created-for/pvc/name = mysql-pvc`.

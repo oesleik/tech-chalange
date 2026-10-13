@@ -65,14 +65,14 @@ resource "aws_eks_node_group" "this" {
   ]
 }
 
-# Sem NLB (custo fixo). API no NodePort 30080 no IP público do node.
+# NodePort 30080 aceita só o NLB interno (que só aceita o VPC Link do API Gateway). Ver apigateway.tf.
 resource "aws_vpc_security_group_ingress_rule" "nodeport_http" {
   count = var.use_ministack ? 0 : 1
 
-  security_group_id = aws_eks_cluster.this.vpc_config[0].cluster_security_group_id
-  description       = "NodePort HTTP"
-  cidr_ipv4         = "0.0.0.0/0"
-  from_port         = 30080
-  ip_protocol       = "tcp"
-  to_port           = 30080
+  security_group_id            = aws_eks_cluster.this.vpc_config[0].cluster_security_group_id
+  description                  = "NodePort HTTP via NLB do API Gateway"
+  referenced_security_group_id = aws_security_group.nlb[0].id
+  from_port                    = 30080
+  ip_protocol                  = "tcp"
+  to_port                      = 30080
 }

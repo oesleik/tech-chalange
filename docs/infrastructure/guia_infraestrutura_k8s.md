@@ -236,7 +236,7 @@ Resumo:
 | IaC | - | Terraform `ministack.tfvars` | Mesmo HCL, `aws.tfvars` |
 | Workload | Helm values-minikube | Helm values-aws-local | Helm values-aws |
 | Imagem | docker-env + build | build host + import k3s | push ECR |
-| Nginx | NodePort + port-forward | NodePort + port-forward | NodePort 30080 no IP do node |
+| Nginx | NodePort + port-forward | NodePort + port-forward | API Gateway (HTTP API) → VPC Link → NLB interno → NodePort 30080 (SG só aceita o NLB) |
 | phpMyAdmin | sim | não | não |
 | Secrets | placeholders no chart | placeholders no chart | GitHub Secrets |
 | kubeconfig | minikube | adapter `docker exec` | `aws eks update-kubeconfig` |
