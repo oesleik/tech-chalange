@@ -18,6 +18,11 @@ output "kubeconfig_note" {
   value = var.use_ministack ? "MiniStack: use make aws-local-kubeconfig (adapter docker exec). Não use aws eks update-kubeconfig." : "AWS: aws eks update-kubeconfig --name ${var.cluster_name} --region ${var.aws_region}"
 }
 
+output "api_gateway_url" {
+  value       = var.use_ministack ? null : aws_apigatewayv2_stage.default[0].invoke_url
+  description = "Única entrada pública da API (o NodePort só aceita o NLB interno)."
+}
+
 output "ecr_repository_url" {
   value       = var.use_ministack ? null : aws_ecr_repository.php[0].repository_url
   description = "URI da imagem PHP no ECR. Use em charts/tech-challenge/values-aws.yaml (php.image)."

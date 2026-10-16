@@ -190,3 +190,9 @@ jobs:
         run: |
           kubectl delete secret rds-admin-secrets --namespace tech-challenge --ignore-not-found=true || true
           rm -f /tmp/helm-app-secrets.json
+      - name: Show API Gateway URL
+        working-directory: infra
+        run: |
+          API_URL="$(terraform output -raw api_gateway_url)"
+          echo "API Gateway: ${API_URL}"
+          echo "### API Gateway: ${API_URL}" >> "$GITHUB_STEP_SUMMARY"
