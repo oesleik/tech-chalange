@@ -88,4 +88,6 @@ jobs:
 
       - name: Terraform destroy
         working-directory: infra
+        env:
+          TF_VAR_rds_master_password: ${{ secrets.DB_ROOT_PASSWORD }}
         run: terraform destroy -auto-approve -var-file=env/aws.tfvars

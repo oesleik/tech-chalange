@@ -103,3 +103,8 @@ secrets:
   OS_EMAIL_ACTION_TOKEN_SECRET: "troque-por-valor-seguro-em-producao"
   MAIL_USERNAME: ""
   MAIL_PASSWORD: ""
+
+# Banco externo desabilitado por padrão.
+# O MiniStack continua usando o MySQL dentro do Kubernetes.
+externalDatabase:
+  enabled: false

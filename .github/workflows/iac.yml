@@ -8,121 +8,84 @@ on:
       - ".github/workflows/iac.yml"
       - ".github/workflows/aws-deploy.yml"
       - ".github/workflows/aws-destroy.yml"
+      - "charts/tech-challenge/**"
 
 concurrency:
-  group: iac-plan-${{ github.event.pull_request.number }}
+  group: iac-validate-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
 permissions:
   contents: read
-  pull-requests: write
-  id-token: write
 
 env:
   TF_IN_AUTOMATION: "true"
   TF_INPUT: "false"
-  AWS_REGION: us-east-1
 
 jobs:
-  terraform-plan:
-    name: Terraform validate / plan
+  validate:
+    name: Terraform and Helm validation
     runs-on: ubuntu-latest
     timeout-minutes: 15
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ vars.AWS_ROLE_ARN_PLAN }}
-          aws-region: ${{ env.AWS_REGION }}
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: "1.9.8"
-          terraform_wrapper: true
-
-      - name: Configure remote state backend
-        working-directory: infra
-        env:
-          TF_STATE_BUCKET: ${{ vars.TF_STATE_BUCKET }}
-          TF_STATE_LOCK_TABLE: ${{ vars.TF_STATE_LOCK_TABLE }}
-        run: |
-          if [ -z "$TF_STATE_BUCKET" ] || [ -z "$TF_STATE_LOCK_TABLE" ]; then
-            echo "Defina as repository variables TF_STATE_BUCKET e TF_STATE_LOCK_TABLE (ver docs/infrastructure/runbook_aws.md)."
-            exit 1
-          fi
-          cat > backend.tf <<'EOF'
-          terraform {
-            backend "s3" {}
-          }
-          EOF
-          cat > env/backend-aws.hcl <<EOF
-          bucket         = "${TF_STATE_BUCKET}"
-          key            = "tech-challenge/terraform.tfstate"
-          region         = "${AWS_REGION}"
-          dynamodb_table = "${TF_STATE_LOCK_TABLE}"
-          encrypt        = true
-          EOF
+          terraform_wrapper: false
 
       - name: Terraform fmt
         working-directory: infra
         run: terraform fmt -check -recursive -diff
 
-      - name: Terraform init
+      - name: Terraform init without backend
         working-directory: infra
-        run: terraform init -backend-config=env/backend-aws.hcl
+        run: |
+          rm -f backend.tf
+          terraform init -backend=false -input=false
 
       - name: Terraform validate
         working-directory: infra
         run: terraform validate
 
-      - name: Terraform plan
-        id: plan
-        working-directory: infra
-        run: terraform plan -var-file=env/aws.tfvars -no-color
-
-      - name: Comment plan on PR
-        uses: actions/github-script@v7
-        env:
-          PLAN: ${{ steps.plan.outputs.stdout }}
+      - name: Setup Helm
+        uses: azure/setup-helm@v4.3.0
         with:
-          script: |
-            const plan = process.env.PLAN || "(sem saída)";
-            const body = [
-              "### Terraform plan",
-              "",
-              "Job `terraform-plan` em `" + context.sha.slice(0, 7) + "`. **Nada é aplicado automaticamente.** Para subir ou derrubar a AWS: Actions -> **AWS deploy** / **AWS destroy** (`workflow_dispatch` na branch `master`).",
-              "",
-              "<details><summary>Mostrar plan</summary>",
-              "",
-              "```",
-              plan.length > 58000 ? plan.slice(0, 58000) + "\n... truncado nos logs do job" : plan,
-              "```",
-              "",
-              "</details>",
-            ].join("\n");
-            const { data: comments } = await github.rest.issues.listComments({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-            });
-            const marker = "### Terraform plan";
-            const existing = comments.find((c) => c.user.type === "Bot" && c.body.includes(marker));
-            if (existing) {
-              await github.rest.issues.updateComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                comment_id: existing.id,
-                body,
-              });
-            } else {
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: context.issue.number,
-                body,
-              });
-            }
+          version: v3.21.4
+
+      - name: Helm lint — default values
+        run: helm lint charts/tech-challenge
+
+      - name: Helm lint — AWS values
+        run: |
+          helm lint charts/tech-challenge \
+            -f charts/tech-challenge/values-aws.yaml
+
+      - name: Render and validate AWS chart
+        run: |
+          helm template tech-challenge charts/tech-challenge \
+            -f charts/tech-challenge/values-aws.yaml \
+            --set-string config.DB_HOST=db.example.internal \
+            --set-string secrets.DB_ROOT_PASSWORD=SECRET_MARKER_TEST \
+            > "$RUNNER_TEMP/helm-aws-check.yaml"
+
+          if grep -q 'SECRET_MARKER_TEST' "$RUNNER_TEMP/helm-aws-check.yaml"; then
+            echo "::error::Senha administrativa apareceu no manifesto."
+            exit 1
+          fi
+
+          if grep -Eq '^  name: (mysql|mysql-pvc|mysql-config|mysql-init-file)$' \
+            "$RUNNER_TEMP/helm-aws-check.yaml"; then
+            echo "::error::Um recurso do MySQL local foi renderizado no perfil AWS."
+            exit 1
+          fi
+
+          if ! grep -q '^  name: rds-user-setup$' "$RUNNER_TEMP/helm-aws-check.yaml"; then
+            echo "::error::O Job rds-user-setup não foi renderizado."
+            exit 1
+          fi
+
+          echo "Helm AWS validado."
