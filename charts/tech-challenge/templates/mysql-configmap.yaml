@@ -1,3 +1,4 @@
+{{- if not .Values.externalDatabase.enabled }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -11,3 +12,4 @@ data:
     innodb_dedicated_server = {{ if .Values.mysql.innodbDedicatedServer }}ON{{ else }}OFF{{ end }}
     innodb_buffer_pool_size = {{ .Values.mysql.innodbBufferPoolSize }}
     init-file = /etc/mysql/init-file/grant.sql
+{{- end }}
