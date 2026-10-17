@@ -175,7 +175,7 @@ jobs:
             -f /tmp/helm-app-secrets.json \
             --set "php.image=${ECR_URI}:${GITHUB_SHA}" \
             --set-string "config.DB_HOST=${RDS_ENDPOINT}" \
-            --wait --timeout 10m
+            --timeout 10m
 
       - name: Wait for RDS setup job and PHP
         run: |
