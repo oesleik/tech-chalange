@@ -185,6 +185,12 @@ jobs:
       - name: Run database migrations
         run: kubectl exec --namespace tech-challenge deploy/php -- php src/cmd/migrations/migrate.php
 
+      - name: Verify Nginx after migrations
+        run: |
+          kubectl rollout status deployment/nginx \
+            --namespace tech-challenge \
+            --timeout=180s
+
       - name: Clean up temporary database credentials
         if: always()
         run: |
