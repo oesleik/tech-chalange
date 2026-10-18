@@ -27,3 +27,8 @@ output "ecr_repository_url" {
   value       = var.use_ministack ? null : aws_ecr_repository.php[0].repository_url
   description = "URI da imagem PHP no ECR. Use em charts/tech-challenge/values-aws.yaml (php.image)."
 }
+
+output "autenticacao_url" {
+  value       = var.use_ministack ? null : "${aws_apigatewayv2_stage.default[0].invoke_url}autenticacao"
+  description = "Endpoint da Lambda de autenticação (POST {\"cpf\": \"...\"} -> JWT)."
+}

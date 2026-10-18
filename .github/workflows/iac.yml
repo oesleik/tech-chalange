@@ -82,6 +82,8 @@ jobs:
       - name: Terraform plan
         id: plan
         working-directory: infra
+        env:
+          TF_VAR_jwt_secret: ${{ secrets.JWT_SECRET }}
         run: terraform plan -var-file=env/aws.tfvars -no-color
 
       - name: Comment plan on PR

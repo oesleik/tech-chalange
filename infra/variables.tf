@@ -66,3 +66,27 @@ variable "node_max_size" {
   type    = number
   default = 2
 }
+
+variable "jwt_secret" {
+  type        = string
+  default     = null
+  sensitive   = true
+  description = "Mesmo JWT_SECRET do PHP. Usado pela Lambda de autenticação para assinar o token (via TF_VAR_jwt_secret)."
+
+  validation {
+    condition     = var.jwt_secret == null || length(coalesce(var.jwt_secret, "")) >= 32
+    error_message = "jwt_secret precisa ter ao menos 32 bytes (exigência do HS256 no lcobucci/jwt)."
+  }
+}
+
+variable "jwt_issuer" {
+  type        = string
+  default     = "tech-challenge-api"
+  description = "Mesmo JWT_ISSUER do PHP."
+}
+
+variable "jwt_ttl" {
+  type        = number
+  default     = 3600
+  description = "Validade do token em segundos (JWT_TTL)."
+}

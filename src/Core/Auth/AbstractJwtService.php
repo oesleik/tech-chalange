@@ -12,6 +12,7 @@ use Lcobucci\JWT\Signer\Key\InMemory;
 use Lcobucci\JWT\Token\Plain;
 use Lcobucci\JWT\Validation\Constraint\IssuedBy;
 use Lcobucci\JWT\Validation\Constraint\LooseValidAt;
+use Lcobucci\JWT\Validation\Constraint\SignedWith;
 
 abstract class AbstractJwtService {
     private Configuration $config;
@@ -25,6 +26,7 @@ abstract class AbstractJwtService {
         $clock = new SystemClock();
 
         $this->config = $this->config->withValidationConstraints(
+            new SignedWith($this->config->signer(), $this->config->verificationKey()),
             new IssuedBy($this->jwtConfig->getIssuer()),
             new LooseValidAt($clock),
         );
