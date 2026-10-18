@@ -84,6 +84,7 @@ jobs:
         working-directory: infra
         env:
           NODE_INSTANCE_TYPE: ${{ inputs.node_instance_type }}
+          TF_VAR_jwt_secret: ${{ secrets.JWT_SECRET }}
         run: |
           terraform plan -var-file=env/aws.tfvars \
             -var="node_instance_types=[\"${NODE_INSTANCE_TYPE}\"]" \

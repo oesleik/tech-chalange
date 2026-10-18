@@ -109,4 +109,6 @@ jobs:
 
       - name: Terraform destroy
         working-directory: infra
+        env:
+          TF_VAR_jwt_secret: ${{ secrets.JWT_SECRET }}
         run: terraform destroy -auto-approve -var-file=env/aws.tfvars

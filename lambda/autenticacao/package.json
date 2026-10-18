@@ -1,0 +1,14 @@
+{
+  "name": "autenticacao",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Lambda de autenticação: valida CPF e emite JWT para as APIs (POST /autenticacao via API Gateway)",
+  "type": "module",
+  "main": "src/index.mjs",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "test": "node --test"
+  }
+}
