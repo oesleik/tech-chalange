@@ -12,6 +12,7 @@ RUN apt-get update && apt-get install -y \
     libzip-dev \
     zip \
     unzip \
+    gettext-base \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -36,6 +37,36 @@ RUN docker-php-ext-enable pcov
 # extensao OpenTelemetry — captura automatica de traces, metricas e logs
 RUN pecl install opentelemetry
 RUN docker-php-ext-enable opentelemetry
+
+# New Relic PHP Agent (glibc). O tarball linux inclui x86_64 e aarch64;
+# o instalador escolhe a arquitetura do build. A license key não entra na imagem.
+ARG NEWRELIC_VERSION=12.11.0.40
+ARG NEWRELIC_PLATFORM=linux
+
+RUN set -eux; \
+    curl -fsSL "https://download.newrelic.com/php_agent/archive/${NEWRELIC_VERSION}/newrelic-php5-${NEWRELIC_VERSION}-${NEWRELIC_PLATFORM}.tar.gz" -o /tmp/newrelic.tar.gz; \
+    tar -xzf /tmp/newrelic.tar.gz -C /tmp; \
+    cd /tmp/newrelic-php5-*; \
+    NR_INSTALL_SILENT=1 NR_INSTALL_USE_CP_NOT_LN=1 ./newrelic-install install; \
+    rm -rf /tmp/newrelic*; \
+    sed -i 's|^newrelic.license = .*|;newrelic.license = ""|' "$(php-config --ini-dir)/newrelic.ini" || true; \
+    grep -Eq '^[[:space:]]*clear_env[[:space:]]*=[[:space:]]*no[[:space:]]*$' /usr/local/etc/php-fpm.d/docker.conf
+
+COPY docker/php/newrelic.ini.template /usr/local/etc/newrelic/newrelic.ini.template
+COPY docker/php/docker-entrypoint.sh /usr/local/bin/docker-php-newrelic-entrypoint
+
+# O processo roda como www-data: o entrypoint precisa reescrever o ini
+# e o daemon precisa de um diretório de log gravável.
+RUN set -eux; \
+    chmod 755 /usr/local/bin/docker-php-newrelic-entrypoint; \
+    mkdir -p /var/log/newrelic; \
+    touch /usr/local/etc/php/conf.d/zz-newrelic-custom.ini; \
+    chown www-data:www-data /var/log/newrelic /usr/local/etc/php/conf.d/zz-newrelic-custom.ini
+
+ENV NEW_RELIC_ENABLED=false \
+    NEW_RELIC_APP_NAME=tech-challenge-local \
+    NEW_RELIC_LICENSE_KEY="" \
+    NEW_RELIC_LOG_FORWARDING=true
 
 # Instala Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -66,4 +97,5 @@ RUN chmod -R a+rX public
 
 EXPOSE 9000
 
+ENTRYPOINT ["docker-php-newrelic-entrypoint"]
 CMD ["php-fpm"]
