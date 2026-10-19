@@ -36,4 +36,7 @@ output "rds_address" {
 output "rds_port" {
   description = "Porta do RDS."
   value       = var.use_ministack ? null : aws_db_instance.mysql[0].port
+output "autenticacao_url" {
+  value       = var.use_ministack ? null : "${aws_apigatewayv2_stage.default[0].invoke_url}autenticacao"
+  description = "Endpoint da Lambda de autenticação (POST {\"cpf\": \"...\"} -> JWT)."
 }

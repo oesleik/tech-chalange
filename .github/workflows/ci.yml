@@ -46,6 +46,24 @@ jobs:
       - name: Run SAST (phpstan)
         run: phpstan analyse src --no-interaction --no-progress --error-format=github
 
+  lambda-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    defaults:
+      run:
+        working-directory: lambda/autenticacao
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Run tests (node --test)
+        run: npm test
+
   tests:
     runs-on: ubuntu-latest
     timeout-minutes: 5

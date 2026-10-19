@@ -7,6 +7,7 @@
 - [ADR 003 - PHP Slim como framework do projeto](003-framework-slim.md)
 - [ADR 004 - Dois fluxos locais: Minikube e MiniStack (AWS local)](004-minikube-ministack-eks.md)
 - [ADR 005 - Migração para Clean Architecture](005-clean-architecture.md)
+- [ADR 006 - Node.js nas funções Lambda](006-node-lambda.md)
 
 ## Substituídas
 

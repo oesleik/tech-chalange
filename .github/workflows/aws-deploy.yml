@@ -85,6 +85,7 @@ jobs:
         env:
           NODE_INSTANCE_TYPE: ${{ inputs.node_instance_type }}
           TF_VAR_rds_master_password: ${{ secrets.DB_ROOT_PASSWORD }}
+          TF_VAR_jwt_secret: ${{ secrets.JWT_SECRET }}
         run: |
           terraform plan -var-file=env/aws.tfvars \
             -var="node_instance_types=[\"${NODE_INSTANCE_TYPE}\"]" \
