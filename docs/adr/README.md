@@ -8,6 +8,7 @@
 - [ADR 004 - Dois fluxos locais: Minikube e MiniStack (AWS local)](004-minikube-ministack-eks.md)
 - [ADR 005 - Migração para Clean Architecture](005-clean-architecture.md)
 - [ADR 006 - Node.js nas funções Lambda](006-node-lambda.md)
+- [ADR 007 - New Relic no EKS](007-newrelic.md)
 
 ## Substituídas
 

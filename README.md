@@ -207,7 +207,9 @@ AWS real (EKS): bootstrap e CI em [`docs/infrastructure/runbook_aws.md`](./docs/
 
 ## 📊 Documentação sobre observabilidade
 
-A solução de observabilidade com **OpenTelemetry, Prometheus, Grafana, Loki e Jaeger** está documentada em [`docs/observabilidade/observabilidade.md`](./docs/observabilidade/observabilidade.md).
+A solução de observabilidade local com **OpenTelemetry, Prometheus, Grafana, Loki e Jaeger** está documentada em [`docs/observability/observabilidade.md`](./docs/observability/observabilidade.md).
+
+O New Relic no EKS está em [`docs/observability/newrelic.md`](./docs/observability/newrelic.md).
 
 Para subir o ambiente:
 
