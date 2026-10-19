@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Middleware;
 
+use App\Infrastructure\Logging\StderrLogHandler;
 use Monolog\Logger;
 use OpenTelemetry\API\Globals;
 use OpenTelemetry\Contrib\Logs\Monolog\Handler as OpenTelemetryMonologHandler;
@@ -18,6 +19,7 @@ final class OpenTelemetryMiddleware implements MiddlewareInterface {
 
     public function __construct() {
         $this->logger = new Logger('tech-challenge-api');
+        StderrLogHandler::attach($this->logger);
 
         $this->logger->pushHandler(
             new OpenTelemetryMonologHandler(
