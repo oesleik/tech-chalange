@@ -102,6 +102,8 @@ variable "rds_master_password" {
   type        = string
   sensitive   = true
   default     = ""
+}
+
 variable "jwt_secret" {
   type        = string
   default     = null
