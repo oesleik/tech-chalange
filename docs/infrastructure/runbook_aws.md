@@ -14,7 +14,7 @@ CI em PR: [`.github/workflows/iac.yml`](../../.github/workflows/iac.yml) (role *
 | IdP `token.actions.githubusercontent.com` + roles `gha-plan` / `gha-apply` | CLI (setup) |
 | Variables do Actions (`TF_STATE_*`, `AWS_ROLE_ARN_*`) | `gh variable set` ou via interface no GitHub |
 | Secrets do Actions (`DB_*`, `JWT_*`, `MAIL_*`) | `gh secret set` ou via interface no GitHub |
-| Cluster EKS + node group + ECR + EBS CSI | workflow **AWS deploy** (trigger manual) |
+| Cluster EKS + node group + ECR | workflow **AWS deploy** (trigger manual) |
 | API Gateway (HTTP API) + VPC Link + NLB interno | workflow **AWS deploy** (URL no summary do job / `terraform output api_gateway_url`) |
 
 > Role `tech-challenge-gha-apply` já criada antes do API Gateway? Rode de novo só o `aws iam put-role-policy` da seção abaixo (statement `ApiGatewayNlb` + service-linked roles).
@@ -150,7 +150,7 @@ aws iam put-role-policy \
 
 Trust: só `refs/heads/master` **e** só `aws-deploy.yml` / `aws-destroy.yml`. Sem isso, qualquer workflow novo na `master` poderia assumir a role.
 
-A policy cobre o HCL atual (VPC, IAM de EKS, EKS, EBS CSI, ECR) + state. O `Deny` no final impede o apply de apagar o próprio setup de OIDC.
+A policy cobre o HCL atual (VPC, IAM de EKS, EKS, ECR) + state. O `Deny` no final impede o apply de apagar o próprio setup de OIDC.
 
 ```bash
 cat > /tmp/gha-apply-trust.json <<EOF
@@ -400,7 +400,8 @@ Minikube/MiniStack continuam com os placeholders de `values.yaml`.
 |---|---|---|
 | tfvars | `env/ministack.tfvars` | `env/aws.tfvars` |
 | Backend | `backend.tf` local gerado no `make aws-local-up` | S3 gerado no workflow |
-| ECR, EBS CSI | não criados (`use_ministack = true`) | criados |
+| ECR | não criado (`use_ministack = true`) | criado |
+| EBS CSI | não utilizado | removido da arquitetura AWS com RDS |
 | Instance type | default `t3.medium` | `aws.tfvars` + override no **AWS deploy** |
 
 Não rode `apply -var-file=env/aws.tfvars` apontando para o MiniStack, nem o inverso com o state S3.
@@ -411,7 +412,7 @@ Não rode `apply -var-file=env/aws.tfvars` apontando para o MiniStack, nem o inv
 
 O item caro é o **control plane EKS** enquanto o cluster existir. Workflow **AWS destroy** (confirm = `destroy`) é o caminho do CI.
 
-Equivalente local, com backend S3 já configurado. Apague o namespace **antes**: o volume EBS do MySQL vem do PVC (EBS CSI), não do Terraform, e fica órfão (cobrando) se o cluster morrer com o PVC ainda existindo.
+Equivalente local, com backend S3 já configurado. Em instalações antigas, apague o namespace antes do destroy: versões anteriores executavam MySQL em PVC do EBS, e volumes remanescentes podem continuar gerando custos se ficarem órfãos. O workflow AWS destroy mantém uma etapa de limpeza para esse caso legado.
 
 ```bash
 kubectl delete namespace tech-challenge --wait --timeout=5m

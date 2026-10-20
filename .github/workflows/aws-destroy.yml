@@ -86,9 +86,9 @@ jobs:
         working-directory: infra
         run: terraform init -backend-config=env/backend-aws.hcl
 
-      # O volume EBS do MySQL é criado pelo EBS CSI (PVC), não pelo Terraform.
-      # Precisa apagar o PVC com o cluster e o driver ainda de pé; senão o volume fica órfão.
-      - name: Delete app namespace (releases EBS volumes)
+      # Limpa o namespace antes de destruir o EKS, incluindo eventuais PVCs legados.
+      # Versões anteriores executavam MySQL no cluster; volumes EBS remanescentes podem ficar órfãos.
+      - name: Delete app namespace (legacy PVC cleanup)
         run: |
           if ! aws eks describe-cluster --name tech-challenge --region "${AWS_REGION}" >/dev/null 2>&1; then
             echo "Cluster não existe, nada a limpar."
