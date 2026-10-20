@@ -31,10 +31,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
-      - name: Require approved deployment branch
+      - name: Require master branch
         run: |
-          if [ "${GITHUB_REF}" != "refs/heads/master" ] && [ "${GITHUB_REF}" != "refs/heads/feat/aws-rds-mysql" ]; then
-            echo "Branch não autorizada para deploy."
+          if [ "${GITHUB_REF}" != "refs/heads/master" ]; then
+            echo "Rode este workflow com a branch master selecionada."
             exit 1
           fi
 
