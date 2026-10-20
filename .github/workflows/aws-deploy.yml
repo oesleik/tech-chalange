@@ -5,12 +5,23 @@ on:
   workflow_dispatch:
     inputs:
       node_instance_type:
-        description: "Node EKS. t3.medium = padrão; t3.large para ver HPA com pods extras Running"
+        description: "Tipo de instância dos nós EKS"
         type: choice
-        default: t3.medium
+        required: true
+        default: t3.small
         options:
+          - t3.small
           - t3.medium
           - t3.large
+
+      rds_instance_class:
+        description: "Classe da instância Amazon RDS MySQL"
+        type: choice
+        required: true
+        default: db.t3.micro
+        options:
+          - db.t3.micro
+          - db.t4g.micro
 
 concurrency:
   group: aws-infra
@@ -86,6 +97,7 @@ jobs:
           NODE_INSTANCE_TYPE: ${{ inputs.node_instance_type }}
           TF_VAR_rds_master_password: ${{ secrets.DB_ROOT_PASSWORD }}
           TF_VAR_jwt_secret: ${{ secrets.JWT_SECRET }}
+          TF_VAR_rds_instance_class: ${{ inputs.rds_instance_class }}
         run: |
           terraform plan -var-file=env/aws.tfvars \
             -var="node_instance_types=[\"${NODE_INSTANCE_TYPE}\"]" \

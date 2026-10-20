@@ -48,7 +48,7 @@ variable "availability_zones" {
 
 variable "node_instance_types" {
   type        = list(string)
-  default     = ["t3.medium"]
+  default     = ["t3.small"]
   description = "Tipo(s) do node EKS"
 }
 
