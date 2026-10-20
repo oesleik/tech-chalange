@@ -20,12 +20,12 @@ final class NewRelicMiddlewareTest extends TestCase {
     public function testNaoInstrumentaQuandoAExtensaoNaoEstaCarregada(): void {
         $agent = new RecordingNewRelicAgent(loaded: false);
         $request = $this->request('GET', '/clientes/15');
-        $response = (new ResponseFactory())->createResponse(200);
+        $response = new ResponseFactory()->createResponse(200);
 
         $handler = $this->createMock(RequestHandlerInterface::class);
         $handler->expects(self::once())->method('handle')->with($request)->willReturn($response);
 
-        $result = (new NewRelicMiddleware($agent))->process($request, $handler);
+        $result = new NewRelicMiddleware($agent)->process($request, $handler);
 
         self::assertSame(200, $result->getStatusCode());
         self::assertSame([], $agent->transactions);
@@ -58,7 +58,7 @@ final class NewRelicMiddlewareTest extends TestCase {
         $request = $this->request('POST', '/clientes')->withHeader('X-Request-Id', 'req-1');
         $handler = $this->handler(201);
 
-        (new NewRelicMiddleware($agent))->process($request, $handler);
+        new NewRelicMiddleware($agent)->process($request, $handler);
 
         self::assertSame('req-1', $agent->parameters['request.id']);
     }
@@ -84,7 +84,7 @@ final class NewRelicMiddlewareTest extends TestCase {
         $agent = new RecordingNewRelicAgent();
         $handler = $this->handler(200);
 
-        (new NewRelicMiddleware($agent))->process($this->request('GET', '/healthz'), $handler);
+        new NewRelicMiddleware($agent)->process($this->request('GET', '/healthz'), $handler);
 
         self::assertSame([], $agent->transactions);
         self::assertSame(1, $agent->ignored);
@@ -94,7 +94,7 @@ final class NewRelicMiddlewareTest extends TestCase {
         $agent = new RecordingNewRelicAgent();
         $handler = $this->handler(503);
 
-        (new NewRelicMiddleware($agent))->process($this->request('GET', '/clientes'), $handler);
+        new NewRelicMiddleware($agent)->process($this->request('GET', '/clientes'), $handler);
 
         self::assertCount(1, $agent->errors);
         self::assertSame(503, $agent->parameters['http.status_code']);
@@ -104,7 +104,7 @@ final class NewRelicMiddlewareTest extends TestCase {
         $agent = new RecordingNewRelicAgent();
         $request = $this->request('GET', '/clientes');
         $exception = new \RuntimeException('falha interna');
-        $next = new FixedErrorHandler((new ResponseFactory())->createResponse(500));
+        $next = new FixedErrorHandler(new ResponseFactory()->createResponse(500));
 
         $response = (new NewRelicErrorHandler($agent, $next))(
             $request,
@@ -123,7 +123,7 @@ final class NewRelicMiddlewareTest extends TestCase {
     public function testHandlerDeErroIgnoraFalhaDeProbe(): void {
         $agent = new RecordingNewRelicAgent();
         $request = $this->request('GET', '/health');
-        $next = new FixedErrorHandler((new ResponseFactory())->createResponse(500));
+        $next = new FixedErrorHandler(new ResponseFactory()->createResponse(500));
 
         (new NewRelicErrorHandler($agent, $next))(
             $request,
@@ -139,7 +139,7 @@ final class NewRelicMiddlewareTest extends TestCase {
     public function testHandlerDeErroNaoNotifica404(): void {
         $agent = new RecordingNewRelicAgent();
         $request = $this->request('GET', '/ausente');
-        $next = new FixedErrorHandler((new ResponseFactory())->createResponse(404));
+        $next = new FixedErrorHandler(new ResponseFactory()->createResponse(404));
 
         $response = (new NewRelicErrorHandler($agent, $next))(
             $request,
@@ -168,11 +168,11 @@ final class NewRelicMiddlewareTest extends TestCase {
     }
 
     private function request(string $method, string $path): ServerRequestInterface {
-        return (new ServerRequestFactory())->createServerRequest($method, $path);
+        return new ServerRequestFactory()->createServerRequest($method, $path);
     }
 
     private function handler(int $status): RequestHandlerInterface {
-        $response = (new ResponseFactory())->createResponse($status);
+        $response = new ResponseFactory()->createResponse($status);
         $handler = $this->createMock(RequestHandlerInterface::class);
         $handler->method('handle')->willReturn($response);
 
