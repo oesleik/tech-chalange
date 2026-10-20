@@ -57,6 +57,8 @@ COPY docker/php/docker-entrypoint.sh /usr/local/bin/docker-php-newrelic-entrypoi
 
 # O processo roda como www-data: o entrypoint precisa reescrever o ini
 # e o daemon precisa de um diretório de log gravável.
+# O CI sobrescreve o usuário (`docker compose run --user`); nesse caso o
+# entrypoint grava o ini em /tmp e acrescenta esse diretório ao scan do PHP.
 RUN set -eux; \
     chmod 755 /usr/local/bin/docker-php-newrelic-entrypoint; \
     mkdir -p /var/log/newrelic; \
