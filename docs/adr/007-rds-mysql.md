@@ -81,6 +81,12 @@ dependência do armazenamento EBS no cluster.
 Opção escolhida para a implantação AWS por desacoplar o banco dos pods
 e reduzir a responsabilidade operacional sobre o MySQL.
 
+- No ambiente de estudos, a retenção de backups automatizados do RDS
+  fica em zero (`backup_retention_period = 0`) para reduzir custos.
+  Essa configuração desabilita os backups automatizados e a recuperação
+  point-in-time. Como `skip_final_snapshot = true`, a exclusão da
+  instância também não cria automaticamente um snapshot final.
+
 ### Banco local nos ambientes de desenvolvimento
 
 Continua sendo utilizado nos ambientes locais que não dependem do RDS,
