@@ -9,6 +9,7 @@
 - [ADR 005 - Migração para Clean Architecture](005-clean-architecture.md)
 - [ADR 006 - Node.js nas funções Lambda](006-node-lambda.md)
 - [ADR 007 - MySQL gerenciado no Amazon RDS](007-rds-mysql.md)
+- [ADR 008 - Lambda de autenticação consulta o RDS diretamente](008-lambda-acesso-rds.md)
 
 ## Substituídas
 
