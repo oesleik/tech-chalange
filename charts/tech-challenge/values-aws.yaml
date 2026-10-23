@@ -43,25 +43,12 @@ nginx:
     port: 80
     nodePort: 30080
 
-mysql:
-  resources:
-    requests:
-      memory: "512Mi"
-      cpu: "250m"
-    limits:
-      memory: "1Gi"
-      cpu: "500m"
-  persistence:
-    size: 8Gi
-    storageClassName: gp3
-    storageClass:
-      create: true
-      default: true
-      name: gp3
-      provisioner: ebs.csi.aws.com
-      parameters:
-        type: gp3
-        encrypted: "true"
-
 phpmyadmin:
   enabled: false
+
+externalDatabase:
+  enabled: true
+  masterUsername: "dbadmin"
+
+config:
+  DB_HOST: "RDS_ENDPOINT_SET_BY_DEPLOY_WORKFLOW"

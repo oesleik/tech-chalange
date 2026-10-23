@@ -1,4 +1,4 @@
-# ADR-007 - New Relic no EKS
+# ADR-009 - New Relic no EKS
 
 **Status:** Aceita
 **Data:** 19/10/2026

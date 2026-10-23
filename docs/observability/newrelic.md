@@ -2,7 +2,7 @@
 
 O New Relic observa a API no **EKS**. No laptop, no Minikube e no MiniStack ele fica desligado. A stack OpenTelemetry local (`make otel-up`) não muda.
 
-Decisão registrada em [ADR-007](../adr/007-newrelic.md).
+Decisão registrada em [ADR-009](../adr/009-newrelic.md).
 
 ## O que entra no cluster
 

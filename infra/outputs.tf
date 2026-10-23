@@ -28,6 +28,16 @@ output "ecr_repository_url" {
   description = "URI da imagem PHP no ECR. Use em charts/tech-challenge/values-aws.yaml (php.image)."
 }
 
+output "rds_address" {
+  description = "Endpoint DNS do RDS, sem a porta."
+  value       = var.use_ministack ? null : aws_db_instance.mysql[0].address
+}
+
+output "rds_port" {
+  description = "Porta do RDS."
+  value       = var.use_ministack ? null : aws_db_instance.mysql[0].port
+}
+
 output "autenticacao_url" {
   value       = var.use_ministack ? null : "${aws_apigatewayv2_stage.default[0].invoke_url}autenticacao"
   description = "Endpoint da Lambda de autenticação (POST {\"cpf\": \"...\"} -> JWT)."

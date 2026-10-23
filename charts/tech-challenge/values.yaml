@@ -111,3 +111,8 @@ newrelic:
   existingSecret: newrelic-license
   secretKey: license-key
   logForwarding: true
+
+# Banco externo desabilitado por padrão.
+# O MiniStack continua usando o MySQL dentro do Kubernetes.
+externalDatabase:
+  enabled: false
