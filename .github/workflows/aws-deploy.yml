@@ -5,12 +5,23 @@ on:
   workflow_dispatch:
     inputs:
       node_instance_type:
-        description: "Node EKS. t3.medium = padrão; t3.large para ver HPA com pods extras Running"
+        description: "Tipo de instância dos nós EKS"
         type: choice
-        default: t3.medium
+        required: true
+        default: t3.small
         options:
+          - t3.small
           - t3.medium
           - t3.large
+
+      rds_instance_class:
+        description: "Classe da instância Amazon RDS MySQL"
+        type: choice
+        required: true
+        default: db.t3.micro
+        options:
+          - db.t3.micro
+          - db.t4g.micro
 
 concurrency:
   group: aws-infra
@@ -84,7 +95,9 @@ jobs:
         working-directory: infra
         env:
           NODE_INSTANCE_TYPE: ${{ inputs.node_instance_type }}
+          TF_VAR_rds_master_password: ${{ secrets.DB_ROOT_PASSWORD }}
           TF_VAR_jwt_secret: ${{ secrets.JWT_SECRET }}
+          TF_VAR_rds_instance_class: ${{ inputs.rds_instance_class }}
         run: |
           terraform plan -var-file=env/aws.tfvars \
             -var="node_instance_types=[\"${NODE_INSTANCE_TYPE}\"]" \
@@ -93,6 +106,16 @@ jobs:
       - name: Terraform apply
         working-directory: infra
         run: terraform apply -auto-approve tfplan
+
+      - name: Export RDS endpoint
+        working-directory: infra
+        run: |
+          RDS_ENDPOINT="$(terraform output -raw rds_address)"
+          if [ -z "$RDS_ENDPOINT" ]; then
+            echo "::error::Endpoint do RDS não foi retornado pelo Terraform."
+            exit 1
+          fi
+          echo "RDS_ENDPOINT=$RDS_ENDPOINT" >> "$GITHUB_ENV"
 
       - name: Install kubectl and Helm
         run: |
@@ -123,10 +146,24 @@ jobs:
             --set args={--kubelet-insecure-tls} \
             --wait --timeout 3m
 
+      - name: Prepare RDS admin Secret
+        env:
+          DB_ROOT_PASSWORD: ${{ secrets.DB_ROOT_PASSWORD }}
+        run: |
+          if [ -z "$DB_ROOT_PASSWORD" ]; then
+            echo "::error::Configure o secret DB_ROOT_PASSWORD no GitHub."
+            exit 1
+          fi
+          kubectl create namespace tech-challenge --dry-run=client -o yaml | kubectl apply -f -
+          kubectl create secret generic rds-admin-secrets \
+            --namespace tech-challenge \
+            --from-literal=DB_ROOT_USERNAME=dbadmin \
+            --from-literal="DB_ROOT_PASSWORD=${DB_ROOT_PASSWORD}" \
+            --dry-run=client -o yaml | kubectl apply -f -
+
       - name: Helm upgrade
         env:
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          DB_ROOT_PASSWORD: ${{ secrets.DB_ROOT_PASSWORD }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
           OS_EMAIL_ACTION_TOKEN_SECRET: ${{ secrets.OS_EMAIL_ACTION_TOKEN_SECRET }}
           MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
@@ -136,7 +173,6 @@ jobs:
           import json, os, pathlib
           keys = (
             "DB_PASSWORD",
-            "DB_ROOT_PASSWORD",
             "JWT_SECRET",
             "OS_EMAIL_ACTION_TOKEN_SECRET",
             "MAIL_USERNAME",
@@ -151,16 +187,28 @@ jobs:
             -f charts/tech-challenge/values-aws.yaml \
             -f /tmp/helm-app-secrets.json \
             --set "php.image=${ECR_URI}:${GITHUB_SHA}" \
-            --wait --timeout 10m
+            --set-string "config.DB_HOST=${RDS_ENDPOINT}" \
+            --timeout 10m
 
-      - name: Wait for MySQL and PHP
+      - name: Wait for RDS setup job and PHP
         run: |
-          kubectl wait --namespace tech-challenge --for=condition=ready pod -l app=mysql --timeout=300s
+          kubectl wait --namespace tech-challenge --for=condition=complete job/rds-user-setup --timeout=300s
           kubectl wait --namespace tech-challenge --for=condition=ready pod -l app=php --timeout=180s
 
       - name: Run database migrations
         run: kubectl exec --namespace tech-challenge deploy/php -- php src/cmd/migrations/migrate.php
 
+      - name: Verify Nginx after migrations
+        run: |
+          kubectl rollout status deployment/nginx \
+            --namespace tech-challenge \
+            --timeout=180s
+
+      - name: Clean up temporary database credentials
+        if: always()
+        run: |
+          kubectl delete secret rds-admin-secrets --namespace tech-challenge --ignore-not-found=true || true
+          rm -f /tmp/helm-app-secrets.json
       - name: Show API Gateway URL
         working-directory: infra
         run: |

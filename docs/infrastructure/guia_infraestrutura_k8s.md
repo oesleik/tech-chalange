@@ -247,7 +247,7 @@ Resumo:
 
 **Valida:** `terraform apply`/`destroy` contra API AWS emulada; Helm no k3s; MySQL dentro do cluster; probes; artefato de deploy.
 
-**Não valida:** IRSA e enforcement de IAM; security groups reais; pull ECR; ALB; EBS CSI; autenticação EKS (`aws-iam-authenticator`); custo e quotas.
+**Não valida:** IRSA e enforcement de IAM; security groups reais; pull ECR; ALB; conectividade real entre EKS e RDS; autenticação EKS (`aws-iam-authenticator`); custo e quotas.
 
 Detalhe em [ADR-004](../adr/004-minikube-ministack-eks.md).
 

@@ -203,8 +203,6 @@ Há dois fluxos locais, documentados em [`docs/infrastructure/guia_infraestrutur
 - **Minikube** (dia a dia): `make k8s-up`
 - **MiniStack** (simulação AWS local, com Terraform + EKS/k3s): `make aws-local-up`
 
-AWS real (EKS): bootstrap e CI em [`docs/infrastructure/runbook_aws.md`](./docs/infrastructure/runbook_aws.md).
-
 ## 📊 Documentação sobre observabilidade
 
 A solução de observabilidade com **OpenTelemetry, Prometheus, Grafana, Loki e Jaeger** está documentada em [`docs/observabilidade/observabilidade.md`](./docs/observabilidade/observabilidade.md).
@@ -220,3 +218,10 @@ Principais interfaces locais:
 - **Grafana:** http://localhost:3000
 - **Prometheus:** http://localhost:9090
 - **Jaeger:** http://localhost:16686
+
+## Infraestrutura e deploy AWS
+
+Para operar a infraestrutura AWS real (EKS, RDS, API Gateway), consulte:
+
+- **[Guia operacional de deploy, validação e destroy na AWS](./docs/infrastructure/deploy_aws.md)** — procedimento recorrente pelo GitHub Actions, comandos de validação, troubleshooting e remoção para evitar custos.
+- **[Runbook AWS](./docs/infrastructure/runbook_aws.md)** — configuração inicial do state remoto do Terraform, OIDC/IAM e variables/secrets do GitHub Actions.
