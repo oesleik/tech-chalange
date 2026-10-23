@@ -1,5 +1,9 @@
 # ADR-007 - MySQL gerenciado no Amazon RDS
 
+**Status:** Aceita  
+**Data:** 18/10/2026  
+**Participantes:** Augusto, Claudio, Daniel, Fernando, Oeslei 
+
 ## Contexto
 
 A aplicação do Tech Challenge utiliza PHP e MySQL. Na implantação AWS
