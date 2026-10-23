@@ -1,12 +1,14 @@
-import { existeClientePorCpf, lerConfigBanco } from './clientes.mjs';
+import { existeClientePorCpfCnpj, lerConfigBanco } from './clientes.mjs';
+import { ehCnpjValido, limparCnpj } from './cnpj.mjs';
 import { ehCpfValido, limparCpf } from './cpf.mjs';
 import { gerarJwt } from './jwt.mjs';
 
 const ROLE = 'cliente';
 
 // Dependências injetáveis para os testes não precisarem de um MySQL.
-export function criarHandler({ existeCliente = existeClientePorCpf, lerBanco = lerConfigBanco } = {}) {
-    // Invocada pelo API Gateway HTTP API (payload format 2.0): POST /autenticacao {"cpf": "..."}
+export function criarHandler({ existeCliente = existeClientePorCpfCnpj, lerBanco = lerConfigBanco } = {}) {
+    // Invocada pelo API Gateway HTTP API (payload format 2.0): POST /autenticacao {"cpf_cnpj": "..."}
+    // ("cpf" continua aceito como alias do contrato original).
     return async (event) => {
         const config = lerConfig();
         const banco = lerBanco();
@@ -17,20 +19,22 @@ export function criarHandler({ existeCliente = existeClientePorCpf, lerBanco = l
         }
 
         const body = lerBody(event);
+        const valor = body?.cpf_cnpj ?? body?.cpf;
 
-        if (typeof body?.cpf !== 'string') {
-            return resposta(400, { error: 'Bad Request', message: 'Informe o campo "cpf" (string) no corpo JSON.' });
+        if (typeof valor !== 'string') {
+            return resposta(400, { error: 'Bad Request', message: 'Informe o campo "cpf_cnpj" (string) no corpo JSON.' });
         }
 
-        if (!ehCpfValido(body.cpf)) {
-            return resposta(401, { error: 'Unauthorized', message: 'CPF inválido.' });
+        const cpfCnpj = normalizarCpfCnpj(valor);
+
+        if (!cpfCnpj) {
+            return resposta(401, { error: 'Unauthorized', message: 'CPF/CNPJ inválido.' });
         }
 
-        const cpf = limparCpf(body.cpf);
         let existe;
 
         try {
-            existe = await existeCliente(cpf, banco);
+            existe = await existeCliente(cpfCnpj, banco);
         } catch (error) {
             console.error('Falha ao consultar o cliente no banco:', error.code ?? error.message);
             return resposta(503, { error: 'Service Unavailable', message: 'Autenticação indisponível.' });
@@ -40,13 +44,27 @@ export function criarHandler({ existeCliente = existeClientePorCpf, lerBanco = l
             return resposta(404, { error: 'Not Found', message: 'Cliente não encontrado.' });
         }
 
-        const token = gerarJwt({ sub: cpf, role: ROLE }, config);
+        const token = gerarJwt({ sub: cpfCnpj, role: ROLE }, config);
 
         return resposta(200, { access_token: token, token_type: 'Bearer', expires_in: config.ttl });
     };
 }
 
 export const handler = criarHandler();
+
+// Mesmo formato gravado em clientes.cpf_cnpj pelos value objects Cpf/Cnpj do PHP: sem separadores
+// (e CNPJ em maiúsculas). Retorna null se não for um CPF nem um CNPJ válido.
+function normalizarCpfCnpj(valor) {
+    if (ehCpfValido(valor)) {
+        return limparCpf(valor);
+    }
+
+    if (ehCnpjValido(valor)) {
+        return limparCnpj(valor);
+    }
+
+    return null;
+}
 
 function lerConfig() {
     const secret = process.env.JWT_SECRET;

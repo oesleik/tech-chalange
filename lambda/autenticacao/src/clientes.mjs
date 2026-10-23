@@ -6,8 +6,8 @@ import mysql from 'mysql2/promise';
 
 let pool;
 
-export async function existeClientePorCpf(cpf, config) {
-    const [linhas] = await obterPool(config).execute('SELECT 1 FROM clientes WHERE cpf_cnpj = ? LIMIT 1', [cpf]);
+export async function existeClientePorCpfCnpj(cpfCnpj, config) {
+    const [linhas] = await obterPool(config).execute('SELECT 1 FROM clientes WHERE cpf_cnpj = ? LIMIT 1', [cpfCnpj]);
 
     return linhas.length > 0;
 }

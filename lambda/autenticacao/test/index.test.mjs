@@ -5,12 +5,13 @@ import { criarHandler } from '../src/index.mjs';
 const SECRET = 'segredo-de-teste-com-pelo-menos-32-bytes';
 const BANCO = { host: 'db', port: 3306, database: 'app_db', user: 'autenticacao', password: 'x' };
 const CPF_CADASTRADO = '52998224725';
+const CNPJ_CADASTRADO = '12ABC34501DE35';
 
 let consultas;
 
-const existeClienteFake = async (cpf, banco) => {
-    consultas.push({ cpf, banco });
-    return cpf === CPF_CADASTRADO;
+const existeClienteFake = async (cpfCnpj, banco) => {
+    consultas.push({ cpfCnpj, banco });
+    return [CPF_CADASTRADO, CNPJ_CADASTRADO].includes(cpfCnpj);
 };
 
 const handler = criarHandler({ existeCliente: existeClienteFake, lerBanco: () => BANCO });
@@ -93,7 +94,7 @@ test('retorna 500 sem JWT_SECRET configurado', async () => {
 test('consulta o cliente pelo CPF só com dígitos', async () => {
     await invocar(JSON.stringify({ cpf: '529.982.247-25' }));
 
-    assert.deepEqual(consultas, [{ cpf: CPF_CADASTRADO, banco: BANCO }]);
+    assert.deepEqual(consultas, [{ cpfCnpj: CPF_CADASTRADO, banco: BANCO }]);
 });
 
 test('não consulta o banco para CPF inválido', async () => {
@@ -130,4 +131,38 @@ test('retorna 500 sem variáveis DB_* configuradas', async () => {
 
     assert.equal(res.statusCode, 500);
     assert.equal(consultas.length, 0);
+});
+
+test('aceita o campo cpf_cnpj com CPF', async () => {
+    const res = await invocar(JSON.stringify({ cpf_cnpj: '529.982.247-25' }));
+
+    assert.equal(res.statusCode, 200);
+    assert.equal(payloadDo(res.body.access_token).sub, CPF_CADASTRADO);
+});
+
+test('retorna token para CNPJ alfanumérico cadastrado, normalizado como no PHP', async () => {
+    const res = await invocar(JSON.stringify({ cpf_cnpj: '12.abc.345/01de-35' }));
+
+    assert.equal(res.statusCode, 200);
+    assert.equal(payloadDo(res.body.access_token).sub, CNPJ_CADASTRADO);
+    assert.deepEqual(consultas, [{ cpfCnpj: CNPJ_CADASTRADO, banco: BANCO }]);
+});
+
+test('retorna 404 para CNPJ válido sem cliente cadastrado', async () => {
+    const res = await invocar(JSON.stringify({ cpf_cnpj: '11.222.333/0001-81' }));
+
+    assert.equal(res.statusCode, 404);
+});
+
+test('retorna 401 para CNPJ inválido sem consultar o banco', async () => {
+    const res = await invocar(JSON.stringify({ cpf_cnpj: '11.222.333/0001-82' }));
+
+    assert.equal(res.statusCode, 401);
+    assert.equal(consultas.length, 0);
+});
+
+test('prioriza cpf_cnpj quando cpf também é enviado', async () => {
+    await invocar(JSON.stringify({ cpf_cnpj: '11.222.333/0001-81', cpf: '529.982.247-25' }));
+
+    assert.equal(consultas[0].cpfCnpj, '11222333000181');
 });
