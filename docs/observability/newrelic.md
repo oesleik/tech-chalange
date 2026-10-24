@@ -127,12 +127,20 @@ Dashboard `tech-challenge`:
 | Página | Conteúdo |
 |---|---|
 | Visão geral | rpm, taxa de erro, p95, uptime do `/health`, OS criadas, falhas em OS, CPU/memória dos containers |
-| API | p50/p95/p99, throughput, tabela por transação, taxa de erro e 5xx, status HTTP; no API Gateway, latência total x integração e percentis (sem `/health`) |
-| Kubernetes | CPU e memória por container em % do limit e em valor absoluto, CPU/memória alocável dos nodes, restarts, deployments. As linhas de limiar são as mesmas dos alertas |
+| API | p50/p95/p99, throughput, tabela por transação, taxa de erro e 5xx, status HTTP; no API Gateway, latência empilhada integração + gateway e percentis (sem `/health`) |
+| Kubernetes | CPU e memória por container em % do limit, réplicas do HPA (atuais, desejadas, máximo, se está no limite), CPU/memória em valor absoluto, CPU/memória alocável dos nodes, restarts, deployments |
 | Saúde e uptime | Sucesso e duração do synthetic, falhas, pods ready, restarts, `/health` no access log |
 | Ordens de serviço | Criadas por dia (30 dias), tempo médio por situação (min), transições, falhas por rota (`Transaction`), endpoints de OS |
 | Integrações | RDS (CPU, memória livre, conexões), Lambda de autenticação (invocações, erros, duração, erros no log), 5xx e erros de integração do API Gateway, falhas de integração (`TransactionError` de `EmailException`), exceções por classe |
 | Logs | Logs da aplicação, volume por nível, erros, access log do API Gateway |
+
+Eixos e limiares:
+
+- Gráfico em % de capacidade (CPU/memória de container, node e RDS) vai de 0 a 100: o que importa é a distância até 100%.
+- Taxa de erro vai de 0 a 10%: o normal fica perto de 0, e uma escala até 100 esconderia a diferença entre 0,5% e 4%.
+- Os demais gráficos de linha começam em 0 (`y_axis_left_zero`) para oscilação pequena não parecer pico.
+- As faixas de limiar (warning/critical) são as mesmas dos alertas: latência, taxa de erro, CPU/memória e RDS.
+- Integração + gateway somam o `responseLatency`. Requisição sem integração (`integrationLatency` = `-`, como erro do próprio gateway) fica fora para as duas médias cobrirem as mesmas requisições. Não há autorizador no API Gateway (o JWT é validado no PHP), então não há latência de autorizador a separar.
 
 A métrica customizada chega em segundos (o agente converte os ms). Contagem usa `count(newrelic.timeslice.value)`.
 
@@ -151,6 +159,7 @@ Policy `tech-challenge` (um incidente por condição e alvo):
 | Container: memória (% do limit) | > 90% por 5 min | > 80% por 5 min |
 | Node: CPU alocável | > 90% por 5 min | > 80% por 5 min |
 | Node: memória alocável | > 90% por 5 min | > 80% por 5 min |
+| HPA: limitado no máximo de réplicas (`isLimited`, por HPA) | > 0 por 10 min | — |
 | RDS: CPU | > 80% por 15 min | — |
 | RDS: memória livre | < 30 MiB por 15 min | — |
 
