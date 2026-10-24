@@ -113,4 +113,8 @@ jobs:
           TF_VAR_rds_master_password: ${{ secrets.DB_ROOT_PASSWORD }}
           TF_VAR_jwt_secret: ${{ secrets.JWT_SECRET }}
           TF_VAR_lambda_db_password: ${{ secrets.LAMBDA_DB_PASSWORD }}
+          # O provider New Relic precisa das credenciais para desfazer o vínculo da conta AWS.
+          TF_VAR_newrelic_account_id: ${{ secrets.NEW_RELIC_ACCOUNT_ID }}
+          TF_VAR_newrelic_api_key: ${{ secrets.NEW_RELIC_API_KEY }}
+          TF_VAR_newrelic_region: ${{ vars.NEW_RELIC_REGION || 'US' }}
         run: terraform destroy -auto-approve -var-file=env/aws.tfvars

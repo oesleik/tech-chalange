@@ -63,9 +63,24 @@ No workflow `aws-deploy`, antes do Helm da aplicação:
 2. Cria os Secrets nos dois namespaces.
 3. Instala `newrelic/nri-bundle` na versão de `charts/newrelic/VERSION`.
 
-Depois do deploy, o marker `newrelic/deployment-marker-action@v2.6.2` só roda se a variable `NEW_RELIC_ENTITY_GUID` estiver preenchida. A action atual marca pelo GUID; não recebe `accountId`. O secret da conta continua obrigatório para o restante da configuração manual.
+Depois do deploy, o marker `newrelic/deployment-marker-action@v2.6.2` só roda se a variable `NEW_RELIC_ENTITY_GUID` estiver preenchida. A action atual marca pelo GUID; não recebe `accountId`. O secret da conta também alimenta o Terraform da integração AWS.
 
 Secrets e variables ficam no GitHub. Não entram no repositório.
+
+## Integração AWS
+
+`infra/newrelic.tf`, aplicado pelo **AWS deploy**. Só é criado quando o secret `NEW_RELIC_ACCOUNT_ID` existe.
+
+| Peça | Função |
+|---|---|
+| Role `tech-challenge-newrelic-integration` (`ReadOnlyAccess`) | API polling de métricas. Trust na conta AWS do New Relic com External ID = account id |
+| Vínculo `tech-challenge-aws` (`newrelic_cloud_aws_link_account`, modo `PULL`) | Conta AWS ligada ao New Relic usando a role acima |
+| Integrações `rds`, `ec2`, `lambda`, `api_gateway` | Polling de 300 s em `us-east-1` |
+| Firehose `tech-challenge-newrelic-logs` | Entrega logs do CloudWatch no endpoint de logs do New Relic |
+| Subscription filters (padrão vazio) | `/aws/apigateway/tech-challenge-api` e `/aws/lambda/tech-challenge-autenticacao` |
+| Bucket `tech-challenge-<conta>-newrelic-firehose` | Só entregas que falharam; expira em 7 dias |
+
+O provider `newrelic/newrelic` usa `NEW_RELIC_ACCOUNT_ID` e `NEW_RELIC_API_KEY` (User API key). A região vem da variable `NEW_RELIC_REGION` (padrão `US`). Sem account id, o provider recebe valores fictícios e nenhum recurso New Relic é criado (MiniStack, validação de PR).
 
 ## Validar
 
@@ -93,4 +108,4 @@ No EKS, depois do workflow: a entidade `tech-challenge-prod` recebe transação,
 
 ## Fora deste repositório
 
-Conta, license key, user API key, account id, GUID da entidade, dashboards e alertas. O `infra/` não ganhou provider New Relic. Convenção sugerida para o alerta, quando for criado no console: `AWS-<Servico>-<Ambiente>-<Regiao>-<Metrica>-<Severidade>`.
+Conta, license key, user API key, account id, GUID da entidade, dashboards e alertas. O `infra/` só gerencia a integração AWS; dashboards e alertas continuam fora. Convenção sugerida para o alerta, quando for criado no console: `AWS-<Servico>-<Ambiente>-<Regiao>-<Metrica>-<Severidade>`.

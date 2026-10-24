@@ -14,6 +14,14 @@ terraform {
       source  = "hashicorp/archive"
       version = "~> 2.0"
     }
+    newrelic = {
+      source  = "newrelic/newrelic"
+      version = "~> 3.0"
+    }
+    time = {
+      source  = "hashicorp/time"
+      version = "~> 0.12"
+    }
   }
 
   # MiniStack: Makefile gera backend.tf (local) + env/backend-ministack.hcl.

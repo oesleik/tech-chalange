@@ -18,8 +18,9 @@ CI em PR: [`.github/workflows/iac.yml`](../../.github/workflows/iac.yml) (só `i
 | Secrets do Actions (`DB_*`, `JWT_*`, `MAIL_*`) | `gh secret set` ou via interface no GitHub |
 | Cluster EKS + node group + ECR | workflow **AWS deploy** (trigger manual) |
 | API Gateway (HTTP API) + VPC Link + NLB interno | workflow **AWS deploy** (URL no summary do job / `terraform output api_gateway_url`) |
+| Integração AWS do New Relic (role de polling, vínculo, integrações e Firehose de logs) | workflow **AWS deploy** (`infra/newrelic.tf`), inclusive o vínculo da conta e as integrações no New Relic; ver [New Relic](../observability/newrelic.md#integração-aws) |
 
-> Role `tech-challenge-gha-apply` já criada antes do API Gateway, do RDS ou da Lambda? Rode de novo só o `cat > /tmp/gha-apply-inline.json` e o `aws iam put-role-policy` da seção abaixo (statements `ApiGatewayNlb`, `RdsMysql`, `RdsDescribe`, `RdsMysqlDefaultGroups`, `RdsServiceLinkedRole`, `LambdaAutenticacao`, `LambdaVpcEniCleanup`). O `put-role-policy` substitui a policy inline inteira, então exporte as variáveis do início da seção antes.
+> Role `tech-challenge-gha-apply` já criada antes do API Gateway, do RDS, da Lambda ou da integração AWS do New Relic? Rode de novo só o `cat > /tmp/gha-apply-inline.json` e o `aws iam put-role-policy` da seção abaixo (statements `ApiGatewayNlb`, `RdsMysql`, `RdsDescribe`, `RdsMysqlDefaultGroups`, `RdsServiceLinkedRole`, `LambdaAutenticacao`, `LambdaVpcEniCleanup`, `NewRelicFirehose`, `NewRelicFirehoseBackupBucket`, `NewRelicLogSubscriptions`, `NewRelicInlineRolePolicies`). O `put-role-policy` substitui a policy inline inteira, então exporte as variáveis do início da seção antes.
 
 O NodePort `30080` **não** é acessível pela internet: o SG dos nodes só aceita o SG do NLB interno, que só aceita o SG do VPC Link. O NLB cobra por hora enquanto existir (~US$ 0,0225/h); some no **AWS destroy**.
 
@@ -384,6 +385,44 @@ cat > /tmp/gha-apply-inline.json <<EOF
       "Resource": [
         "arn:aws:ec2:us-east-1:${ACCOUNT_ID}:network-interface/*",
         "arn:aws:ec2:us-east-1:${ACCOUNT_ID}:instance/*"
+      ]
+    },
+    {
+      "Sid": "NewRelicFirehose",
+      "Effect": "Allow",
+      "Action": [
+        "firehose:CreateDeliveryStream", "firehose:DeleteDeliveryStream",
+        "firehose:DescribeDeliveryStream", "firehose:UpdateDestination",
+        "firehose:ListTagsForDeliveryStream", "firehose:TagDeliveryStream",
+        "firehose:UntagDeliveryStream"
+      ],
+      "Resource": "arn:aws:firehose:us-east-1:${ACCOUNT_ID}:deliverystream/tech-challenge-newrelic-logs"
+    },
+    {
+      "Sid": "NewRelicFirehoseBackupBucket",
+      "Effect": "Allow",
+      "Action": "s3:*",
+      "Resource": [
+        "arn:aws:s3:::tech-challenge-${ACCOUNT_ID}-newrelic-firehose",
+        "arn:aws:s3:::tech-challenge-${ACCOUNT_ID}-newrelic-firehose/*"
+      ]
+    },
+    {
+      "Sid": "NewRelicLogSubscriptions",
+      "Effect": "Allow",
+      "Action": [
+        "logs:PutSubscriptionFilter", "logs:DeleteSubscriptionFilter",
+        "logs:DescribeSubscriptionFilters"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "NewRelicInlineRolePolicies",
+      "Effect": "Allow",
+      "Action": ["iam:PutRolePolicy", "iam:GetRolePolicy", "iam:DeleteRolePolicy"],
+      "Resource": [
+        "arn:aws:iam::${ACCOUNT_ID}:role/tech-challenge-newrelic-firehose",
+        "arn:aws:iam::${ACCOUNT_ID}:role/tech-challenge-newrelic-logs-to-firehose"
       ]
     },
     {

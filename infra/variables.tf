@@ -145,6 +145,44 @@ variable "lambda_db_username" {
   description = "Usuário MySQL somente leitura da Lambda de autenticação (criado pelo job rds-user-setup)."
 }
 
+variable "newrelic_account_id" {
+  type        = string
+  default     = null
+  description = "Account id do New Relic (via TF_VAR_newrelic_account_id). Vazio desliga a integração AWS do New Relic. Também é o External ID da role de polling."
+}
+
+variable "newrelic_api_key" {
+  type        = string
+  default     = null
+  sensitive   = true
+  description = "User API key do New Relic (NRAK-..., via TF_VAR_newrelic_api_key). Usada pelo provider para vincular a conta AWS e ligar as integrações."
+}
+
+variable "newrelic_region" {
+  type        = string
+  default     = "US"
+  description = "Região da conta New Relic (US ou EU)."
+}
+
+variable "newrelic_logs_ingest_key" {
+  type        = string
+  default     = null
+  sensitive   = true
+  description = "License key do New Relic usada pelo Firehose para enviar logs (via TF_VAR_newrelic_logs_ingest_key; a mesma NEW_RELIC_LICENSE_KEY do cluster). Fica no state."
+}
+
+variable "newrelic_logs_endpoint" {
+  type        = string
+  default     = "https://aws-api.newrelic.com/firehose/v1"
+  description = "Endpoint de logs do Firehose no New Relic. Conta EU: https://aws-api.eu01.nr-data.net/firehose/v1."
+}
+
+variable "newrelic_aws_principal_account_id" {
+  type        = string
+  default     = "754728514883"
+  description = "Conta AWS do New Relic que assume a role de polling."
+}
+
 variable "lambda_db_password" {
   type        = string
   default     = null
