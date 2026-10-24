@@ -40,7 +40,7 @@ final class AtualizarSituacaoEmailControllerTest extends TestCase {
             ->with($response, $this->anything(), HttpStatusCodeEnum::Ok)
             ->willReturn($response);
 
-        $controller = new AtualizarSituacaoEmailController(new AtualizarSituacaoController($useCase, $presenter));
+        $controller = new AtualizarSituacaoEmailController(new AtualizarSituacaoController($useCase, $presenter), $presenter);
 
         $resultado = $controller->atualizarParaAprovada($request, $response);
 
@@ -66,7 +66,7 @@ final class AtualizarSituacaoEmailControllerTest extends TestCase {
         $presenter = $this->createMock(PresenterInterface::class);
         $presenter->method('success')->willReturn($response);
 
-        $controller = new AtualizarSituacaoEmailController(new AtualizarSituacaoController($useCase, $presenter));
+        $controller = new AtualizarSituacaoEmailController(new AtualizarSituacaoController($useCase, $presenter), $presenter);
 
         $resultado = $controller->atualizarParaRejeitada($request, $response);
 
@@ -75,10 +75,6 @@ final class AtualizarSituacaoEmailControllerTest extends TestCase {
 
     public function testRetorna422QuandoIdOrdemServicoAusenteNasClaims(): void {
         $response = $this->createMock(ResponseInterface::class);
-        $response->expects($this->once())
-            ->method('withStatus')
-            ->with(422, 'Ordem de serviço não identificada')
-            ->willReturn($response);
 
         $request = $this->createMock(ServerRequestInterface::class);
         $request->method('getAttribute')->with('jwt_claims', [])->willReturn([]);
@@ -87,8 +83,12 @@ final class AtualizarSituacaoEmailControllerTest extends TestCase {
         $useCase->expects($this->never())->method('executar');
 
         $presenter = $this->createMock(PresenterInterface::class);
+        $presenter->expects($this->once())
+            ->method('error')
+            ->with($response, 'Ordem de serviço não identificada', HttpStatusCodeEnum::UnprocessableEntity)
+            ->willReturn($response);
 
-        $controller = new AtualizarSituacaoEmailController(new AtualizarSituacaoController($useCase, $presenter));
+        $controller = new AtualizarSituacaoEmailController(new AtualizarSituacaoController($useCase, $presenter), $presenter);
 
         $resultado = $controller->atualizarParaAprovada($request, $response);
 
@@ -97,10 +97,6 @@ final class AtualizarSituacaoEmailControllerTest extends TestCase {
 
     public function testRetorna422QuandoIdOrdemServicoNaoNumerico(): void {
         $response = $this->createMock(ResponseInterface::class);
-        $response->expects($this->once())
-            ->method('withStatus')
-            ->with(422, 'Ordem de serviço não identificada')
-            ->willReturn($response);
 
         $request = $this->createMock(ServerRequestInterface::class);
         $request->method('getAttribute')->with('jwt_claims', [])->willReturn(['id_ordem_servico' => 'abc']);
@@ -109,8 +105,12 @@ final class AtualizarSituacaoEmailControllerTest extends TestCase {
         $useCase->expects($this->never())->method('executar');
 
         $presenter = $this->createMock(PresenterInterface::class);
+        $presenter->expects($this->once())
+            ->method('error')
+            ->with($response, 'Ordem de serviço não identificada', HttpStatusCodeEnum::UnprocessableEntity)
+            ->willReturn($response);
 
-        $controller = new AtualizarSituacaoEmailController(new AtualizarSituacaoController($useCase, $presenter));
+        $controller = new AtualizarSituacaoEmailController(new AtualizarSituacaoController($useCase, $presenter), $presenter);
 
         $resultado = $controller->atualizarParaRejeitada($request, $response);
 

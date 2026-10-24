@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\OrdemServico\Presentation\Http\Controller;
 
+use App\Core\Presentation\Http\HttpStatusCodeEnum;
+use App\Core\Presentation\Http\PresenterInterface;
 use App\OrdemServico\Domain\Enum\SituacaoOrdemServicoEnum;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -18,6 +20,7 @@ use OpenApi\Attributes as OA;
 final class AtualizarSituacaoEmailController {
     public function __construct(
         private readonly AtualizarSituacaoController $attSituacaoController,
+        private readonly PresenterInterface $presenter,
     ) {}
 
     public function atualizarParaAprovada(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface {
@@ -37,7 +40,7 @@ final class AtualizarSituacaoEmailController {
         $idOrdemServico  = $claims['id_ordem_servico'] ?? null;
 
         if (!is_int($idOrdemServico) && !ctype_digit((string) $idOrdemServico)) {
-            return $response->withStatus(422, 'Ordem de serviço não identificada');
+            return $this->presenter->error($response, 'Ordem de serviço não identificada', HttpStatusCodeEnum::UnprocessableEntity);
         }
 
         return $this->attSituacaoController->alterarSituacao((int) $idOrdemServico, $novaSituacao, $response);

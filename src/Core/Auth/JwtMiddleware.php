@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace App\Core\Auth;
 
+use App\Core\Presentation\Http\PresenterInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 class JwtMiddleware extends AbstractJwtMiddleware {
-    public function __construct(JwtService $jwtService, ResponseFactoryInterface $responseFactory) {
-        parent::__construct($jwtService, $responseFactory);
+    public function __construct(JwtService $jwtService, ResponseFactoryInterface $responseFactory, PresenterInterface $presenter) {
+        parent::__construct($jwtService, $responseFactory, $presenter);
     }
 
     protected function getTokenFromRequest(ServerRequestInterface $request): ?string {

@@ -10,6 +10,8 @@ use App\Peca\Domain\Entity\Peca;
 use App\Peca\Domain\ValueObject\ValorUnitario;
 use App\Peca\Presentation\Http\Controller\CriarPecaController;
 use App\Core\Contract\ContractResolver;
+use App\Core\Presentation\Http\HttpStatusCodeEnum;
+use App\Core\Presentation\Http\PresenterInterface;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
@@ -47,6 +49,19 @@ final class CriarPecaControllerTest extends TestCase {
         return $resolver;
     }
 
+    private function presenter(?HttpStatusCodeEnum $status = null): PresenterInterface {
+        $presenter = $this->createMock(PresenterInterface::class);
+        if ($status === null) {
+            $presenter->expects($this->never())->method('error');
+        } else {
+            $presenter->expects($this->once())
+                ->method('error')
+                ->with($this->anything(), $this->isString(), $status)
+                ->willReturnArgument(0);
+        }
+        return $presenter;
+    }
+
     public function testExecuteComSucesso(): void {
         $response = $this->criarResponseMock();
         $request = $this->criarRequestComPayload([
@@ -66,7 +81,7 @@ final class CriarPecaControllerTest extends TestCase {
             ))
             ->willReturn($pecaCriada);
 
-        $controller = new CriarPecaController($useCase, $this->contractResolverFake());
+        $controller = new CriarPecaController($useCase, $this->contractResolverFake(), $this->presenter());
 
         $resultado = $controller->execute($request, $response);
 
@@ -83,7 +98,7 @@ final class CriarPecaControllerTest extends TestCase {
         $useCase = $this->createMock(CriarPecaUseCase::class);
         $useCase->expects($this->never())->method('executar');
 
-        $controller = new CriarPecaController($useCase, $this->contractResolverFake());
+        $controller = new CriarPecaController($useCase, $this->contractResolverFake(), $this->presenter(HttpStatusCodeEnum::BadRequest));
 
         $resultado = $controller->execute($request, $response);
 
@@ -100,7 +115,7 @@ final class CriarPecaControllerTest extends TestCase {
         $useCase = $this->createMock(CriarPecaUseCase::class);
         $useCase->expects($this->never())->method('executar');
 
-        $controller = new CriarPecaController($useCase, $this->contractResolverFake());
+        $controller = new CriarPecaController($useCase, $this->contractResolverFake(), $this->presenter(HttpStatusCodeEnum::BadRequest));
 
         $resultado = $controller->execute($request, $response);
 
@@ -119,7 +134,7 @@ final class CriarPecaControllerTest extends TestCase {
             ->method('executar')
             ->willThrowException(new InvalidArgumentException('Valor unitário não pode ser negativo.'));
 
-        $controller = new CriarPecaController($useCase, $this->contractResolverFake());
+        $controller = new CriarPecaController($useCase, $this->contractResolverFake(), $this->presenter(HttpStatusCodeEnum::BadRequest));
 
         $resultado = $controller->execute($request, $response);
 

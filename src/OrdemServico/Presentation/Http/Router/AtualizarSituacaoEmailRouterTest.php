@@ -24,7 +24,7 @@ final class AtualizarSituacaoEmailRouterTest extends TestCase {
         $presenter = $this->createMock(PresenterInterface::class);
         $presenter->method('success')->willReturnArgument(0);
 
-        return new AtualizarSituacaoEmailController(new AtualizarSituacaoController($useCase, $presenter));
+        return new AtualizarSituacaoEmailController(new AtualizarSituacaoController($useCase, $presenter), $presenter);
     }
 
     public function testAtualizarParaAprovadaDelegaParaOController(): void {

@@ -8,6 +8,8 @@ use App\Peca\Application\UseCase\CriarPeca\CriarPecaUseCase;
 use App\Peca\Presentation\Http\DTO\CriarPecaMapper;
 use App\Peca\Presentation\Http\DTO\PecaResponseDTO;
 use App\Core\Contract\ContractResolver;
+use App\Core\Presentation\Http\HttpStatusCodeEnum;
+use App\Core\Presentation\Http\PresenterInterface;
 use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -17,6 +19,7 @@ final class CriarPecaController {
     public function __construct(
         private readonly CriarPecaUseCase $useCase,
         private readonly ContractResolver $contractResolver,
+        private readonly PresenterInterface $presenter,
     ) {}
 
     #[OA\Post(
@@ -46,8 +49,7 @@ final class CriarPecaController {
             $response->getBody()->write($this->contractResolver->toJson($output));
             return $response->withHeader('Content-Type', 'application/json');
         } catch (InvalidArgumentException $e) {
-            $response->getBody()->write(json_encode(['error' => $e->getMessage()]));
-            return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
+            return $this->presenter->error($response, $e->getMessage(), HttpStatusCodeEnum::BadRequest);
         }
     }
 }

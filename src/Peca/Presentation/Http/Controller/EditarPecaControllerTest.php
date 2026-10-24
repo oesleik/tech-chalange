@@ -11,6 +11,8 @@ use App\Peca\Domain\Exception\PecaNaoEncontradaException;
 use App\Peca\Domain\ValueObject\ValorUnitario;
 use App\Peca\Presentation\Http\Controller\EditarPecaController;
 use App\Core\Contract\ContractResolver;
+use App\Core\Presentation\Http\HttpStatusCodeEnum;
+use App\Core\Presentation\Http\PresenterInterface;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -47,6 +49,19 @@ final class EditarPecaControllerTest extends TestCase {
         return $resolver;
     }
 
+    private function presenter(?HttpStatusCodeEnum $status = null): PresenterInterface {
+        $presenter = $this->createMock(PresenterInterface::class);
+        if ($status === null) {
+            $presenter->expects($this->never())->method('error');
+        } else {
+            $presenter->expects($this->once())
+                ->method('error')
+                ->with($this->anything(), $this->isString(), $status)
+                ->willReturnArgument(0);
+        }
+        return $presenter;
+    }
+
     public function testExecuteComSucesso(): void {
         $response = $this->criarResponseMock();
         $request = $this->criarRequestComPayload([
@@ -65,7 +80,7 @@ final class EditarPecaControllerTest extends TestCase {
             ))
             ->willReturn($pecaAtualizada);
 
-        $controller = new EditarPecaController($useCase, $this->contractResolverFake());
+        $controller = new EditarPecaController($useCase, $this->contractResolverFake(), $this->presenter());
 
         $resultado = $controller->execute(1, $request, $response);
 
@@ -83,7 +98,7 @@ final class EditarPecaControllerTest extends TestCase {
             ->method('executar')
             ->willThrowException(PecaNaoEncontradaException::comId(99));
 
-        $controller = new EditarPecaController($useCase, $this->contractResolverFake());
+        $controller = new EditarPecaController($useCase, $this->contractResolverFake(), $this->presenter(HttpStatusCodeEnum::NotFound));
 
         $resultado = $controller->execute(99, $request, $response);
 
@@ -99,7 +114,7 @@ final class EditarPecaControllerTest extends TestCase {
         $useCase = $this->createMock(EditarPecaUseCase::class);
         $useCase->expects($this->never())->method('executar');
 
-        $controller = new EditarPecaController($useCase, $this->contractResolverFake());
+        $controller = new EditarPecaController($useCase, $this->contractResolverFake(), $this->presenter(HttpStatusCodeEnum::BadRequest));
 
         $resultado = $controller->execute(1, $request, $response);
 

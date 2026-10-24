@@ -9,6 +9,8 @@ use App\Peca\Domain\Exception\PecaNaoEncontradaException;
 use App\Peca\Presentation\Http\DTO\EditarPecaMapper;
 use App\Peca\Presentation\Http\DTO\PecaResponseDTO;
 use App\Core\Contract\ContractResolver;
+use App\Core\Presentation\Http\HttpStatusCodeEnum;
+use App\Core\Presentation\Http\PresenterInterface;
 use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -18,6 +20,7 @@ final class EditarPecaController {
     public function __construct(
         private readonly EditarPecaUseCase $useCase,
         private readonly ContractResolver $contractResolver,
+        private readonly PresenterInterface $presenter,
     ) {}
 
     #[OA\Patch(
@@ -53,11 +56,9 @@ final class EditarPecaController {
             $response->getBody()->write($this->contractResolver->toJson($output));
             return $response->withHeader('Content-Type', 'application/json');
         } catch (PecaNaoEncontradaException $e) {
-            $response->getBody()->write(json_encode(['error' => $e->getMessage()]));
-            return $response->withStatus(404)->withHeader('Content-Type', 'application/json');
+            return $this->presenter->error($response, $e->getMessage(), HttpStatusCodeEnum::NotFound);
         } catch (InvalidArgumentException $e) {
-            $response->getBody()->write(json_encode(['error' => $e->getMessage()]));
-            return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
+            return $this->presenter->error($response, $e->getMessage(), HttpStatusCodeEnum::BadRequest);
         }
     }
 }
