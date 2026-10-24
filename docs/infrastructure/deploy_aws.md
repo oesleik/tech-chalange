@@ -32,6 +32,7 @@ Antes de executar qualquer workflow, confira o [Runbook AWS](./runbook_aws.md) e
 | `TF_STATE_LOCK_TABLE` | Tabela DynamoDB de lock |
 | `AWS_ROLE_ARN_PLAN` | Role usada pelo workflow IaC/plan, quando aplicável |
 | `AWS_ROLE_ARN_APPLY` | Role usada pelos workflows `AWS deploy` e `AWS destroy` |
+| `EKS_ADMIN_PRINCIPAL_ARNS` | Opcional. Lista JSON de ARNs de usuários/roles IAM com acesso admin ao cluster EKS, ex.: `["arn:aws:iam::123456789012:user/fulano"]`. Grupos IAM não são suportados pelo EKS |
 
 ### GitHub Actions secrets
 

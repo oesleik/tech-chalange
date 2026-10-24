@@ -45,6 +45,25 @@ resource "aws_eks_access_policy_association" "account_root_admin" {
   }
 }
 
+# Devs com acesso ao cluster (console e kubectl). Lista vem da variable EKS_ADMIN_PRINCIPAL_ARNS do GitHub.
+resource "aws_eks_access_entry" "admins" {
+  for_each      = var.use_ministack ? toset([]) : toset(var.eks_admin_principal_arns)
+  cluster_name  = aws_eks_cluster.this.name
+  principal_arn = each.value
+  type          = "STANDARD"
+}
+
+resource "aws_eks_access_policy_association" "admins" {
+  for_each      = aws_eks_access_entry.admins
+  cluster_name  = aws_eks_cluster.this.name
+  principal_arn = each.value.principal_arn
+  policy_arn    = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+
+  access_scope {
+    type = "cluster"
+  }
+}
+
 resource "aws_eks_node_group" "this" {
   cluster_name    = aws_eks_cluster.this.name
   node_group_name = "default"
