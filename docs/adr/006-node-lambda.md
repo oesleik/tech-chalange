@@ -29,6 +29,7 @@ Foi decidido utilizar Node.js, na última versão LTS suportada pela Lambda (`no
 
 - Segunda linguagem no projeto, além do PHP
 - Regras duplicadas entre PHP e Node (validação de CPF, formato do JWT) precisam ser mantidas compatíveis
+- Desde o [ADR-008](008-lambda-acesso-rds.md), a Lambda depende do `mysql2` para consultar o RDS: o pacote deixou de ser só a biblioteca padrão
 
 ## Alternativas consideradas
 

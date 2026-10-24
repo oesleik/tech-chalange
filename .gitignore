@@ -13,3 +13,4 @@ infra/backend.tf
 infra/env/backend-aws.hcl
 infra/env/backend-ministack.hcl
 crash.log
+lambda/*/node_modules/

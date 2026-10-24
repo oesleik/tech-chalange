@@ -112,4 +112,5 @@ jobs:
         env:
           TF_VAR_rds_master_password: ${{ secrets.DB_ROOT_PASSWORD }}
           TF_VAR_jwt_secret: ${{ secrets.JWT_SECRET }}
+          TF_VAR_lambda_db_password: ${{ secrets.LAMBDA_DB_PASSWORD }}
         run: terraform destroy -auto-approve -var-file=env/aws.tfvars

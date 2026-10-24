@@ -40,6 +40,7 @@ Antes de executar qualquer workflow, confira o [Runbook AWS](./runbook_aws.md) e
 | `DB_PASSWORD` | Senha do usuário de aplicação `app_user` |
 | `DB_ROOT_PASSWORD` | Senha administrativa do RDS (usuário configurado como `dbadmin`) e do Job temporário de configuração |
 | `JWT_SECRET` | Assinatura dos JWTs administrativos |
+| `LAMBDA_DB_PASSWORD` | Senha do usuário somente leitura `autenticacao`, usado pela Lambda para consultar `clientes` (Terraform e Job de configuração) |
 | `OS_EMAIL_ACTION_TOKEN_SECRET` | Assinatura dos tokens dos links de e-mail da ordem de serviço |
 | `MAIL_USERNAME` | Usuário SMTP |
 | `MAIL_PASSWORD` | Senha SMTP |

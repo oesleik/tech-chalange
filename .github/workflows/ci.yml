@@ -61,6 +61,9 @@ jobs:
         with:
           node-version: "24"
 
+      - name: Install dependencies
+        run: npm ci
+
       - name: Run tests (node --test)
         run: npm test
 

@@ -29,6 +29,14 @@ resource "aws_security_group" "rds" {
     ]
   }
 
+  ingress {
+    description     = "MySQL a partir da Lambda de autenticacao"
+    from_port       = 3306
+    to_port         = 3306
+    protocol        = "tcp"
+    security_groups = [aws_security_group.autenticacao[0].id]
+  }
+
   egress {
     from_port   = 0
     to_port     = 0
