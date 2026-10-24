@@ -39,6 +39,18 @@ Licença que começa com `eu01` é da região EU e o agente PHP detecta sozinho.
 - Erro 5xx e exceção não tratada viram error event.
 - `/health` e `/healthz` são ignorados. O readiness do Nginx usa `/health`. O liveness `/nginx-health` responde no Nginx e não chega ao PHP. O probe do PHP-FPM é TCP na porta 9000 e não cria transação.
 
+### Métricas customizadas
+
+Enviadas com `newrelic_custom_metric`. Os nomes são contrato com dashboards e alertas.
+
+| Métrica | Valor | Quando |
+|---|---|---|
+| `Custom/OrdemServico/Criada` | 1 | OS criada com sucesso |
+| `Custom/OrdemServico/Transicao/<NovaSituacao>` | 1 | Mudança de situação gravada |
+| `Custom/OrdemServico/TempoNaSituacao/<SituacaoAnterior>` | ms | A OS sai da situação anterior |
+
+- O agente agrega por minuto (count, total, min, max). Média: `SELECT average(newrelic.timeslice.value) FROM Metric WHERE metricTimesliceName LIKE 'Custom/OrdemServico/TempoNaSituacao/%' FACET metricTimesliceName`.
+
 Não vão para atributo nem para log de propósito: CPF, CNPJ, placa, senha, token, corpo da requisição. SQL sai ofuscado (`record_sql = obfuscated`).
 
 Algumas exceções de domínio colocam CPF ou placa na mensagem (`ClienteNaoEncontradoException`, `VeiculoNaoEncontradoException`). Os controllers devolvem isso como 404, e 404 não é enviado ao New Relic. Se uma dessas exceções escapar como 500, a mensagem vai no error event. O texto da exceção não deve carregar o identificador.
@@ -106,6 +118,53 @@ No EKS, depois do workflow: a entidade `tech-challenge-prod` recebe transação,
 - Log duplicado: `newrelic-logging` foi ligado junto com o forwarding do agente PHP.
 - Worker sem variável: conferir `clear_env = no` no pool `www`.
 
-## Fora deste repositório
+## Dashboard e alertas
 
-Conta, license key, user API key, account id, GUID da entidade, dashboards e alertas. O `infra/` só gerencia a integração AWS; dashboards e alertas continuam fora. Convenção sugerida para o alerta, quando for criado no console: `AWS-<Servico>-<Ambiente>-<Regiao>-<Metrica>-<Severidade>`.
+`infra/newrelic_dashboard.tf` e `infra/newrelic_alerts.tf`, aplicados pelo **AWS deploy**. O output `newrelic_dashboard_url` traz o link do dashboard.
+
+Dashboard `tech-challenge`:
+
+| Página | Conteúdo |
+|---|---|
+| Visão geral | rpm, taxa de erro, p95, uptime do `/health`, OS criadas, falhas em OS, CPU/memória dos containers |
+| API | p50/p95/p99, throughput, tabela por transação, taxa de erro e 5xx, status HTTP; no API Gateway, latência total x integração e percentis (sem `/health`) |
+| Kubernetes | CPU e memória por container em % do limit e em valor absoluto, CPU/memória alocável dos nodes, restarts, deployments. As linhas de limiar são as mesmas dos alertas |
+| Saúde e uptime | Sucesso e duração do synthetic, falhas, pods ready, restarts, `/health` no access log |
+| Ordens de serviço | Criadas por dia (30 dias), tempo médio por situação (min), transições, falhas por rota (`Transaction`), endpoints de OS |
+| Integrações | RDS (CPU, memória livre, conexões), Lambda de autenticação (invocações, erros, duração, erros no log), 5xx e erros de integração do API Gateway, falhas de integração (`TransactionError` de `EmailException`), exceções por classe |
+| Logs | Logs da aplicação, volume por nível, erros, access log do API Gateway |
+
+A métrica customizada chega em segundos (o agente converte os ms). Contagem usa `count(newrelic.timeslice.value)`.
+
+Synthetic `tech-challenge-health`: ping (`SIMPLE`) a cada 5 min em `/health`. Exige `"status":"ok"` no corpo, então falha também com o banco fora. Ping não consome a cota de checks sintéticos.
+
+Policy `tech-challenge` (um incidente por condição e alvo):
+
+| Condição | Critical | Warning |
+|---|---|---|
+| Ordem de serviço: falha (`Transaction` 5xx/erro nas rotas de OS, por rota) | > 0 em 1 min | — |
+| Integração: falha (`TransactionError` com `error.class` de integração, hoje `EmailException`) | > 0 em 1 min | — |
+| API: taxa de 5xx | > 5% por 5 min | > 1% por 5 min |
+| API: latência p95 | > 2 s por 5 min | > 1 s por 5 min |
+| Uptime: `/health` falhando | um check com falha | — |
+| Container: CPU (% do limit) | > 90% por 5 min | > 75% por 5 min |
+| Container: memória (% do limit) | > 90% por 5 min | > 80% por 5 min |
+| Node: CPU alocável | > 90% por 5 min | > 80% por 5 min |
+| Node: memória alocável | > 90% por 5 min | > 80% por 5 min |
+| RDS: CPU | > 80% por 15 min | — |
+| RDS: memória livre | < 30 MiB por 15 min | — |
+
+- Container em % do limit: só funciona porque todo container do chart tem limit em `values-aws.yaml`. Container sem limit não gera o atributo.
+- RDS: a instância pequena opera com cerca de 60 MiB livres (o buffer pool do MySQL ocupa o resto). Por isso o limiar de 30 MiB, e não um percentual.
+
+Notificação: variable `NEW_RELIC_ALERT_EMAILS` no GitHub, e-mails separados por vírgula. Com ela preenchida, o deploy cria destino e canal de e-mail e o workflow `tech-challenge`, que notifica abertura, reconhecimento e fechamento de incidentes da policy. Vazia, os incidentes só aparecem no New Relic.
+
+### Correlação de requisição
+
+O API Gateway sobrescreve o header `X-Request-Id` com `$context.requestId` (`request_parameters` da integração com o NLB). O mesmo valor aparece:
+
+- no access log do API Gateway, campo `requestId`;
+- na transação do APM, atributo `request.id`;
+- no log da aplicação, atributo `context.request.id`.
+
+A rota `POST /autenticacao` vai direto para a Lambda e não passa por esse header.

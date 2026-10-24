@@ -183,6 +183,12 @@ variable "newrelic_aws_principal_account_id" {
   description = "Conta AWS do New Relic que assume a role de polling."
 }
 
+variable "newrelic_alert_emails" {
+  type        = string
+  default     = ""
+  description = "E-mails que recebem os alertas do New Relic, separados por vírgula (via TF_VAR_newrelic_alert_emails). Vazio: alertas sem notificação."
+}
+
 variable "lambda_db_password" {
   type        = string
   default     = null

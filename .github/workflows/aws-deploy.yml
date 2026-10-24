@@ -114,6 +114,7 @@ jobs:
           TF_VAR_newrelic_api_key: ${{ secrets.NEW_RELIC_API_KEY }}
           TF_VAR_newrelic_region: ${{ vars.NEW_RELIC_REGION || 'US' }}
           TF_VAR_newrelic_logs_ingest_key: ${{ secrets.NEW_RELIC_LICENSE_KEY }}
+          TF_VAR_newrelic_alert_emails: ${{ vars.NEW_RELIC_ALERT_EMAILS }}
         run: |
           terraform plan -var-file=env/aws.tfvars \
             -var="node_instance_types=[\"${NODE_INSTANCE_TYPE}\"]" \

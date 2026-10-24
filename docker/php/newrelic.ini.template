@@ -17,6 +17,10 @@ newrelic.application_logging.forwarding.enabled = ${NEW_RELIC_LOG_FORWARDING}
 newrelic.application_logging.forwarding.log_level = "INFO"
 newrelic.application_logging.metrics.enabled = true
 newrelic.application_logging.local_decorating.enabled = false
+; Envia o context do Monolog como atributos (context.*), para correlacionar por request.id.
+; O exclude marca as chaves sensíveis: o que entrar no context com esses nomes não sai.
+newrelic.application_logging.forwarding.context_data.enabled = true
+newrelic.application_logging.forwarding.context_data.exclude = "cpf,cnpj,cpf_cnpj,placa,senha,password,token,authorization,body,email"
 
 newrelic.transaction_tracer.record_sql = "obfuscated"
 newrelic.labels = "env:${APP_ENV};service:tech-challenge"

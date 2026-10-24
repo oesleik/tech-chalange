@@ -47,3 +47,8 @@ output "autenticacao_url" {
   value       = var.use_ministack ? null : "${aws_apigatewayv2_stage.default[0].invoke_url}autenticacao"
   description = "Endpoint da Lambda de autenticação (POST {\"cpf\": \"...\"} -> JWT)."
 }
+
+output "newrelic_dashboard_url" {
+  value       = one(newrelic_one_dashboard.tech_challenge[*].permalink)
+  description = "Dashboard tech-challenge no New Relic."
+}
