@@ -12,7 +12,9 @@ CI em PR: [`.github/workflows/iac.yml`](../../.github/workflows/iac.yml) (só `i
 |---|---|
 | Bucket S3 + tabela DynamoDB (state/lock) | CLI (setup) |
 | IdP `token.actions.githubusercontent.com` + roles `gha-plan` / `gha-apply` | CLI (setup) |
-| Variables do Actions (`TF_STATE_*`, `AWS_ROLE_ARN_*`) | `gh variable set` ou via interface no GitHub |
+| Grupo IAM `tech-challenge-devs` (acesso AWS dos devs) | CLI (setup) |
+| Access entries EKS dos devs | workflow **AWS deploy** (variable `EKS_ADMIN_PRINCIPAL_ARNS`) |
+| Variables do Actions (`TF_STATE_*`, `AWS_ROLE_ARN_*`, `EKS_ADMIN_PRINCIPAL_ARNS`) | `gh variable set` ou via interface no GitHub |
 | Secrets do Actions (`DB_*`, `JWT_*`, `MAIL_*`) | `gh secret set` ou via interface no GitHub |
 | Cluster EKS + node group + ECR | workflow **AWS deploy** (trigger manual) |
 | API Gateway (HTTP API) + VPC Link + NLB interno | workflow **AWS deploy** (URL no summary do job / `terraform output api_gateway_url`) |
@@ -436,6 +438,171 @@ gh variable set AWS_ROLE_ARN_APPLY --repo "${GH_OWNER}/${GH_REPO}" --body "arn:a
 | `TF_STATE_LOCK_TABLE` | lock DynamoDB |
 | `AWS_ROLE_ARN_PLAN` | sem uso hoje (role plan; ver seção da role) |
 | `AWS_ROLE_ARN_APPLY` | **AWS deploy** e **AWS destroy** |
+| `EKS_ADMIN_PRINCIPAL_ARNS` | **AWS deploy** (opcional; ver [Acesso dos devs](#acesso-dos-devs-iam--eks)) |
+
+---
+
+## Acesso dos devs (IAM + EKS)
+
+São duas camadas independentes, e o dev precisa das duas:
+
+| Camada | Libera | Onde |
+|---|---|---|
+| IAM (grupo `tech-challenge-devs`) | API/console da AWS para os serviços do projeto | CLI, uma vez por conta |
+| Access entry do EKS | Recursos do Kubernetes (pods, deployments etc.) no console e no `kubectl` | Terraform, via variable `EKS_ADMIN_PRINCIPAL_ARNS` |
+
+Pré-requisitos: usuários IAM já criados (senha de console/MFA/access keys são manuais) e as variáveis do início da seção [OIDC](#oidc-github-actions-duas-roles) exportadas.
+
+### Grupo IAM
+
+Acesso total aos recursos que o Terraform gerencia, restrito pelo prefixo `tech-challenge` onde o serviço permite (EKS, ECR, RDS, Lambda, CloudWatch Logs, ELB). Leitura (`Describe*`/`List*`) vale para a conta inteira, para o console conseguir listar.
+
+Ficam **sem restrição** (conta inteira): EC2/VPC, Auto Scaling, API Gateway e métricas do CloudWatch. Os ARNs desses recursos usam IDs gerados (`vpc-…`, `/apis/abc123`), não o nome, e o HCL não aplica uma tag comum para filtrar por condição.
+
+IAM é só leitura. A exceção é `iam:PassRole` nas roles do projeto, necessário para editar a configuração da Lambda ou do node group pelo console; não permite alterar as roles.
+
+```bash
+cat > /tmp/devs-inline.json <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "NoResourceScope",
+      "Effect": "Allow",
+      "Action": ["ec2:*", "autoscaling:*", "apigateway:*", "cloudwatch:*"],
+      "Resource": "*"
+    },
+    {
+      "Sid": "ReadAll",
+      "Effect": "Allow",
+      "Action": [
+        "eks:Describe*", "eks:List*",
+        "ecr:Describe*", "ecr:List*", "ecr:GetAuthorizationToken",
+        "rds:Describe*", "rds:List*",
+        "lambda:List*", "lambda:GetAccountSettings",
+        "logs:Describe*", "logs:GetQueryResults", "logs:StopQuery",
+        "elasticloadbalancing:Describe*"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "Eks",
+      "Effect": "Allow",
+      "Action": "eks:*",
+      "Resource": [
+        "arn:aws:eks:us-east-1:${ACCOUNT_ID}:cluster/tech-challenge",
+        "arn:aws:eks:us-east-1:${ACCOUNT_ID}:*/tech-challenge/*"
+      ]
+    },
+    {
+      "Sid": "Ecr",
+      "Effect": "Allow",
+      "Action": "ecr:*",
+      "Resource": "arn:aws:ecr:us-east-1:${ACCOUNT_ID}:repository/tech-challenge-*"
+    },
+    {
+      "Sid": "Rds",
+      "Effect": "Allow",
+      "Action": "rds:*",
+      "Resource": "arn:aws:rds:us-east-1:${ACCOUNT_ID}:*:tech-challenge-*"
+    },
+    {
+      "Sid": "RdsMysqlDefaultGroups",
+      "Effect": "Allow",
+      "Action": ["rds:CreateDBInstance", "rds:ModifyDBInstance"],
+      "Resource": [
+        "arn:aws:rds:us-east-1:${ACCOUNT_ID}:og:default:mysql-*",
+        "arn:aws:rds:us-east-1:${ACCOUNT_ID}:pg:default.mysql*"
+      ]
+    },
+    {
+      "Sid": "Lambda",
+      "Effect": "Allow",
+      "Action": "lambda:*",
+      "Resource": "arn:aws:lambda:us-east-1:${ACCOUNT_ID}:function:tech-challenge-*"
+    },
+    {
+      "Sid": "Logs",
+      "Effect": "Allow",
+      "Action": "logs:*",
+      "Resource": [
+        "arn:aws:logs:us-east-1:${ACCOUNT_ID}:log-group:/aws/lambda/tech-challenge-*",
+        "arn:aws:logs:us-east-1:${ACCOUNT_ID}:log-group:/aws/apigateway/tech-challenge-*",
+        "arn:aws:logs:us-east-1:${ACCOUNT_ID}:log-group:/aws/eks/tech-challenge/*"
+      ]
+    },
+    {
+      "Sid": "Elb",
+      "Effect": "Allow",
+      "Action": "elasticloadbalancing:*",
+      "Resource": "arn:aws:elasticloadbalancing:us-east-1:${ACCOUNT_ID}:*/tech-challenge-*"
+    },
+    {
+      "Sid": "TerraformState",
+      "Effect": "Allow",
+      "Action": ["s3:ListBucket", "s3:GetObject", "s3:PutObject", "s3:DeleteObject"],
+      "Resource": [
+        "arn:aws:s3:::${STATE_BUCKET}",
+        "arn:aws:s3:::${STATE_BUCKET}/*"
+      ]
+    },
+    {
+      "Sid": "TerraformLock",
+      "Effect": "Allow",
+      "Action": ["dynamodb:DescribeTable", "dynamodb:GetItem", "dynamodb:PutItem", "dynamodb:DeleteItem"],
+      "Resource": "arn:aws:dynamodb:us-east-1:${ACCOUNT_ID}:table/tech-challenge-tfstate-lock"
+    },
+    {
+      "Sid": "IamRead",
+      "Effect": "Allow",
+      "Action": ["iam:Get*", "iam:List*"],
+      "Resource": "*"
+    },
+    {
+      "Sid": "PassProjectRoles",
+      "Effect": "Allow",
+      "Action": "iam:PassRole",
+      "Resource": [
+        "arn:aws:iam::${ACCOUNT_ID}:role/tech-challenge-cluster",
+        "arn:aws:iam::${ACCOUNT_ID}:role/tech-challenge-nodes",
+        "arn:aws:iam::${ACCOUNT_ID}:role/tech-challenge-autenticacao"
+      ],
+      "Condition": {
+        "StringEquals": {
+          "iam:PassedToService": ["eks.amazonaws.com", "ec2.amazonaws.com", "lambda.amazonaws.com"]
+        }
+      }
+    }
+  ]
+}
+EOF
+
+aws iam create-group --group-name tech-challenge-devs
+
+aws iam put-group-policy \
+  --group-name tech-challenge-devs \
+  --policy-name tech-challenge-devs \
+  --policy-document file:///tmp/devs-inline.json
+```
+
+### Adicionar devs
+
+```bash
+aws iam add-user-to-group --group-name tech-challenge-devs --user-name fulano
+```
+
+### Acesso ao cluster EKS
+
+Lista JSON com o ARN de **todos** os devs.
+
+```bash
+gh variable set EKS_ADMIN_PRINCIPAL_ARNS --repo "${GH_OWNER}/${GH_REPO}" \
+  --body "[\"arn:aws:iam::${ACCOUNT_ID}:user/fulano\", \"arn:aws:iam::${ACCOUNT_ID}:user/beltrano\"]"
+```
+
+Cada ARN ganha `AmazonEKSClusterAdminPolicy` no cluster inteiro (`infra/eks.tf`). Access entry criada antes manualmente no console dá `ResourceInUseException` no apply: apague-a no console (EKS > cluster > Access) antes do deploy.
+
+`kubectl` local: `aws eks update-kubeconfig --name tech-challenge --region us-east-1` com as credenciais do próprio usuário (não de uma role assumida, senão o ARN não bate com o da access entry).
 
 ---
 
