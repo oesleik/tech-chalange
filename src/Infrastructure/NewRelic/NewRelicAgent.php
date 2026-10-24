@@ -25,6 +25,11 @@ final class NewRelicAgent implements NewRelicAgentInterface {
         $this->invoke('newrelic_notice_error', $error);
     }
 
+    // O nome precisa começar com Custom/. O agente trata o valor como milissegundos.
+    public function recordMetric(string $name, float $value): void {
+        $this->invoke('newrelic_custom_metric', $name, $value);
+    }
+
     private function invoke(string $function, mixed ...$arguments): void {
         if (!$this->isLoaded() || !function_exists($function)) {
             return;

@@ -19,6 +19,7 @@ CI em PR: [`.github/workflows/iac.yml`](../../.github/workflows/iac.yml) (só `i
 | Cluster EKS + node group + ECR | workflow **AWS deploy** (trigger manual) |
 | API Gateway (HTTP API) + VPC Link + NLB interno | workflow **AWS deploy** (URL no summary do job / `terraform output api_gateway_url`) |
 | Integração AWS do New Relic (role de polling, vínculo, integrações e Firehose de logs) | workflow **AWS deploy** (`infra/newrelic.tf`), inclusive o vínculo da conta e as integrações no New Relic; ver [New Relic](../observability/newrelic.md#integração-aws) |
+| Dashboard, synthetic do `/health`, policy de alertas e notificação por e-mail no New Relic | workflow **AWS deploy** (`infra/newrelic_dashboard.tf`, `infra/newrelic_alerts.tf`; e-mails na variable `NEW_RELIC_ALERT_EMAILS`); ver [New Relic](../observability/newrelic.md#dashboard-alertas-e-synthetic) |
 
 > Role `tech-challenge-gha-apply` já criada antes do API Gateway, do RDS, da Lambda ou da integração AWS do New Relic? Rode de novo só o `cat > /tmp/gha-apply-inline.json` e o `aws iam put-role-policy` da seção abaixo (statements `ApiGatewayNlb`, `RdsMysql`, `RdsDescribe`, `RdsMysqlDefaultGroups`, `RdsServiceLinkedRole`, `LambdaAutenticacao`, `LambdaVpcEniCleanup`, `NewRelicFirehose`, `NewRelicFirehoseBackupBucket`, `NewRelicLogSubscriptions`, `NewRelicInlineRolePolicies`). O `put-role-policy` substitui a policy inline inteira, então exporte as variáveis do início da seção antes.
 
@@ -478,6 +479,7 @@ gh variable set AWS_ROLE_ARN_APPLY --repo "${GH_OWNER}/${GH_REPO}" --body "arn:a
 | `AWS_ROLE_ARN_PLAN` | sem uso hoje (role plan; ver seção da role) |
 | `AWS_ROLE_ARN_APPLY` | **AWS deploy** e **AWS destroy** |
 | `EKS_ADMIN_PRINCIPAL_ARNS` | **AWS deploy** (opcional; ver [Acesso dos devs](#acesso-dos-devs-iam--eks)) |
+| `NEW_RELIC_ALERT_EMAILS` | **AWS deploy** e **AWS destroy** (opcional; e-mails dos alertas do New Relic separados por vírgula; ver [New Relic](../observability/newrelic.md#dashboard-alertas-e-synthetic)) |
 
 ---
 

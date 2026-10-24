@@ -61,8 +61,8 @@ final class OrdemServicoGateway implements OrdemServicoGatewayInterface {
 
     public function inserir(OrdemServico $ordemServico): OrdemServico {
         $stmt = $this->pdo->prepare(
-            'INSERT INTO ' . self::TABELA . ' (id_cliente, id_veiculo, situacao, valor_total, data_solicitacao)
-             VALUES (?, ?, ?, ?, ?)'
+            'INSERT INTO ' . self::TABELA . ' (id_cliente, id_veiculo, situacao, valor_total, data_solicitacao, data_situacao)
+             VALUES (?, ?, ?, ?, ?, ?)'
         );
         $stmt->execute([
             $ordemServico->idCliente(),
@@ -70,14 +70,18 @@ final class OrdemServicoGateway implements OrdemServicoGatewayInterface {
             $ordemServico->situacao()->value,
             $ordemServico->valorTotal(),
             $ordemServico->dataSolicitacao()->format('Y-m-d H:i:s'),
+            $ordemServico->dataSituacao()->format('Y-m-d H:i:s'),
         ]);
 
         return $ordemServico->comId((int) $this->pdo->lastInsertId());
     }
 
     public function atualizarSituacao(OrdemServico $ordemServico): OrdemServico {
-        $sql    = 'UPDATE ' . self::TABELA . ' SET situacao = ?';
-        $params = [$ordemServico->situacao()->value];
+        $sql    = 'UPDATE ' . self::TABELA . ' SET situacao = ?, data_situacao = ?';
+        $params = [
+            $ordemServico->situacao()->value,
+            $ordemServico->dataSituacao()->format('Y-m-d H:i:s'),
+        ];
 
         if ($ordemServico->dataAprovacao() !== null) {
             $sql      .= ', data_aprovacao = ?';

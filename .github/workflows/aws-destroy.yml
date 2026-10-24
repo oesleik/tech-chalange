@@ -117,4 +117,5 @@ jobs:
           TF_VAR_newrelic_account_id: ${{ secrets.NEW_RELIC_ACCOUNT_ID }}
           TF_VAR_newrelic_api_key: ${{ secrets.NEW_RELIC_API_KEY }}
           TF_VAR_newrelic_region: ${{ vars.NEW_RELIC_REGION || 'US' }}
+          TF_VAR_newrelic_alert_emails: ${{ vars.NEW_RELIC_ALERT_EMAILS }}
         run: terraform destroy -auto-approve -var-file=env/aws.tfvars

@@ -20,9 +20,8 @@ $appConfig = new AppConfig();
 $app = \DI\Bridge\Slim\Bridge::create($container);
 
 $app->addBodyParsingMiddleware();
-// Slim executa o último middleware adicionado primeiro. O New Relic fica
-// antes do routing para rodar depois dele e enxergar o padrão da rota.
 $app->add(NewRelicMiddleware::class);
+$app->add(OpenTelemetryMiddleware::class);
 $app->addRoutingMiddleware();
 $errorMiddleware = $app->addErrorMiddleware(
     displayErrorDetails: !$appConfig->getAmbiente()->isProd(),
@@ -105,7 +104,5 @@ $app->group('', function (RouteCollectorProxy $group): void {
     });
 
 })->add(JwtMiddleware::class);
-
-$app->add(OpenTelemetryMiddleware::class);
 
 return $app;

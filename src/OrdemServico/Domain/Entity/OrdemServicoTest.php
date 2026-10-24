@@ -40,10 +40,19 @@ final class OrdemServicoTest extends TestCase {
 
     public function testComSituacaoRetornaNovaInstancia(): void {
         $os = $this->criarOrdemServico();
-        $atualizada = $os->comSituacao(SituacaoOrdemServicoEnum::EM_DIAGNOSTICO);
+        $dataSituacao = new \DateTime('2024-01-05 08:00:00');
+        $atualizada = $os->comSituacao(SituacaoOrdemServicoEnum::EM_DIAGNOSTICO, $dataSituacao);
 
         $this->assertSame(SituacaoOrdemServicoEnum::RECEBIDA, $os->situacao());
         $this->assertSame(SituacaoOrdemServicoEnum::EM_DIAGNOSTICO, $atualizada->situacao());
+        $this->assertSame($dataSituacao, $atualizada->dataSituacao());
+    }
+
+    public function testDataSituacaoPadraoEDataSolicitacao(): void {
+        $dataSolicitacao = new \DateTime('2024-01-01 10:00:00');
+        $os = new OrdemServico(1, 10, 20, SituacaoOrdemServicoEnum::RECEBIDA, 0, $dataSolicitacao);
+
+        $this->assertSame($dataSolicitacao, $os->dataSituacao());
     }
 
     public function testComValorTotalRetornaNovaInstancia(): void {

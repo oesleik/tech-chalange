@@ -14,4 +14,6 @@ interface NewRelicAgentInterface {
     public function ignoreTransaction(): void;
 
     public function noticeError(\Throwable $error): void;
+
+    public function recordMetric(string $name, float $value): void;
 }

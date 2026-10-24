@@ -8,6 +8,8 @@ use App\OrdemServico\Domain\Enum\SituacaoOrdemServicoEnum;
 use DateTime;
 
 final class OrdemServico {
+    private DateTime $dataSituacao;
+
     public function __construct(
         private int $id,
         private int $idCliente,
@@ -16,7 +18,11 @@ final class OrdemServico {
         private float $valorTotal,
         private DateTime $dataSolicitacao,
         private ?DateTime $dataAprovacao = null,
-    ) {}
+        ?DateTime $dataSituacao = null,
+    ) {
+        // Sem data informada, a situação atual começou na solicitação.
+        $this->dataSituacao = $dataSituacao ?? $dataSolicitacao;
+    }
 
     public function id(): int {
         return $this->id;
@@ -46,15 +52,20 @@ final class OrdemServico {
         return $this->dataAprovacao;
     }
 
+    public function dataSituacao(): DateTime {
+        return $this->dataSituacao;
+    }
+
     public function comId(int $id): self {
         $clone = clone $this;
         $clone->id = $id;
         return $clone;
     }
 
-    public function comSituacao(SituacaoOrdemServicoEnum $situacao): self {
+    public function comSituacao(SituacaoOrdemServicoEnum $situacao, DateTime $dataSituacao): self {
         $clone = clone $this;
         $clone->situacao = $situacao;
+        $clone->dataSituacao = $dataSituacao;
         return $clone;
     }
 

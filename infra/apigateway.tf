@@ -122,6 +122,11 @@ resource "aws_apigatewayv2_integration" "nlb" {
   connection_type        = "VPC_LINK"
   connection_id          = aws_apigatewayv2_vpc_link.this[0].id
   payload_format_version = "1.0"
+
+  # Mesmo id do access log, para correlacionar com o request.id da aplicação no New Relic.
+  request_parameters = {
+    "overwrite:header.X-Request-Id" = "$context.requestId"
+  }
 }
 
 resource "aws_apigatewayv2_route" "default" {

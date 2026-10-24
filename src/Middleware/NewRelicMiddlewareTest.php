@@ -165,6 +165,7 @@ final class NewRelicMiddlewareTest extends TestCase {
         $agent->addCustomParameter('http.method', 'GET');
         $agent->ignoreTransaction();
         $agent->noticeError(new \RuntimeException('x'));
+        $agent->recordMetric('Custom/Teste', 1);
     }
 
     private function request(string $method, string $path): ServerRequestInterface {
@@ -215,6 +216,8 @@ final class RecordingNewRelicAgent implements NewRelicAgentInterface {
     public function noticeError(\Throwable $error): void {
         $this->errors[] = $error;
     }
+
+    public function recordMetric(string $name, float $value): void {}
 }
 
 final class FixedErrorHandler implements ErrorHandlerInterface {

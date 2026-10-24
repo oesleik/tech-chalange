@@ -12,6 +12,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Slim\Exception\HttpException;
 use Slim\Routing\RouteContext;
 
 final class OpenTelemetryMiddleware implements MiddlewareInterface {
@@ -50,6 +51,7 @@ final class OpenTelemetryMiddleware implements MiddlewareInterface {
 
             if ($statusCode >= 400) {
                 $this->recordError(
+                    $request,
                     $method,
                     $route,
                     $statusCode
@@ -60,17 +62,19 @@ final class OpenTelemetryMiddleware implements MiddlewareInterface {
         } catch (\Throwable $exception) {
             $route = $this->getRoute($request);
             $method = $request->getMethod();
+            $statusCode = $exception instanceof HttpException ? $exception->getCode() : 500;
 
             $this->recordRequest(
                 $method,
                 $route,
-                500
+                $statusCode
             );
 
             $this->recordError(
+                $request,
                 $method,
                 $route,
-                500,
+                $statusCode,
                 $exception
             );
 
@@ -101,6 +105,7 @@ final class OpenTelemetryMiddleware implements MiddlewareInterface {
     }
 
     private function recordError(
+        ServerRequestInterface $request,
         string $method,
         string $route,
         int $statusCode,
@@ -122,11 +127,25 @@ final class OpenTelemetryMiddleware implements MiddlewareInterface {
             'http.status_code' => $statusCode,
         ];
 
-        if ($exception !== null) {
-            $context['exception'] = $exception;
+        $requestId = $request->getHeaderLine('X-Request-Id');
+        if ($requestId !== '') {
+            $context['request.id'] = $requestId;
         }
 
-        $this->logger->error(
+        // Atributos planos: o New Relic reconhece error.class/message/stack no log.
+        if ($exception !== null) {
+            $context['error.class'] = $exception::class;
+            $context['error.message'] = $exception->getMessage();
+            $context['error.stack'] = "{$exception->getFile()}:{$exception->getLine()}\n{$exception->getTraceAsString()}";
+
+            if ($exception->getPrevious() !== null) {
+                $context['error.previous'] = $exception->getPrevious()::class . ': ' . $exception->getPrevious()->getMessage();
+            }
+        }
+
+        // 4xx é erro do cliente: fica como warning para não poluir os erros da aplicação.
+        $this->logger->log(
+            $statusCode >= 500 ? 'error' : 'warning',
             "HTTP request error: {$method} {$route} ({$statusCode})",
             $context
         );

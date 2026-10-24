@@ -7,6 +7,7 @@
 locals {
   # O secret ausente chega como "" pelo TF_VAR, não como null.
   newrelic_enabled = var.use_ministack || try(trimspace(var.newrelic_account_id), "") == "" ? 0 : 1
+  newrelic_account = local.newrelic_enabled == 1 ? tonumber(trimspace(var.newrelic_account_id)) : 0
 
   # Log groups do CloudWatch encaminhados ao New Relic.
   newrelic_log_groups = local.newrelic_enabled == 1 ? {
