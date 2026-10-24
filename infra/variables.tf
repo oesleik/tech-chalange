@@ -31,6 +31,17 @@ variable "cluster_name" {
   default = "tech-challenge"
 }
 
+variable "eks_admin_principal_arns" {
+  type        = list(string)
+  default     = []
+  description = "ARNs de usuários/roles IAM com acesso admin ao cluster EKS (via TF_VAR_eks_admin_principal_arns, JSON)."
+
+  validation {
+    condition     = alltrue([for arn in var.eks_admin_principal_arns : can(regex("^arn:aws:iam::[0-9]{12}:(user|role)/.+$", arn))])
+    error_message = "Use ARNs de usuário ou role IAM (ex.: arn:aws:iam::123456789012:user/nome). Grupos IAM não são aceitos pelo EKS."
+  }
+}
+
 variable "vpc_cidr" {
   type    = string
   default = "10.0.0.0/16"
