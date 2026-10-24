@@ -63,6 +63,10 @@ services:
       - OTEL_EXPORTER_OTLP_ENDPOINT=${OTEL_EXPORTER_OTLP_ENDPOINT:-http://otel-collector:4318}
       - OTEL_LOGS_EXPORTER=${OTEL_LOGS_EXPORTER:-otlp}
       - OTEL_METRICS_EXPORTER=${OTEL_METRICS_EXPORTER:-otlp}
+      - NEW_RELIC_ENABLED=${NEW_RELIC_ENABLED:-false}
+      - NEW_RELIC_APP_NAME=${NEW_RELIC_APP_NAME:-tech-challenge-local}
+      - NEW_RELIC_LICENSE_KEY=${NEW_RELIC_LICENSE_KEY:-}
+      - NEW_RELIC_LOG_FORWARDING=${NEW_RELIC_LOG_FORWARDING:-true}
     depends_on:
       mysql:
         condition: service_healthy

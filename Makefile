@@ -251,6 +251,9 @@ aws-local-logs-nginx: ## Logs do Nginx no MiniStack
 
 ##@ Observabilidade
 
+nr-check: ## Verifica se a extensão newrelic está carregada no PHP
+	docker compose exec php php -m | grep -i newrelic
+
 otel-logs: ## Ver logs do OTel Collector
 	docker compose logs -f otel-collector
 

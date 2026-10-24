@@ -1,0 +1,22 @@
+; Renderizado no start do container (envsubst). O PHP não expande
+; variável de ambiente em .ini: ${...} aqui é placeholder do template.
+newrelic.license = "${NEW_RELIC_LICENSE_KEY}"
+newrelic.appname = "${NEW_RELIC_APP_NAME}"
+newrelic.enabled = ${NEW_RELIC_ENABLED}
+
+newrelic.distributed_tracing_enabled = true
+newrelic.transaction_tracer.enabled = true
+newrelic.transaction_tracer.threshold = "apdex_f"
+newrelic.error_collector.enabled = true
+newrelic.error_collector.record_database_errors = true
+newrelic.browser_monitoring.auto_instrument = false
+
+; Forwarding pelo agente PHP. newrelic-logging (Fluent Bit) fica desligado.
+newrelic.application_logging.enabled = true
+newrelic.application_logging.forwarding.enabled = ${NEW_RELIC_LOG_FORWARDING}
+newrelic.application_logging.forwarding.log_level = "INFO"
+newrelic.application_logging.metrics.enabled = true
+newrelic.application_logging.local_decorating.enabled = false
+
+newrelic.transaction_tracer.record_sql = "obfuscated"
+newrelic.labels = "env:${APP_ENV};service:tech-challenge"

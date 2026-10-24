@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\OpenTelemetry;
 
+use App\Infrastructure\Logging\StderrLogHandler;
 use Monolog\Logger;
 use OpenTelemetry\API\Common\Time\Clock;
 use OpenTelemetry\API\Globals;
@@ -71,6 +72,7 @@ final class OpenTelemetryBootstrap {
             ->build();
 
         $logger = new Logger('tech-challenge-api');
+        StderrLogHandler::attach($logger);
 
         $logger->pushHandler(
             new OpenTelemetryMonologHandler(

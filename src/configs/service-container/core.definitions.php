@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 use App\Core\AppDatabase;
+use App\Infrastructure\NewRelic\NewRelicAgent;
+use App\Infrastructure\NewRelic\NewRelicAgentInterface;
 use App\Core\Config\EmailConfig;
 use App\Core\Email\EmailService;
 use App\Core\Infrastructure\Persistence\DbConnectionInterface;
@@ -271,4 +273,6 @@ return [
         $c->get(ItensOrdemServicoGatewayInterface::class),
         $c->get(PresenterInterface::class),
     ),
+
+    NewRelicAgentInterface::class => fn() => new NewRelicAgent(),
 ];

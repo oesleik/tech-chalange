@@ -104,6 +104,14 @@ secrets:
   MAIL_USERNAME: ""
   MAIL_PASSWORD: ""
 
+# Desligado por padrão. O Secret da license key não é criado por este chart.
+newrelic:
+  enabled: false
+  appName: tech-challenge
+  existingSecret: newrelic-license
+  secretKey: license-key
+  logForwarding: true
+
 # Banco externo desabilitado por padrão.
 # O MiniStack continua usando o MySQL dentro do Kubernetes.
 externalDatabase:

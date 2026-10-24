@@ -7,8 +7,11 @@ use App\Core\Auth\OrdemServico\JwtOrdemServicoMiddleware;
 use App\Core\BaseController;
 use App\Core\Config\AppConfig;
 use App\Core\ServiceContainerBuilder;
-use Slim\Routing\RouteCollectorProxy;
+use App\Infrastructure\NewRelic\NewRelicAgentInterface;
+use App\Middleware\NewRelicErrorHandler;
+use App\Middleware\NewRelicMiddleware;
 use App\Middleware\OpenTelemetryMiddleware;
+use Slim\Routing\RouteCollectorProxy;
 
 $containerBuilder = new ServiceContainerBuilder();
 $container = $containerBuilder->build();
@@ -17,12 +20,19 @@ $appConfig = new AppConfig();
 $app = \DI\Bridge\Slim\Bridge::create($container);
 
 $app->addBodyParsingMiddleware();
+// Slim executa o último middleware adicionado primeiro. O New Relic fica
+// antes do routing para rodar depois dele e enxergar o padrão da rota.
+$app->add(NewRelicMiddleware::class);
 $app->addRoutingMiddleware();
-$app->addErrorMiddleware(
+$errorMiddleware = $app->addErrorMiddleware(
     displayErrorDetails: !$appConfig->getAmbiente()->isProd(),
     logErrors: true,
     logErrorDetails: true,
 );
+$errorMiddleware->setDefaultErrorHandler(new NewRelicErrorHandler(
+    $container->get(NewRelicAgentInterface::class),
+    $errorMiddleware->getDefaultErrorHandler(),
+));
 
 // Rotas públicas
 $app->get('/', [BaseController::class, 'index']);

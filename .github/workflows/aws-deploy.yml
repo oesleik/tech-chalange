@@ -157,6 +157,48 @@ jobs:
             --set args={--kubelet-insecure-tls} \
             --wait --timeout 3m
 
+      - name: Require New Relic secrets
+        env:
+          NEW_RELIC_LICENSE_KEY: ${{ secrets.NEW_RELIC_LICENSE_KEY }}
+          NEW_RELIC_API_KEY: ${{ secrets.NEW_RELIC_API_KEY }}
+          NEW_RELIC_ACCOUNT_ID: ${{ secrets.NEW_RELIC_ACCOUNT_ID }}
+        run: |
+          set -eu
+          missing=0
+          for name in NEW_RELIC_LICENSE_KEY NEW_RELIC_API_KEY NEW_RELIC_ACCOUNT_ID; do
+            if [ -z "${!name}" ]; then
+              echo "Secret ausente: ${name}. Defina em Settings > Secrets and variables > Actions."
+              missing=1
+            fi
+          done
+          if [ "$missing" -ne 0 ]; then
+            exit 1
+          fi
+
+      - name: Create New Relic license secrets
+        env:
+          NEW_RELIC_LICENSE_KEY: ${{ secrets.NEW_RELIC_LICENSE_KEY }}
+        run: |
+          set -eu
+          for ns in newrelic tech-challenge; do
+            kubectl create namespace "$ns" --dry-run=client -o yaml | kubectl apply -f -
+            kubectl -n "$ns" create secret generic newrelic-license \
+              --from-literal=license-key="$NEW_RELIC_LICENSE_KEY" \
+              --dry-run=client -o yaml | kubectl apply -f -
+          done
+
+      - name: Install New Relic Kubernetes bundle
+        run: |
+          set -eu
+          VERSION="$(tr -d '[:space:]' < charts/newrelic/VERSION)"
+          helm repo add newrelic https://helm-charts.newrelic.com
+          helm repo update
+          helm upgrade --install newrelic-bundle newrelic/nri-bundle \
+            --namespace newrelic --create-namespace \
+            --version "$VERSION" \
+            -f charts/newrelic/values.yaml \
+            --wait --timeout 10m
+
       - name: Prepare RDS admin Secret
         env:
           DB_ROOT_PASSWORD: ${{ secrets.DB_ROOT_PASSWORD }}
@@ -216,6 +258,17 @@ jobs:
           kubectl rollout status deployment/nginx \
             --namespace tech-challenge \
             --timeout=180s
+
+      - name: New Relic deployment marker
+        if: success() && vars.NEW_RELIC_ENTITY_GUID != ''
+        uses: newrelic/deployment-marker-action@v2
+        with:
+          apiKey: ${{ secrets.NEW_RELIC_API_KEY }}
+          guid: ${{ vars.NEW_RELIC_ENTITY_GUID }}
+          region: ${{ vars.NEW_RELIC_REGION || 'US' }}
+          version: ${{ github.sha }}
+          commit: ${{ github.sha }}
+          user: ${{ github.actor }}
 
       - name: Clean up temporary database credentials
         if: always()

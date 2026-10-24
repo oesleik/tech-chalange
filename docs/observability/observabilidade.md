@@ -2,6 +2,8 @@
 
 Implementação de observabilidade da API utilizando **OpenTelemetry**, **Prometheus**, **Grafana**, **Loki** e **Jaeger**.
 
+No EKS, a saúde da aplicação é acompanhada com **New Relic**. A stack local abaixo permanece. Ver [New Relic](newrelic.md).
+
 ## Stack
 
 | Componente | Função |

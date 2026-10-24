@@ -27,6 +27,20 @@ spec:
                 name: app-config
             - secretRef:
                 name: app-secrets
+          env:
+            - name: NEW_RELIC_ENABLED
+              value: {{ .Values.newrelic.enabled | ternary "true" "false" | quote }}
+            - name: NEW_RELIC_APP_NAME
+              value: {{ .Values.newrelic.appName | quote }}
+            - name: NEW_RELIC_LOG_FORWARDING
+              value: {{ .Values.newrelic.logForwarding | ternary "true" "false" | quote }}
+            {{- if .Values.newrelic.enabled }}
+            - name: NEW_RELIC_LICENSE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.newrelic.existingSecret }}
+                  key: {{ .Values.newrelic.secretKey }}
+            {{- end }}
           # PHP-FPM nao tem endpoint HTTP, entao verificamos se a porta TCP esta aberta
           readinessProbe:
             tcpSocket:
