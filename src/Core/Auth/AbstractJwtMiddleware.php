@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Core\Auth;
 
+use App\Core\Presentation\Http\HttpStatusCodeEnum;
+use App\Core\Presentation\Http\PresenterInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -14,6 +16,7 @@ abstract class AbstractJwtMiddleware implements MiddlewareInterface {
     public function __construct(
         protected readonly AbstractJwtService $jwtService,
         protected readonly ResponseFactoryInterface $responseFactory,
+        protected readonly PresenterInterface $presenter,
     ) {}
 
     abstract protected function getTokenFromRequest(ServerRequestInterface $request): ?string;
@@ -35,11 +38,10 @@ abstract class AbstractJwtMiddleware implements MiddlewareInterface {
     }
 
     private function unauthorized(string $message): ResponseInterface {
-        $response = $this->responseFactory->createResponse(401);
-        $response->getBody()->write(json_encode([
-            'error'   => 'Unauthorized',
-            'message' => $message,
-        ]));
-        return $response->withHeader('Content-Type', 'application/json');
+        return $this->presenter->error(
+            $this->responseFactory->createResponse(),
+            $message,
+            HttpStatusCodeEnum::Unauthorized
+        );
     }
 }

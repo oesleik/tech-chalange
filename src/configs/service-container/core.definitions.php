@@ -260,6 +260,7 @@ return [
     ),
     AtualizarSituacaoEmailController::class => fn(\DI\Container $c) => new AtualizarSituacaoEmailController(
         $c->get(AtualizarSituacaoController::class),
+        $c->get(PresenterInterface::class),
     ),
     EditarItensOrdemServicoController::class => fn(\DI\Container $c) => new EditarItensOrdemServicoController(
         $c->get(EditarPecasOrdemServicoUseCaseInterface::class),

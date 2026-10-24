@@ -114,11 +114,12 @@ resource "newrelic_one_dashboard" "tech_challenge" {
     }
 
     widget_line {
-      title  = "Throughput e erros"
-      row    = 4
-      column = 1
-      width  = 6
-      height = 3
+      title            = "Throughput e erros"
+      row              = 4
+      column           = 1
+      width            = 6
+      height           = 3
+      y_axis_left_zero = true
 
       nrql_query {
         account_id = local.newrelic_account
@@ -127,15 +128,31 @@ resource "newrelic_one_dashboard" "tech_challenge" {
     }
 
     widget_line {
-      title  = "Latência (s)"
-      row    = 4
-      column = 7
-      width  = 6
-      height = 3
+      title            = "Latência (s)"
+      row              = 4
+      column           = 7
+      width            = 6
+      height           = 3
+      y_axis_left_zero = true
 
       nrql_query {
         account_id = local.newrelic_account
         query      = "FROM Transaction SELECT percentile(duration, 50, 95, 99) WHERE ${local.newrelic_where_apm} TIMESERIES"
+      }
+
+      # Mesmos limiares do alerta de p95 (newrelic_alerts.tf).
+      threshold {
+        name     = "Warning"
+        from     = 1
+        to       = 2
+        severity = "warning"
+      }
+
+      threshold {
+        name     = "Critical"
+        from     = 2
+        to       = 1000
+        severity = "critical"
       }
     }
 
@@ -153,28 +170,60 @@ resource "newrelic_one_dashboard" "tech_challenge" {
     }
 
     widget_line {
-      title  = "CPU dos containers (% do limit)"
-      row    = 7
-      column = 5
-      width  = 4
-      height = 3
+      title           = "CPU dos containers (% do limit)"
+      row             = 7
+      column          = 5
+      width           = 4
+      height          = 3
+      y_axis_left_min = 0
+      y_axis_left_max = 100
 
       nrql_query {
         account_id = local.newrelic_account
         query      = "FROM K8sContainerSample SELECT average(cpuCoresUtilization) WHERE ${local.newrelic_where_k8s} FACET containerName TIMESERIES"
       }
+
+      threshold {
+        name     = "Warning"
+        from     = 75
+        to       = 90
+        severity = "warning"
+      }
+
+      threshold {
+        name     = "Critical"
+        from     = 90
+        to       = 1000
+        severity = "critical"
+      }
     }
 
     widget_line {
-      title  = "Memória dos containers (% do limit)"
-      row    = 7
-      column = 9
-      width  = 4
-      height = 3
+      title           = "Memória dos containers (% do limit)"
+      row             = 7
+      column          = 9
+      width           = 4
+      height          = 3
+      y_axis_left_min = 0
+      y_axis_left_max = 100
 
       nrql_query {
         account_id = local.newrelic_account
         query      = "FROM K8sContainerSample SELECT average(memoryWorkingSetUtilization) WHERE ${local.newrelic_where_k8s} FACET containerName TIMESERIES"
+      }
+
+      threshold {
+        name     = "Warning"
+        from     = 80
+        to       = 90
+        severity = "warning"
+      }
+
+      threshold {
+        name     = "Critical"
+        from     = 90
+        to       = 1000
+        severity = "critical"
       }
     }
   }
@@ -185,24 +234,41 @@ resource "newrelic_one_dashboard" "tech_challenge" {
     name = "API"
 
     widget_line {
-      title  = "Latência p50/p95/p99 (s)"
-      row    = 1
-      column = 1
-      width  = 6
-      height = 3
+      title            = "Latência p50/p95/p99 (s)"
+      row              = 1
+      column           = 1
+      width            = 6
+      height           = 3
+      y_axis_left_zero = true
 
       nrql_query {
         account_id = local.newrelic_account
         query      = "FROM Transaction SELECT percentile(duration, 50, 95, 99) WHERE ${local.newrelic_where_apm} TIMESERIES"
       }
+
+      # Mesmos limiares do alerta de p95 (newrelic_alerts.tf).
+      threshold {
+        name     = "Warning"
+        from     = 1
+        to       = 2
+        severity = "warning"
+      }
+
+      threshold {
+        name     = "Critical"
+        from     = 2
+        to       = 1000
+        severity = "critical"
+      }
     }
 
     widget_line {
-      title  = "Throughput (rpm)"
-      row    = 1
-      column = 7
-      width  = 6
-      height = 3
+      title            = "Throughput (rpm)"
+      row              = 1
+      column           = 7
+      width            = 6
+      height           = 3
+      y_axis_left_zero = true
 
       nrql_query {
         account_id = local.newrelic_account
@@ -224,15 +290,32 @@ resource "newrelic_one_dashboard" "tech_challenge" {
     }
 
     widget_line {
-      title  = "Taxa de erro (%)"
-      row    = 8
-      column = 1
-      width  = 6
-      height = 3
+      title           = "Taxa de erro (%)"
+      row             = 8
+      column          = 1
+      width           = 6
+      height          = 3
+      y_axis_left_min = 0
+      y_axis_left_max = 10
 
       nrql_query {
         account_id = local.newrelic_account
         query      = "FROM Transaction SELECT percentage(count(*), WHERE error IS true) AS 'Erros', percentage(count(*), WHERE httpResponseCode LIKE '5%') AS '5xx' WHERE ${local.newrelic_where_apm} TIMESERIES"
+      }
+
+      # Mesmos limiares do alerta de 5xx. Eixo baixo: o normal fica perto de 0%.
+      threshold {
+        name     = "Warning"
+        from     = 1
+        to       = 5
+        severity = "warning"
+      }
+
+      threshold {
+        name     = "Critical"
+        from     = 5
+        to       = 1000
+        severity = "critical"
       }
     }
 
@@ -249,8 +332,10 @@ resource "newrelic_one_dashboard" "tech_challenge" {
       }
     }
 
-    widget_line {
-      title  = "API Gateway: total x integração (ms)"
+    # Integração + gateway = total (responseLatency). Linhas sem integração (integrationLatency "-",
+    # ex.: erro do próprio gateway) ficam fora para as duas médias cobrirem as mesmas requisições.
+    widget_stacked_bar {
+      title  = "API Gateway: integração + gateway (ms)"
       row    = 11
       column = 1
       width  = 6
@@ -258,16 +343,17 @@ resource "newrelic_one_dashboard" "tech_challenge" {
 
       nrql_query {
         account_id = local.newrelic_account
-        query      = "FROM Log SELECT average(numeric(responseLatency)) AS 'Gateway (total)', average(numeric(integrationLatency)) AS 'Integração' WHERE ${local.newrelic_where_gw_log} AND path != '/health' TIMESERIES"
+        query      = "FROM Log SELECT average(numeric(integrationLatency)) AS 'Integração', average(numeric(responseLatency)) - average(numeric(integrationLatency)) AS 'Gateway' WHERE ${local.newrelic_where_gw_log} AND path != '/health' AND integrationLatency != '-' TIMESERIES"
       }
     }
 
     widget_line {
-      title  = "API Gateway: latência p50/p95/p99 (ms)"
-      row    = 11
-      column = 7
-      width  = 6
-      height = 3
+      title            = "API Gateway: latência p50/p95/p99 (ms)"
+      row              = 11
+      column           = 7
+      width            = 6
+      height           = 3
+      y_axis_left_zero = true
 
       nrql_query {
         account_id = local.newrelic_account
@@ -282,11 +368,13 @@ resource "newrelic_one_dashboard" "tech_challenge" {
     name = "Kubernetes"
 
     widget_line {
-      title  = "CPU por container (% do limit)"
-      row    = 1
-      column = 1
-      width  = 6
-      height = 3
+      title           = "CPU por container (% do limit)"
+      row             = 1
+      column          = 1
+      width           = 6
+      height          = 3
+      y_axis_left_min = 0
+      y_axis_left_max = 100
 
       nrql_query {
         account_id = local.newrelic_account
@@ -310,11 +398,13 @@ resource "newrelic_one_dashboard" "tech_challenge" {
     }
 
     widget_line {
-      title  = "Memória por container (% do limit)"
-      row    = 1
-      column = 7
-      width  = 6
-      height = 3
+      title           = "Memória por container (% do limit)"
+      row             = 1
+      column          = 7
+      width           = 6
+      height          = 3
+      y_axis_left_min = 0
+      y_axis_left_max = 100
 
       nrql_query {
         account_id = local.newrelic_account
@@ -336,12 +426,42 @@ resource "newrelic_one_dashboard" "tech_challenge" {
       }
     }
 
+    # HPA: réplicas desejadas acima das atuais por muito tempo = pods não sobem (ex.: sem node);
+    # "No limite" = 1 quando o HPA quer escalar mas já está no maxReplicas.
     widget_line {
-      title  = "CPU usada x request x limit (cores)"
+      title            = "HPA: réplicas"
+      row              = 4
+      column           = 1
+      width            = 6
+      height           = 3
+      y_axis_left_zero = true
+
+      nrql_query {
+        account_id = local.newrelic_account
+        query      = "FROM K8sHpaSample SELECT latest(currentReplicas) AS 'Atuais', latest(desiredReplicas) AS 'Desejadas', latest(maxReplicas) AS 'Máximo' WHERE ${local.newrelic_where_k8s} FACET displayName TIMESERIES"
+      }
+    }
+
+    widget_table {
+      title  = "HPA"
       row    = 4
-      column = 1
+      column = 7
       width  = 6
       height = 3
+
+      nrql_query {
+        account_id = local.newrelic_account
+        query      = "FROM K8sHpaSample SELECT latest(currentReplicas) AS 'Atuais', latest(desiredReplicas) AS 'Desejadas', latest(minReplicas) AS 'Mínimo', latest(maxReplicas) AS 'Máximo', latest(isLimited) AS 'No limite' WHERE ${local.newrelic_where_k8s} FACET displayName"
+      }
+    }
+
+    widget_line {
+      title            = "CPU usada x request x limit (cores)"
+      row              = 7
+      column           = 1
+      width            = 6
+      height           = 3
+      y_axis_left_zero = true
 
       nrql_query {
         account_id = local.newrelic_account
@@ -350,11 +470,12 @@ resource "newrelic_one_dashboard" "tech_challenge" {
     }
 
     widget_line {
-      title  = "Memória usada x limit (MiB)"
-      row    = 4
-      column = 7
-      width  = 6
-      height = 3
+      title            = "Memória usada x limit (MiB)"
+      row              = 7
+      column           = 7
+      width            = 6
+      height           = 3
+      y_axis_left_zero = true
 
       nrql_query {
         account_id = local.newrelic_account
@@ -363,11 +484,13 @@ resource "newrelic_one_dashboard" "tech_challenge" {
     }
 
     widget_line {
-      title  = "Nodes: CPU alocável (%)"
-      row    = 7
-      column = 1
-      width  = 6
-      height = 3
+      title           = "Nodes: CPU alocável (%)"
+      row             = 10
+      column          = 1
+      width           = 6
+      height          = 3
+      y_axis_left_min = 0
+      y_axis_left_max = 100
 
       nrql_query {
         account_id = local.newrelic_account
@@ -390,11 +513,13 @@ resource "newrelic_one_dashboard" "tech_challenge" {
     }
 
     widget_line {
-      title  = "Nodes: memória alocável (%)"
-      row    = 7
-      column = 7
-      width  = 6
-      height = 3
+      title           = "Nodes: memória alocável (%)"
+      row             = 10
+      column          = 7
+      width           = 6
+      height          = 3
+      y_axis_left_min = 0
+      y_axis_left_max = 100
 
       nrql_query {
         account_id = local.newrelic_account
@@ -418,7 +543,7 @@ resource "newrelic_one_dashboard" "tech_challenge" {
 
     widget_table {
       title  = "Restarts por container"
-      row    = 10
+      row    = 13
       column = 1
       width  = 6
       height = 3
@@ -431,7 +556,7 @@ resource "newrelic_one_dashboard" "tech_challenge" {
 
     widget_table {
       title  = "Deployments"
-      row    = 10
+      row    = 13
       column = 7
       width  = 6
       height = 3
@@ -462,11 +587,12 @@ resource "newrelic_one_dashboard" "tech_challenge" {
     }
 
     widget_line {
-      title  = "Synthetic: duração (ms)"
-      row    = 1
-      column = 4
-      width  = 5
-      height = 3
+      title            = "Synthetic: duração (ms)"
+      row              = 1
+      column           = 4
+      width            = 5
+      height           = 3
+      y_axis_left_zero = true
 
       nrql_query {
         account_id = local.newrelic_account
@@ -488,11 +614,12 @@ resource "newrelic_one_dashboard" "tech_challenge" {
     }
 
     widget_line {
-      title  = "Pods ready"
-      row    = 4
-      column = 1
-      width  = 6
-      height = 3
+      title            = "Pods ready"
+      row              = 4
+      column           = 1
+      width            = 6
+      height           = 3
+      y_axis_left_zero = true
 
       nrql_query {
         account_id = local.newrelic_account
@@ -501,11 +628,12 @@ resource "newrelic_one_dashboard" "tech_challenge" {
     }
 
     widget_line {
-      title  = "Restarts (acumulado)"
-      row    = 4
-      column = 7
-      width  = 6
-      height = 3
+      title            = "Restarts (acumulado)"
+      row              = 4
+      column           = 7
+      width            = 6
+      height           = 3
+      y_axis_left_zero = true
 
       nrql_query {
         account_id = local.newrelic_account
@@ -619,11 +747,13 @@ resource "newrelic_one_dashboard" "tech_challenge" {
     name = "Integrações"
 
     widget_line {
-      title  = "RDS: CPU (%)"
-      row    = 1
-      column = 1
-      width  = 4
-      height = 3
+      title           = "RDS: CPU (%)"
+      row             = 1
+      column          = 1
+      width           = 4
+      height          = 3
+      y_axis_left_min = 0
+      y_axis_left_max = 100
 
       nrql_query {
         account_id = local.newrelic_account
@@ -639,11 +769,12 @@ resource "newrelic_one_dashboard" "tech_challenge" {
     }
 
     widget_line {
-      title  = "RDS: memória livre (MiB)"
-      row    = 1
-      column = 5
-      width  = 4
-      height = 3
+      title            = "RDS: memória livre (MiB)"
+      row              = 1
+      column           = 5
+      width            = 4
+      height           = 3
+      y_axis_left_zero = true
 
       nrql_query {
         account_id = local.newrelic_account
@@ -659,11 +790,12 @@ resource "newrelic_one_dashboard" "tech_challenge" {
     }
 
     widget_line {
-      title  = "RDS: conexões"
-      row    = 1
-      column = 9
-      width  = 4
-      height = 3
+      title            = "RDS: conexões"
+      row              = 1
+      column           = 9
+      width            = 4
+      height           = 3
+      y_axis_left_zero = true
 
       nrql_query {
         account_id = local.newrelic_account
@@ -672,11 +804,12 @@ resource "newrelic_one_dashboard" "tech_challenge" {
     }
 
     widget_line {
-      title  = "Lambda autenticação: invocações e erros"
-      row    = 4
-      column = 1
-      width  = 4
-      height = 3
+      title            = "Lambda autenticação: invocações e erros"
+      row              = 4
+      column           = 1
+      width            = 4
+      height           = 3
+      y_axis_left_zero = true
 
       nrql_query {
         account_id = local.newrelic_account
@@ -685,11 +818,12 @@ resource "newrelic_one_dashboard" "tech_challenge" {
     }
 
     widget_line {
-      title  = "Lambda autenticação: duração (ms)"
-      row    = 4
-      column = 5
-      width  = 4
-      height = 3
+      title            = "Lambda autenticação: duração (ms)"
+      row              = 4
+      column           = 5
+      width            = 4
+      height           = 3
+      y_axis_left_zero = true
 
       nrql_query {
         account_id = local.newrelic_account
@@ -698,11 +832,12 @@ resource "newrelic_one_dashboard" "tech_challenge" {
     }
 
     widget_line {
-      title  = "Lambda autenticação: erros no log"
-      row    = 4
-      column = 9
-      width  = 4
-      height = 3
+      title            = "Lambda autenticação: erros no log"
+      row              = 4
+      column           = 9
+      width            = 4
+      height           = 3
+      y_axis_left_zero = true
 
       nrql_query {
         account_id = local.newrelic_account
@@ -804,11 +939,12 @@ resource "newrelic_one_dashboard" "tech_challenge" {
     }
 
     widget_line {
-      title  = "Erros na aplicação"
-      row    = 6
-      column = 7
-      width  = 6
-      height = 3
+      title            = "Erros na aplicação"
+      row              = 6
+      column           = 7
+      width            = 6
+      height           = 3
+      y_axis_left_zero = true
 
       nrql_query {
         account_id = local.newrelic_account

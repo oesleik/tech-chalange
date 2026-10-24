@@ -10,6 +10,8 @@ use App\Peca\Domain\Exception\PecaNaoEncontradaException;
 use App\Peca\Domain\ValueObject\ValorUnitario;
 use App\Peca\Presentation\Http\Controller\ObterPecaController;
 use App\Core\Contract\ContractResolver;
+use App\Core\Presentation\Http\HttpStatusCodeEnum;
+use App\Core\Presentation\Http\PresenterInterface;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
@@ -35,6 +37,19 @@ final class ObterPecaControllerTest extends TestCase {
         return $resolver;
     }
 
+    private function presenter(?HttpStatusCodeEnum $status = null): PresenterInterface {
+        $presenter = $this->createMock(PresenterInterface::class);
+        if ($status === null) {
+            $presenter->expects($this->never())->method('error');
+        } else {
+            $presenter->expects($this->once())
+                ->method('error')
+                ->with($this->anything(), $this->isString(), $status)
+                ->willReturnArgument(0);
+        }
+        return $presenter;
+    }
+
     public function testExecuteComSucesso(): void {
         $response = $this->criarResponseMock();
         $peca = Peca::reconstituir(1, 'Filtro de óleo', new ValorUnitario(49.90));
@@ -46,7 +61,7 @@ final class ObterPecaControllerTest extends TestCase {
             ->with(1)
             ->willReturn($peca);
 
-        $controller = new ObterPecaController($useCase, $this->contractResolverFake());
+        $controller = new ObterPecaController($useCase, $this->contractResolverFake(), $this->presenter());
 
         $resultado = $controller->execute(1, $response);
 
@@ -63,7 +78,7 @@ final class ObterPecaControllerTest extends TestCase {
             ->with(99)
             ->willThrowException(PecaNaoEncontradaException::comId(99));
 
-        $controller = new ObterPecaController($useCase, $this->contractResolverFake());
+        $controller = new ObterPecaController($useCase, $this->contractResolverFake(), $this->presenter(HttpStatusCodeEnum::NotFound));
 
         $resultado = $controller->execute(99, $response);
 

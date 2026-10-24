@@ -8,6 +8,8 @@ use App\Peca\Application\UseCase\ObterPeca\ObterPecaUseCase;
 use App\Peca\Domain\Exception\PecaNaoEncontradaException;
 use App\Peca\Presentation\Http\DTO\PecaResponseDTO;
 use App\Core\Contract\ContractResolver;
+use App\Core\Presentation\Http\HttpStatusCodeEnum;
+use App\Core\Presentation\Http\PresenterInterface;
 use Psr\Http\Message\ResponseInterface;
 use OpenApi\Attributes as OA;
 
@@ -15,6 +17,7 @@ final class ObterPecaController {
     public function __construct(
         private readonly ObterPecaUseCase $useCase,
         private readonly ContractResolver $contractResolver,
+        private readonly PresenterInterface $presenter,
     ) {}
 
     #[OA\Get(
@@ -38,8 +41,7 @@ final class ObterPecaController {
             $response->getBody()->write($this->contractResolver->toJson($output));
             return $response->withHeader('Content-Type', 'application/json');
         } catch (PecaNaoEncontradaException $e) {
-            $response->getBody()->write(json_encode(['error' => $e->getMessage()]));
-            return $response->withStatus(404)->withHeader('Content-Type', 'application/json');
+            return $this->presenter->error($response, $e->getMessage(), HttpStatusCodeEnum::NotFound);
         }
     }
 }

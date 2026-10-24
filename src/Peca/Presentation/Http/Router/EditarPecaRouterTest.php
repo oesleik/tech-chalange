@@ -10,6 +10,7 @@ use App\Peca\Domain\ValueObject\ValorUnitario;
 use App\Peca\Presentation\Http\Controller\EditarPecaController;
 use App\Peca\Presentation\Http\Router\EditarPecaRouter;
 use App\Core\Contract\ContractResolver;
+use App\Core\Presentation\Http\PresenterInterface;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -41,7 +42,7 @@ final class EditarPecaRouterTest extends TestCase {
         $contractResolver = $this->createMock(ContractResolver::class);
         $contractResolver->method('toJson')->willReturnCallback(fn(object $dto) => json_encode($dto));
 
-        $controller = new EditarPecaController($useCase, $contractResolver);
+        $controller = new EditarPecaController($useCase, $contractResolver, $this->createMock(PresenterInterface::class));
         $router = new EditarPecaRouter($controller);
 
         $resultado = $router($request, $response, 1);

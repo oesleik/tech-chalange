@@ -317,6 +317,33 @@ resource "newrelic_nrql_alert_condition" "node_memoria" {
   }
 }
 
+# isLimited = 1 quando o HPA quer escalar mas já está no maxReplicas: teto de capacidade.
+resource "newrelic_nrql_alert_condition" "hpa_limitado" {
+  count                        = local.newrelic_enabled
+  account_id                   = local.newrelic_account
+  policy_id                    = newrelic_alert_policy.tech_challenge[0].id
+  type                         = "static"
+  name                         = "HPA: limitado no máximo de réplicas"
+  description                  = "O HPA quer mais réplicas, mas já está no maxReplicas (charts/tech-challenge/values-aws.yaml)."
+  enabled                      = true
+  violation_time_limit_seconds = 86400
+  aggregation_window           = 60
+  aggregation_method           = "event_flow"
+  aggregation_delay            = 120
+  fill_option                  = "none"
+
+  nrql {
+    query = "FROM K8sHpaSample SELECT max(isLimited) WHERE ${local.newrelic_where_k8s} FACET displayName"
+  }
+
+  critical {
+    operator              = "above"
+    threshold             = 0
+    threshold_duration    = 600
+    threshold_occurrences = "all"
+  }
+}
+
 # RDS: vem do API polling do CloudWatch (5 min, com atraso), por isso event_timer.
 
 resource "newrelic_nrql_alert_condition" "rds_cpu" {
