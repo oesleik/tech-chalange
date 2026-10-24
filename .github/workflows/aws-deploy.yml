@@ -110,6 +110,10 @@ jobs:
           TF_VAR_lambda_db_password: ${{ secrets.LAMBDA_DB_PASSWORD }}
           TF_VAR_rds_instance_class: ${{ inputs.rds_instance_class }}
           TF_VAR_eks_admin_principal_arns: ${{ vars.EKS_ADMIN_PRINCIPAL_ARNS || '[]' }}
+          TF_VAR_newrelic_account_id: ${{ secrets.NEW_RELIC_ACCOUNT_ID }}
+          TF_VAR_newrelic_api_key: ${{ secrets.NEW_RELIC_API_KEY }}
+          TF_VAR_newrelic_region: ${{ vars.NEW_RELIC_REGION || 'US' }}
+          TF_VAR_newrelic_logs_ingest_key: ${{ secrets.NEW_RELIC_LICENSE_KEY }}
         run: |
           terraform plan -var-file=env/aws.tfvars \
             -var="node_instance_types=[\"${NODE_INSTANCE_TYPE}\"]" \

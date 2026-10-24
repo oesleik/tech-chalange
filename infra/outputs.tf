@@ -38,6 +38,11 @@ output "rds_port" {
   value       = var.use_ministack ? null : aws_db_instance.mysql[0].port
 }
 
+output "newrelic_integration_role_arn" {
+  value       = local.newrelic_enabled == 1 ? aws_iam_role.newrelic_integration[0].arn : null
+  description = "Role do API polling. Usada uma vez no cloudLinkAccount do NerdGraph."
+}
+
 output "autenticacao_url" {
   value       = var.use_ministack ? null : "${aws_apigatewayv2_stage.default[0].invoke_url}autenticacao"
   description = "Endpoint da Lambda de autenticação (POST {\"cpf\": \"...\"} -> JWT)."
