@@ -461,6 +461,8 @@ Ficam **sem restrição** (conta inteira): EC2/VPC, Auto Scaling, API Gateway e 
 
 IAM é só leitura. A exceção é `iam:PassRole` nas roles do projeto, necessário para editar a configuração da Lambda ou do node group pelo console; não permite alterar as roles.
 
+Criar recursos que geram custo fica só com o Terraform (role `gha-apply`, no **AWS deploy**). Os `Deny` no final bloqueiam instâncias EC2, volumes/snapshots/AMIs, Elastic IPs, NAT Gateway, VPC endpoints, VPN, ASGs, clusters/node groups EKS, instâncias/restores/snapshots RDS, Lambdas, load balancers, APIs do API Gateway, log groups, dashboards/alarmes/métricas customizadas. Alterar e apagar os recursos existentes continua liberado, inclusive mudanças que aumentam custo (escalar o node group, trocar a classe do RDS). Um `Deny` vale mesmo que o usuário tenha outra policy permissiva (ex.: `AdministratorAccess`): quem precisar criar recursos manualmente não pode estar no grupo.
+
 ```bash
 cat > /tmp/devs-inline.json <<EOF
 {
@@ -572,6 +574,43 @@ cat > /tmp/devs-inline.json <<EOF
           "iam:PassedToService": ["eks.amazonaws.com", "ec2.amazonaws.com", "lambda.amazonaws.com"]
         }
       }
+    },
+    {
+      "Sid": "DenyCreateBillable",
+      "Effect": "Deny",
+      "Action": [
+        "ec2:RunInstances", "ec2:CreateFleet", "ec2:Request*", "ec2:Purchase*", "ec2:Allocate*",
+        "ec2:CreateVolume", "ec2:CreateSnapshot", "ec2:CreateSnapshots", "ec2:CreateImage",
+        "ec2:RegisterImage", "ec2:Copy*", "ec2:Import*",
+        "ec2:CreateNatGateway", "ec2:CreateVpcEndpoint", "ec2:CreateTransitGateway",
+        "ec2:CreateVpnConnection", "ec2:CreateVpnGateway", "ec2:CreateClientVpnEndpoint",
+        "ec2:CreateCapacityReservation", "ec2:CreateCapacityReservationFleet",
+        "ec2:CreateTrafficMirrorSession", "ec2:CreateIpam",
+        "ec2:CreateVerifiedAccessInstance", "ec2:CreateVerifiedAccessEndpoint",
+        "autoscaling:CreateAutoScalingGroup", "autoscaling:CreateLaunchConfiguration",
+        "eks:CreateCluster", "eks:CreateNodegroup", "eks:CreateFargateProfile",
+        "ecr:CreateRepository",
+        "rds:CreateDB*", "rds:RestoreDB*", "rds:CopyDB*", "rds:CreateBlueGreenDeployment",
+        "rds:CreateGlobalCluster", "rds:StartExportTask",
+        "lambda:CreateFunction", "lambda:PutProvisionedConcurrencyConfig",
+        "elasticloadbalancing:CreateLoadBalancer",
+        "logs:CreateLogGroup",
+        "cloudwatch:PutDashboard", "cloudwatch:PutMetricStream", "cloudwatch:PutMetricAlarm",
+        "cloudwatch:PutCompositeAlarm", "cloudwatch:PutAnomalyDetector",
+        "cloudwatch:PutInsightRule", "cloudwatch:PutMetricData"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "DenyCreateApiGateway",
+      "Effect": "Deny",
+      "Action": "apigateway:POST",
+      "Resource": [
+        "arn:aws:apigateway:us-east-1::/apis",
+        "arn:aws:apigateway:us-east-1::/restapis",
+        "arn:aws:apigateway:us-east-1::/domainnames",
+        "arn:aws:apigateway:us-east-1::/vpclinks"
+      ]
     }
   ]
 }
