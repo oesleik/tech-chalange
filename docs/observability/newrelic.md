@@ -63,7 +63,7 @@ No workflow `aws-deploy`, antes do Helm da aplicação:
 2. Cria os Secrets nos dois namespaces.
 3. Instala `newrelic/nri-bundle` na versão de `charts/newrelic/VERSION`.
 
-Depois do deploy, o marker `newrelic/deployment-marker-action@v2` só roda se a variable `NEW_RELIC_ENTITY_GUID` estiver preenchida. A action atual marca pelo GUID; não recebe `accountId`. O secret da conta continua obrigatório para o restante da configuração manual.
+Depois do deploy, o marker `newrelic/deployment-marker-action@v2.6.2` só roda se a variable `NEW_RELIC_ENTITY_GUID` estiver preenchida. A action atual marca pelo GUID; não recebe `accountId`. O secret da conta continua obrigatório para o restante da configuração manual.
 
 Secrets e variables ficam no GitHub. Não entram no repositório.
 

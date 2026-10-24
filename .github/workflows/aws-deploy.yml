@@ -261,7 +261,7 @@ jobs:
 
       - name: New Relic deployment marker
         if: success() && vars.NEW_RELIC_ENTITY_GUID != ''
-        uses: newrelic/deployment-marker-action@v2
+        uses: newrelic/deployment-marker-action@v2.6.2
         with:
           apiKey: ${{ secrets.NEW_RELIC_API_KEY }}
           guid: ${{ vars.NEW_RELIC_ENTITY_GUID }}

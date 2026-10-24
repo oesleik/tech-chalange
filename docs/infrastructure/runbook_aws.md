@@ -2,7 +2,7 @@
 
 Passos **manuais via CLI** que o Terraform **não** cria (e o **AWS destroy** também não apaga): state remoto + OIDC do GitHub Actions.
 
-CI em PR: [`.github/workflows/iac.yml`](../../.github/workflows/iac.yml) (role **plan**). Subir o ambiente: **Actions -> AWS deploy** (role **apply**, branch `master`). Parar o custo: **Actions -> AWS destroy** (mesma role apply; digite `destroy`).
+CI em PR: [`.github/workflows/iac.yml`](../../.github/workflows/iac.yml) (só `init -backend=false`, `validate` e lint do Helm, **sem** assumir role na AWS). Subir o ambiente: **Actions -> AWS deploy** (role **apply**, branch `master`). Parar o custo: **Actions -> AWS destroy** (mesma role apply; digite `destroy`).
 
 ---
 
@@ -17,7 +17,7 @@ CI em PR: [`.github/workflows/iac.yml`](../../.github/workflows/iac.yml) (role *
 | Cluster EKS + node group + ECR | workflow **AWS deploy** (trigger manual) |
 | API Gateway (HTTP API) + VPC Link + NLB interno | workflow **AWS deploy** (URL no summary do job / `terraform output api_gateway_url`) |
 
-> Role `tech-challenge-gha-apply` já criada antes do API Gateway? Rode de novo só o `aws iam put-role-policy` da seção abaixo (statement `ApiGatewayNlb` + service-linked roles).
+> Role `tech-challenge-gha-apply` já criada antes do API Gateway, do RDS ou da Lambda? Rode de novo só o `cat > /tmp/gha-apply-inline.json` e o `aws iam put-role-policy` da seção abaixo (statements `ApiGatewayNlb`, `RdsMysql`, `RdsMysqlDefaultGroups`, `RdsServiceLinkedRole`, `LambdaAutenticacao`, `LambdaVpcEniCleanup`). O `put-role-policy` substitui a policy inline inteira, então exporte as variáveis do início da seção antes.
 
 O NodePort `30080` **não** é acessível pela internet: o SG dos nodes só aceita o SG do NLB interno, que só aceita o SG do VPC Link. O NLB cobra por hora enquanto existir (~US$ 0,0225/h); some no **AWS destroy**.
 
@@ -150,7 +150,7 @@ aws iam put-role-policy \
 
 Trust: só `refs/heads/master` **e** só `aws-deploy.yml` / `aws-destroy.yml`. Sem isso, qualquer workflow novo na `master` poderia assumir a role.
 
-A policy cobre o HCL atual (VPC, IAM de EKS, EKS, ECR) + state. O `Deny` no final impede o apply de apagar o próprio setup de OIDC.
+A policy cobre o HCL atual (VPC, IAM de EKS/Lambda, EKS, ECR, API Gateway/NLB, RDS, Lambda) + state. O `Deny` no final impede o apply de apagar o próprio setup de OIDC.
 
 ```bash
 cat > /tmp/gha-apply-trust.json <<EOF
@@ -314,6 +314,70 @@ cat > /tmp/gha-apply-inline.json <<EOF
       "Resource": "*"
     },
     {
+      "Sid": "RdsMysql",
+      "Effect": "Allow",
+      "Action": [
+        "rds:CreateDBSubnetGroup", "rds:ModifyDBSubnetGroup",
+        "rds:DeleteDBSubnetGroup", "rds:DescribeDBSubnetGroups",
+        "rds:CreateDBInstance", "rds:ModifyDBInstance",
+        "rds:DeleteDBInstance", "rds:DescribeDBInstances",
+        "rds:AddTagsToResource", "rds:RemoveTagsFromResource", "rds:ListTagsForResource"
+      ],
+      "Resource": [
+        "arn:aws:rds:us-east-1:${ACCOUNT_ID}:db:tech-challenge-mysql",
+        "arn:aws:rds:us-east-1:${ACCOUNT_ID}:subgrp:tech-challenge-rds-subnets"
+      ]
+    },
+    {
+      "Sid": "RdsMysqlDefaultGroups",
+      "Effect": "Allow",
+      "Action": ["rds:CreateDBInstance", "rds:ModifyDBInstance"],
+      "Resource": [
+        "arn:aws:rds:us-east-1:${ACCOUNT_ID}:og:default:mysql-*",
+        "arn:aws:rds:us-east-1:${ACCOUNT_ID}:pg:default.mysql*"
+      ]
+    },
+    {
+      "Sid": "RdsServiceLinkedRole",
+      "Effect": "Allow",
+      "Action": "iam:CreateServiceLinkedRole",
+      "Resource": "arn:aws:iam::${ACCOUNT_ID}:role/aws-service-role/rds.amazonaws.com/AWSServiceRoleForRDS",
+      "Condition": {
+        "StringEquals": {
+          "iam:AWSServiceName": "rds.amazonaws.com"
+        }
+      }
+    },
+    {
+      "Sid": "LambdaAutenticacao",
+      "Effect": "Allow",
+      "Action": [
+        "lambda:CreateFunction", "lambda:DeleteFunction",
+        "lambda:GetFunction", "lambda:GetFunctionConfiguration",
+        "lambda:GetFunctionCodeSigningConfig", "lambda:ListVersionsByFunction",
+        "lambda:UpdateFunctionCode", "lambda:UpdateFunctionConfiguration",
+        "lambda:AddPermission", "lambda:RemovePermission", "lambda:GetPolicy",
+        "lambda:TagResource", "lambda:UntagResource", "lambda:ListTags",
+        "lambda:PublishVersion", "lambda:GetFunctionConcurrency",
+        "lambda:PutFunctionConcurrency", "lambda:DeleteFunctionConcurrency",
+        "lambda:GetFunctionRecursionConfig", "lambda:GetRuntimeManagementConfig",
+        "lambda:GetFunctionEventInvokeConfig"
+      ],
+      "Resource": [
+        "arn:aws:lambda:us-east-1:${ACCOUNT_ID}:function:tech-challenge-autenticacao",
+        "arn:aws:lambda:us-east-1:${ACCOUNT_ID}:function:tech-challenge-autenticacao:*"
+      ]
+    },
+    {
+      "Sid": "LambdaVpcEniCleanup",
+      "Effect": "Allow",
+      "Action": "ec2:DetachNetworkInterface",
+      "Resource": [
+        "arn:aws:ec2:us-east-1:${ACCOUNT_ID}:network-interface/*",
+        "arn:aws:ec2:us-east-1:${ACCOUNT_ID}:instance/*"
+      ]
+    },
+    {
       "Sid": "DenyTouchGithubOidcBootstrap",
       "Effect": "Deny",
       "Action": [
@@ -363,7 +427,7 @@ gh variable set AWS_ROLE_ARN_APPLY --repo "${GH_OWNER}/${GH_REPO}" --body "arn:a
 |---|---|
 | `TF_STATE_BUCKET` | backend S3 |
 | `TF_STATE_LOCK_TABLE` | lock DynamoDB |
-| `AWS_ROLE_ARN_PLAN` | workflow **IaC** |
+| `AWS_ROLE_ARN_PLAN` | sem uso hoje (role plan; ver seção da role) |
 | `AWS_ROLE_ARN_APPLY` | **AWS deploy** e **AWS destroy** |
 
 ---
