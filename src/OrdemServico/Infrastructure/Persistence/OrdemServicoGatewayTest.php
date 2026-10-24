@@ -104,7 +104,7 @@ final class OrdemServicoGatewayTest extends TestCase {
         $stmt = $this->createMock(PDOStatement::class);
         $stmt->expects($this->once())
             ->method('execute')
-            ->with($this->callback(fn(array $params) => count($params) === 3));
+            ->with($this->callback(fn(array $params) => count($params) === 4));
 
         $pdo = $this->createMock(AppDatabase::class);
         $pdo->expects($this->once())
@@ -113,6 +113,24 @@ final class OrdemServicoGatewayTest extends TestCase {
             ->willReturn($stmt);
 
         $os = new OrdemServico(1, 10, 20, SituacaoOrdemServicoEnum::APROVADA, 0, new DateTime(), new DateTime());
+        new OrdemServicoGateway($pdo)->atualizarSituacao($os);
+    }
+
+    public function testAtualizarSituacaoGravaDataSituacao(): void {
+        $stmt = $this->createMock(PDOStatement::class);
+        $stmt->expects($this->once())
+            ->method('execute')
+            ->with([
+                SituacaoOrdemServicoEnum::EM_DIAGNOSTICO->value,
+                '2024-01-05 08:00:00',
+                1,
+            ]);
+
+        $pdo = $this->createMock(AppDatabase::class);
+        $pdo->method('prepare')->willReturn($stmt);
+
+        $os = new OrdemServico(1, 10, 20, SituacaoOrdemServicoEnum::RECEBIDA, 0, new DateTime('2024-01-01 10:00:00'))
+            ->comSituacao(SituacaoOrdemServicoEnum::EM_DIAGNOSTICO, new DateTime('2024-01-05 08:00:00'));
         new OrdemServicoGateway($pdo)->atualizarSituacao($os);
     }
 

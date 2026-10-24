@@ -6,6 +6,7 @@ namespace App\OrdemServico\Application\UseCase\CriarOrdemServico;
 
 use App\OrdemServico\Application\Gateway\ItensOrdemServicoGatewayInterface;
 use App\OrdemServico\Application\Gateway\OrdemServicoGatewayInterface;
+use App\OrdemServico\Application\Metrics\OrdemServicoMetricsInterface;
 use App\OrdemServico\Domain\Entity\OrdemServico;
 use App\OrdemServico\Domain\Entity\PecaOrdemServico;
 use App\OrdemServico\Domain\Entity\ServicoOrdemServico;
@@ -16,6 +17,7 @@ final class CriarOrdemServicoUseCase implements CriarOrdemServicoUseCaseInterfac
     public function __construct(
         private readonly OrdemServicoGatewayInterface $gateway,
         private readonly ItensOrdemServicoGatewayInterface $itensGateway,
+        private readonly OrdemServicoMetricsInterface $metrics,
     ) {}
 
     public function executar(CriarOrdemServicoInputDTO $input): OrdemServico {
@@ -57,6 +59,8 @@ final class CriarOrdemServicoUseCase implements CriarOrdemServicoUseCaseInterfac
                 ),
             );
         }
+
+        $this->metrics->registrarCriacao();
 
         return $ordemServico;
     }

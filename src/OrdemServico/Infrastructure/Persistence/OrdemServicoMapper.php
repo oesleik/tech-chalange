@@ -21,6 +21,9 @@ final class OrdemServicoMapper {
             dataAprovacao: isset($linha['data_aprovacao']) && $linha['data_aprovacao'] !== null
                 ? new DateTime($linha['data_aprovacao'])
                 : null,
+            dataSituacao: isset($linha['data_situacao'])
+                ? new DateTime($linha['data_situacao'])
+                : null,
         );
     }
 }

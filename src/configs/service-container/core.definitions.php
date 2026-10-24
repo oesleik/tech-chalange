@@ -5,6 +5,10 @@ declare(strict_types=1);
 use App\Core\AppDatabase;
 use App\Infrastructure\NewRelic\NewRelicAgent;
 use App\Infrastructure\NewRelic\NewRelicAgentInterface;
+use App\Core\Auth\SystemClock;
+use App\OrdemServico\Application\Metrics\OrdemServicoMetricsInterface;
+use App\OrdemServico\Infrastructure\Metrics\NewRelicOrdemServicoMetrics;
+use Psr\Clock\ClockInterface;
 use App\Core\Config\EmailConfig;
 use App\Core\Email\EmailService;
 use App\Core\Infrastructure\Persistence\DbConnectionInterface;
@@ -195,6 +199,7 @@ return [
     CriarOrdemServicoUseCaseInterface::class => fn(\DI\Container $c) => new CriarOrdemServicoUseCase(
         $c->get(OrdemServicoGatewayInterface::class),
         $c->get(ItensOrdemServicoGatewayInterface::class),
+        $c->get(OrdemServicoMetricsInterface::class),
     ),
     ListarOrdensServicoUseCaseInterface::class => fn(\DI\Container $c) => new ListarOrdensServicoUseCase($c->get(OrdemServicoGatewayInterface::class)),
     ObterOrdemServicoUseCaseInterface::class => fn(\DI\Container $c) => new ObterOrdemServicoUseCase(
@@ -205,7 +210,11 @@ return [
         $c->get(OrdemServicoGatewayInterface::class),
         $c->get(ItensOrdemServicoGatewayInterface::class),
     ),
-    AtualizarSituacaoUseCaseInterface::class => fn(\DI\Container $c) => new AtualizarSituacaoUseCase($c->get(OrdemServicoGatewayInterface::class)),
+    AtualizarSituacaoUseCaseInterface::class => fn(\DI\Container $c) => new AtualizarSituacaoUseCase(
+        $c->get(OrdemServicoGatewayInterface::class),
+        $c->get(OrdemServicoMetricsInterface::class),
+        $c->get(ClockInterface::class),
+    ),
     EditarPecasOrdemServicoUseCaseInterface::class => fn(\DI\Container $c) => new EditarPecasOrdemServicoUseCase(
         $c->get(OrdemServicoGatewayInterface::class),
         $c->get(ItensOrdemServicoGatewayInterface::class),
@@ -275,4 +284,8 @@ return [
     ),
 
     NewRelicAgentInterface::class => fn() => new NewRelicAgent(),
+
+    // Métricas customizadas
+    ClockInterface::class => fn() => new SystemClock(),
+    OrdemServicoMetricsInterface::class => fn(\DI\Container $c) => new NewRelicOrdemServicoMetrics($c->get(NewRelicAgentInterface::class)),
 ];

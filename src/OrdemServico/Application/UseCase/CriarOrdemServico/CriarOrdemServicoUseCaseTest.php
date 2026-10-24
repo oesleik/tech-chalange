@@ -6,6 +6,7 @@ namespace Tests\OrdemServico\Application\UseCase;
 
 use App\OrdemServico\Application\Gateway\ItensOrdemServicoGatewayInterface;
 use App\OrdemServico\Application\Gateway\OrdemServicoGatewayInterface;
+use App\OrdemServico\Application\Metrics\OrdemServicoMetricsInterface;
 use App\OrdemServico\Application\UseCase\CriarOrdemServico\CriarOrdemServicoInputDTO;
 use App\OrdemServico\Application\UseCase\CriarOrdemServico\CriarOrdemServicoUseCase;
 use App\OrdemServico\Domain\Entity\OrdemServico;
@@ -28,7 +29,10 @@ final class CriarOrdemServicoUseCaseTest extends TestCase {
         $itensGateway->expects($this->never())->method('adicionarPecas');
         $itensGateway->expects($this->never())->method('adicionarServicos');
 
-        $resultado = new CriarOrdemServicoUseCase($gateway, $itensGateway)->executar(
+        $metrics = $this->createMock(OrdemServicoMetricsInterface::class);
+        $metrics->expects($this->once())->method('registrarCriacao');
+
+        $resultado = new CriarOrdemServicoUseCase($gateway, $itensGateway, $metrics)->executar(
             new CriarOrdemServicoInputDTO(idCliente: 10, idVeiculo: 20),
         );
 
@@ -55,7 +59,7 @@ final class CriarOrdemServicoUseCaseTest extends TestCase {
                 && $servicos[0]->quantidade() === 3),
         );
 
-        $resultado = new CriarOrdemServicoUseCase($gateway, $itensGateway)->executar(
+        $resultado = new CriarOrdemServicoUseCase($gateway, $itensGateway, $this->createStub(OrdemServicoMetricsInterface::class))->executar(
             new CriarOrdemServicoInputDTO(
                 idCliente: 10,
                 idVeiculo: 20,
@@ -66,4 +70,5 @@ final class CriarOrdemServicoUseCaseTest extends TestCase {
 
         $this->assertSame(5, $resultado->id());
     }
+
 }

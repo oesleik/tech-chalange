@@ -20,6 +20,7 @@ final class OrdemServicoMapperTest extends TestCase {
             'valor_total' => 150.5,
             'data_solicitacao' => '2024-01-01 10:00:00',
             'data_aprovacao' => '2024-01-02 10:00:00',
+            'data_situacao' => '2024-01-03 15:30:00',
         ]);
 
         $this->assertInstanceOf(OrdemServico::class, $os);
@@ -29,6 +30,7 @@ final class OrdemServicoMapperTest extends TestCase {
         $this->assertSame(SituacaoOrdemServicoEnum::FINALIZADA, $os->situacao());
         $this->assertSame(150.5, $os->valorTotal());
         $this->assertInstanceOf(DateTime::class, $os->dataAprovacao());
+        $this->assertSame('2024-01-03 15:30:00', $os->dataSituacao()->format('Y-m-d H:i:s'));
     }
 
     public function testMapeiaLinhaSemDataAprovacaoNemValorTotal(): void {
