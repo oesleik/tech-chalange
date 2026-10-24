@@ -376,6 +376,7 @@ gh variable set AWS_ROLE_ARN_APPLY --repo "${GH_OWNER}/${GH_REPO}" --body "arn:a
 gh secret set DB_PASSWORD --repo "${GH_OWNER}/${GH_REPO}"
 gh secret set DB_ROOT_PASSWORD --repo "${GH_OWNER}/${GH_REPO}"
 gh secret set JWT_SECRET --repo "${GH_OWNER}/${GH_REPO}"
+gh secret set LAMBDA_DB_PASSWORD --repo "${GH_OWNER}/${GH_REPO}"
 gh secret set OS_EMAIL_ACTION_TOKEN_SECRET --repo "${GH_OWNER}/${GH_REPO}"
 gh secret set MAIL_USERNAME --repo "${GH_OWNER}/${GH_REPO}"
 gh secret set MAIL_PASSWORD --repo "${GH_OWNER}/${GH_REPO}"
@@ -386,6 +387,7 @@ gh secret set MAIL_PASSWORD --repo "${GH_OWNER}/${GH_REPO}"
 | `DB_PASSWORD` | Usuário `app_user` (PHP, `init-file` MySQL) |
 | `DB_ROOT_PASSWORD` | Root do MySQL |
 | `JWT_SECRET` | JWT administrativo |
+| `LAMBDA_DB_PASSWORD` | Usuário MySQL somente leitura `autenticacao` (Lambda) |
 | `OS_EMAIL_ACTION_TOKEN_SECRET` | JWT dos links de e-mail da OS |
 | `MAIL_USERNAME` | SMTP |
 | `MAIL_PASSWORD` | SMTP |

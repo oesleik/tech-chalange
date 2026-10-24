@@ -127,3 +127,16 @@ variable "jwt_ttl" {
   default     = 3600
   description = "Validade do token em segundos (JWT_TTL)."
 }
+
+variable "lambda_db_username" {
+  type        = string
+  default     = "autenticacao"
+  description = "Usuário MySQL somente leitura da Lambda de autenticação (criado pelo job rds-user-setup)."
+}
+
+variable "lambda_db_password" {
+  type        = string
+  default     = null
+  sensitive   = true
+  description = "Senha do usuário MySQL da Lambda (via TF_VAR_lambda_db_password). Fica no state e na configuração da função."
+}

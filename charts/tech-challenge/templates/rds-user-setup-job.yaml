@@ -43,6 +43,9 @@ spec:
                   CREATE USER IF NOT EXISTS '${DB_USERNAME}'@'%' IDENTIFIED BY '${DB_PASSWORD}';
                   ALTER USER '${DB_USERNAME}'@'%' IDENTIFIED BY '${DB_PASSWORD}';
                   GRANT ALL PRIVILEGES ON \`${DB_DATABASE}\`.* TO '${DB_USERNAME}'@'%';
+                  CREATE USER IF NOT EXISTS '${LAMBDA_DB_USERNAME}'@'%' IDENTIFIED BY '${LAMBDA_DB_PASSWORD}' REQUIRE SSL;
+                  ALTER USER '${LAMBDA_DB_USERNAME}'@'%' IDENTIFIED BY '${LAMBDA_DB_PASSWORD}' REQUIRE SSL;
+                  GRANT SELECT ON \`${DB_DATABASE}\`.* TO '${LAMBDA_DB_USERNAME}'@'%';
                   FLUSH PRIVILEGES;
                 "
           env:
@@ -71,6 +74,14 @@ spec:
                 secretKeyRef:
                   name: app-secrets
                   key: DB_PASSWORD
+            # Usuário somente leitura da Lambda de autenticação (infra/lambda.tf).
+            - name: LAMBDA_DB_USERNAME
+              value: {{ .Values.externalDatabase.lambdaUsername | quote }}
+            - name: LAMBDA_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: rds-admin-secrets
+                  key: LAMBDA_DB_PASSWORD
             - name: DB_ROOT_USERNAME
               valueFrom:
                 secretKeyRef:

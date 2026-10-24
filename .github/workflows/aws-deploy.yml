@@ -91,12 +91,23 @@ jobs:
         working-directory: infra
         run: terraform init -backend-config=env/backend-aws.hcl
 
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      # O archive_file do lambda.tf empacota o node_modules (mysql2) junto com o src/.
+      - name: Install Lambda dependencies
+        working-directory: lambda/autenticacao
+        run: npm ci --omit=dev
+
       - name: Terraform plan
         working-directory: infra
         env:
           NODE_INSTANCE_TYPE: ${{ inputs.node_instance_type }}
           TF_VAR_rds_master_password: ${{ secrets.DB_ROOT_PASSWORD }}
           TF_VAR_jwt_secret: ${{ secrets.JWT_SECRET }}
+          TF_VAR_lambda_db_password: ${{ secrets.LAMBDA_DB_PASSWORD }}
           TF_VAR_rds_instance_class: ${{ inputs.rds_instance_class }}
         run: |
           terraform plan -var-file=env/aws.tfvars \
@@ -149,9 +160,10 @@ jobs:
       - name: Prepare RDS admin Secret
         env:
           DB_ROOT_PASSWORD: ${{ secrets.DB_ROOT_PASSWORD }}
+          LAMBDA_DB_PASSWORD: ${{ secrets.LAMBDA_DB_PASSWORD }}
         run: |
-          if [ -z "$DB_ROOT_PASSWORD" ]; then
-            echo "::error::Configure o secret DB_ROOT_PASSWORD no GitHub."
+          if [ -z "$DB_ROOT_PASSWORD" ] || [ -z "$LAMBDA_DB_PASSWORD" ]; then
+            echo "::error::Configure os secrets DB_ROOT_PASSWORD e LAMBDA_DB_PASSWORD no GitHub."
             exit 1
           fi
           kubectl create namespace tech-challenge --dry-run=client -o yaml | kubectl apply -f -
@@ -159,6 +171,7 @@ jobs:
             --namespace tech-challenge \
             --from-literal=DB_ROOT_USERNAME=dbadmin \
             --from-literal="DB_ROOT_PASSWORD=${DB_ROOT_PASSWORD}" \
+            --from-literal="LAMBDA_DB_PASSWORD=${LAMBDA_DB_PASSWORD}" \
             --dry-run=client -o yaml | kubectl apply -f -
 
       - name: Helm upgrade

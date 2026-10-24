@@ -10,5 +10,8 @@
   },
   "scripts": {
     "test": "node --test"
+  },
+  "dependencies": {
+    "mysql2": "^3.24.6"
   }
 }
