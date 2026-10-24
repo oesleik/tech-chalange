@@ -17,7 +17,7 @@ CI em PR: [`.github/workflows/iac.yml`](../../.github/workflows/iac.yml) (só `i
 | Cluster EKS + node group + ECR | workflow **AWS deploy** (trigger manual) |
 | API Gateway (HTTP API) + VPC Link + NLB interno | workflow **AWS deploy** (URL no summary do job / `terraform output api_gateway_url`) |
 
-> Role `tech-challenge-gha-apply` já criada antes do API Gateway, do RDS ou da Lambda? Rode de novo só o `cat > /tmp/gha-apply-inline.json` e o `aws iam put-role-policy` da seção abaixo (statements `ApiGatewayNlb`, `RdsMysql`, `RdsMysqlDefaultGroups`, `RdsServiceLinkedRole`, `LambdaAutenticacao`, `LambdaVpcEniCleanup`). O `put-role-policy` substitui a policy inline inteira, então exporte as variáveis do início da seção antes.
+> Role `tech-challenge-gha-apply` já criada antes do API Gateway, do RDS ou da Lambda? Rode de novo só o `cat > /tmp/gha-apply-inline.json` e o `aws iam put-role-policy` da seção abaixo (statements `ApiGatewayNlb`, `RdsMysql`, `RdsDescribe`, `RdsMysqlDefaultGroups`, `RdsServiceLinkedRole`, `LambdaAutenticacao`, `LambdaVpcEniCleanup`). O `put-role-policy` substitui a policy inline inteira, então exporte as variáveis do início da seção antes.
 
 O NodePort `30080` **não** é acessível pela internet: o SG dos nodes só aceita o SG do NLB interno, que só aceita o SG do VPC Link. O NLB cobra por hora enquanto existir (~US$ 0,0225/h); some no **AWS destroy**.
 
@@ -317,15 +317,22 @@ cat > /tmp/gha-apply-inline.json <<EOF
       "Sid": "RdsMysql",
       "Effect": "Allow",
       "Action": [
-        "rds:CreateDBSubnetGroup", "rds:ModifyDBSubnetGroup",
-        "rds:DeleteDBSubnetGroup", "rds:DescribeDBSubnetGroups",
-        "rds:CreateDBInstance", "rds:ModifyDBInstance",
-        "rds:DeleteDBInstance", "rds:DescribeDBInstances",
+        "rds:CreateDBSubnetGroup", "rds:ModifyDBSubnetGroup", "rds:DeleteDBSubnetGroup",
+        "rds:CreateDBInstance", "rds:ModifyDBInstance", "rds:DeleteDBInstance",
         "rds:AddTagsToResource", "rds:RemoveTagsFromResource", "rds:ListTagsForResource"
       ],
       "Resource": [
         "arn:aws:rds:us-east-1:${ACCOUNT_ID}:db:tech-challenge-mysql",
         "arn:aws:rds:us-east-1:${ACCOUNT_ID}:subgrp:tech-challenge-rds-subnets"
+      ]
+    },
+    {
+      "Sid": "RdsDescribe",
+      "Effect": "Allow",
+      "Action": ["rds:DescribeDBInstances", "rds:DescribeDBSubnetGroups"],
+      "Resource": [
+        "arn:aws:rds:us-east-1:${ACCOUNT_ID}:db:*",
+        "arn:aws:rds:us-east-1:${ACCOUNT_ID}:subgrp:*"
       ]
     },
     {
