@@ -16,6 +16,9 @@ use Slim\Exception\HttpException;
 use Slim\Routing\RouteContext;
 
 final class OpenTelemetryMiddleware implements MiddlewareInterface {
+    private const int MAX_ERROR_BODY_BYTES = 8192;
+    private const int MAX_ERROR_MESSAGE_LENGTH = 500;
+
     private readonly Logger $logger;
 
     public function __construct() {
@@ -54,7 +57,8 @@ final class OpenTelemetryMiddleware implements MiddlewareInterface {
                     $request,
                     $method,
                     $route,
-                    $statusCode
+                    $statusCode,
+                    responseMessage: $this->getResponseErrorMessage($response)
                 );
             }
 
@@ -109,7 +113,8 @@ final class OpenTelemetryMiddleware implements MiddlewareInterface {
         string $method,
         string $route,
         int $statusCode,
-        ?\Throwable $exception = null
+        ?\Throwable $exception = null,
+        ?string $responseMessage = null
     ): void {
         $counter = $GLOBALS['otel_error_counter'] ?? null;
 
@@ -141,6 +146,9 @@ final class OpenTelemetryMiddleware implements MiddlewareInterface {
             if ($exception->getPrevious() !== null) {
                 $context['error.previous'] = $exception->getPrevious()::class . ': ' . $exception->getPrevious()->getMessage();
             }
+        } elseif ($responseMessage !== null) {
+            // Erro tratado no controller: só a mensagem enviada ao cliente chega aqui.
+            $context['error.message'] = $responseMessage;
         }
 
         // 4xx é erro do cliente: fica como warning para não poluir os erros da aplicação.
@@ -149,6 +157,34 @@ final class OpenTelemetryMiddleware implements MiddlewareInterface {
             "HTTP request error: {$method} {$route} ({$statusCode})",
             $context
         );
+    }
+
+    /**
+     * Lê o campo "erro" do JsonPresenter. A mensagem já é pública (o cliente a recebe),
+     * por isso não deve repetir dado pessoal; o tamanho é limitado por vir do usuário às vezes.
+     */
+    private function getResponseErrorMessage(ResponseInterface $response): ?string {
+        $body = $response->getBody();
+        $size = $body->getSize();
+
+        if (
+            !str_contains($response->getHeaderLine('Content-Type'), 'application/json')
+            || !$body->isSeekable()
+            || $size === null
+            || $size > self::MAX_ERROR_BODY_BYTES
+        ) {
+            return null;
+        }
+
+        $body->rewind();
+        $payload = json_decode($body->getContents(), true);
+        $body->rewind();
+
+        if (!is_array($payload) || !is_string($payload['erro'] ?? null)) {
+            return null;
+        }
+
+        return mb_substr($payload['erro'], 0, self::MAX_ERROR_MESSAGE_LENGTH);
     }
 
     private function getRoute(ServerRequestInterface $request): string {

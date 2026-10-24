@@ -53,6 +53,24 @@ final class OpenTelemetryMiddlewareTest extends TestCase {
         self::assertSame(404, $result->getStatusCode());
     }
 
+    public function testPreservaBodyDaRespostaAoLerMensagemDeErro(): void {
+        $request = $this->createRequest('/ordens-servico');
+        $response = new ResponseFactory()->createResponse(400)
+            ->withHeader('Content-Type', 'application/json');
+        $response->getBody()->write('{"erro":"Situação inválida: X"}');
+
+        $handler = $this->createMock(RequestHandlerInterface::class);
+        $handler
+            ->method('handle')
+            ->willReturn($response);
+
+        $middleware = new OpenTelemetryMiddleware();
+
+        $result = $middleware->process($request, $handler);
+
+        self::assertSame('{"erro":"Situação inválida: X"}', $result->getBody()->getContents());
+    }
+
     public function testRegistraErro500QuandoHandlerLancaExcecao(): void {
         $request = $this->createRequest('/clientes');
 
