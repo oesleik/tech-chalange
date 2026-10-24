@@ -128,7 +128,7 @@ Dashboard `tech-challenge`:
 |---|---|
 | Visão geral | rpm, taxa de erro, p95, uptime do `/health`, OS criadas, falhas em OS, CPU/memória dos containers |
 | API | p50/p95/p99, throughput, tabela por transação, taxa de erro e 5xx, status HTTP; no API Gateway, latência empilhada integração + gateway e percentis (sem `/health`) |
-| Kubernetes | CPU e memória por container em % do limit, réplicas do HPA (atuais, desejadas, máximo, se está no limite), CPU/memória em valor absoluto, CPU/memória alocável dos nodes, restarts, deployments |
+| Kubernetes | CPU e memória por container em % do limit, uso da capacidade do HPA (réplicas atuais em % do máximo) e tabela do HPA (atuais, desejadas, mínimo, máximo, se está no limite), CPU/memória em valor absoluto, CPU/memória alocável dos nodes, restarts, deployments |
 | Saúde e uptime | Sucesso e duração do synthetic, falhas, pods ready, restarts, `/health` no access log |
 | Ordens de serviço | Criadas por dia (30 dias), tempo médio por situação (min), transições, falhas por rota (`Transaction`), endpoints de OS |
 | Integrações | RDS (CPU, memória livre, conexões), Lambda de autenticação (invocações, erros, duração, erros no log), 5xx e erros de integração do API Gateway, falhas de integração (`TransactionError` de `EmailException`), exceções por classe |

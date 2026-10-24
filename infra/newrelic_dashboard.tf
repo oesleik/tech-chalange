@@ -170,13 +170,14 @@ resource "newrelic_one_dashboard" "tech_challenge" {
     }
 
     widget_line {
-      title           = "CPU dos containers (% do limit)"
-      row             = 7
-      column          = 5
-      width           = 4
-      height          = 3
-      y_axis_left_min = 0
-      y_axis_left_max = 100
+      title            = "CPU dos containers (% do limit)"
+      row              = 7
+      column           = 5
+      width            = 4
+      height           = 3
+      y_axis_left_zero = true
+      y_axis_left_min  = 0
+      y_axis_left_max  = 100
 
       nrql_query {
         account_id = local.newrelic_account
@@ -199,13 +200,14 @@ resource "newrelic_one_dashboard" "tech_challenge" {
     }
 
     widget_line {
-      title           = "Memória dos containers (% do limit)"
-      row             = 7
-      column          = 9
-      width           = 4
-      height          = 3
-      y_axis_left_min = 0
-      y_axis_left_max = 100
+      title            = "Memória dos containers (% do limit)"
+      row              = 7
+      column           = 9
+      width            = 4
+      height           = 3
+      y_axis_left_zero = true
+      y_axis_left_min  = 0
+      y_axis_left_max  = 100
 
       nrql_query {
         account_id = local.newrelic_account
@@ -290,13 +292,14 @@ resource "newrelic_one_dashboard" "tech_challenge" {
     }
 
     widget_line {
-      title           = "Taxa de erro (%)"
-      row             = 8
-      column          = 1
-      width           = 6
-      height          = 3
-      y_axis_left_min = 0
-      y_axis_left_max = 10
+      title            = "Taxa de erro (%)"
+      row              = 8
+      column           = 1
+      width            = 6
+      height           = 3
+      y_axis_left_zero = true
+      y_axis_left_min  = 0
+      y_axis_left_max  = 10
 
       nrql_query {
         account_id = local.newrelic_account
@@ -368,13 +371,14 @@ resource "newrelic_one_dashboard" "tech_challenge" {
     name = "Kubernetes"
 
     widget_line {
-      title           = "CPU por container (% do limit)"
-      row             = 1
-      column          = 1
-      width           = 6
-      height          = 3
-      y_axis_left_min = 0
-      y_axis_left_max = 100
+      title            = "CPU por container (% do limit)"
+      row              = 1
+      column           = 1
+      width            = 6
+      height           = 3
+      y_axis_left_zero = true
+      y_axis_left_min  = 0
+      y_axis_left_max  = 100
 
       nrql_query {
         account_id = local.newrelic_account
@@ -398,13 +402,14 @@ resource "newrelic_one_dashboard" "tech_challenge" {
     }
 
     widget_line {
-      title           = "Memória por container (% do limit)"
-      row             = 1
-      column          = 7
-      width           = 6
-      height          = 3
-      y_axis_left_min = 0
-      y_axis_left_max = 100
+      title            = "Memória por container (% do limit)"
+      row              = 1
+      column           = 7
+      width            = 6
+      height           = 3
+      y_axis_left_zero = true
+      y_axis_left_min  = 0
+      y_axis_left_max  = 100
 
       nrql_query {
         account_id = local.newrelic_account
@@ -426,19 +431,35 @@ resource "newrelic_one_dashboard" "tech_challenge" {
       }
     }
 
-    # HPA: réplicas desejadas acima das atuais por muito tempo = pods não sobem (ex.: sem node);
-    # "No limite" = 1 quando o HPA quer escalar mas já está no maxReplicas.
+    # HPA: réplicas atuais em % do maxReplicas, para comparar HPAs com máximos diferentes.
+    # 100% = sem margem para escalar (o alerta de isLimited cobre ficar preso ali).
     widget_line {
-      title            = "HPA: réplicas"
+      title            = "HPA: uso da capacidade (% do máximo)"
       row              = 4
       column           = 1
       width            = 6
       height           = 3
       y_axis_left_zero = true
+      y_axis_left_min  = 0
+      y_axis_left_max  = 100
 
       nrql_query {
         account_id = local.newrelic_account
-        query      = "FROM K8sHpaSample SELECT latest(currentReplicas) AS 'Atuais', latest(desiredReplicas) AS 'Desejadas', latest(maxReplicas) AS 'Máximo' WHERE ${local.newrelic_where_k8s} FACET displayName TIMESERIES"
+        query      = "FROM K8sHpaSample SELECT latest(currentReplicas) / latest(maxReplicas) * 100 WHERE ${local.newrelic_where_k8s} FACET displayName TIMESERIES"
+      }
+
+      threshold {
+        name     = "Warning"
+        from     = 75
+        to       = 100
+        severity = "warning"
+      }
+
+      threshold {
+        name     = "Critical"
+        from     = 100
+        to       = 1000
+        severity = "critical"
       }
     }
 
@@ -484,13 +505,14 @@ resource "newrelic_one_dashboard" "tech_challenge" {
     }
 
     widget_line {
-      title           = "Nodes: CPU alocável (%)"
-      row             = 10
-      column          = 1
-      width           = 6
-      height          = 3
-      y_axis_left_min = 0
-      y_axis_left_max = 100
+      title            = "Nodes: CPU alocável (%)"
+      row              = 10
+      column           = 1
+      width            = 6
+      height           = 3
+      y_axis_left_zero = true
+      y_axis_left_min  = 0
+      y_axis_left_max  = 100
 
       nrql_query {
         account_id = local.newrelic_account
@@ -513,13 +535,14 @@ resource "newrelic_one_dashboard" "tech_challenge" {
     }
 
     widget_line {
-      title           = "Nodes: memória alocável (%)"
-      row             = 10
-      column          = 7
-      width           = 6
-      height          = 3
-      y_axis_left_min = 0
-      y_axis_left_max = 100
+      title            = "Nodes: memória alocável (%)"
+      row              = 10
+      column           = 7
+      width            = 6
+      height           = 3
+      y_axis_left_zero = true
+      y_axis_left_min  = 0
+      y_axis_left_max  = 100
 
       nrql_query {
         account_id = local.newrelic_account
@@ -747,13 +770,14 @@ resource "newrelic_one_dashboard" "tech_challenge" {
     name = "Integrações"
 
     widget_line {
-      title           = "RDS: CPU (%)"
-      row             = 1
-      column          = 1
-      width           = 4
-      height          = 3
-      y_axis_left_min = 0
-      y_axis_left_max = 100
+      title            = "RDS: CPU (%)"
+      row              = 1
+      column           = 1
+      width            = 4
+      height           = 3
+      y_axis_left_zero = true
+      y_axis_left_min  = 0
+      y_axis_left_max  = 100
 
       nrql_query {
         account_id = local.newrelic_account
