@@ -15,6 +15,7 @@ Stack completa containerizada pronta para desenvolvimento com:
 - Documentos de entregas das fases anteriores em [docs/entregas/](./docs/entregas/)
 - [Vídeo entrega fase 1](https://www.youtube.com/watch?v=ov2wa36pA7E)
 - [Vídeo entrega fase 2](https://www.youtube.com/watch?v=xzyHejsCoEs)
+- [Vídeo entrega fase 3]()
 
 ## 📋 Pré-requisitos
 
@@ -152,6 +153,10 @@ Domínios e Contextos Delimitados) estão em [`docs/ddd/`](./docs/ddd/README.md)
 
 - **ADRs:** [`docs/adr/`](./docs/adr/README.md)
 - **DAS:** [`docs/arch/DAS.md`](./docs/arch/DAS.md)
+
+### Arquitetura na AWS
+
+![Arquitetura AWS](./docs/arch/AWS-Architecture.png)
 
 ### Visão Geral da Solução
 

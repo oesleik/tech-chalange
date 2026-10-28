@@ -11,6 +11,9 @@
 - [ADR 007 - MySQL gerenciado no Amazon RDS](007-rds-mysql.md)
 - [ADR 008 - Lambda de autenticação consulta o RDS diretamente](008-lambda-acesso-rds.md)
 - [ADR 009 - New Relic no EKS](009-newrelic.md)
+- [ADR 010 - API Gateway](010-api-gateway.md)
+- [ADR 011 - Uso de serviços AWS](011-aws.md)
+- [ADR 012 - HPA (Horizontal Pod Autoscaler) no EKS](012-hpa.md)
 
 ## Substituídas
 
