@@ -4,6 +4,8 @@ Este documento descreve o procedimento recorrente para publicar e validar o Tech
 
 ## 1. Arquitetura implantada
 
+![Arquitetura AWS](../arch/AWS-Architecture.png)
+
 O workflow `AWS deploy` provisiona ou atualiza os recursos gerenciados pelo Terraform e publica a aplicação:
 
 - **Amazon EKS**: cluster Kubernetes e node group.

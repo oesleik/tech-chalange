@@ -254,6 +254,8 @@ Deve ser gerado e entregue um relatório com os resultados do scan de vulnerabil
 
 ## Diagrama de implantação e configuração
 
+![Arquitetura AWS](./AWS-Architecture.png)
+
 ---
 
 ## Modelo de dados
