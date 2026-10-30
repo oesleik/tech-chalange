@@ -1,0 +1,94 @@
+name: Destroy
+
+# Manual. Segundo da cadeia de destroy: lambda -> app -> infra-db -> infra-k8s.
+# Remove o release Helm e o namespace. A imagem no ECR some com o destroy do infra-k8s.
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: "Digite exatamente destroy para confirmar"
+        required: true
+        type: string
+
+concurrency:
+  group: app
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  AWS_REGION: us-east-1
+  SSM_PREFIX: /tech-challenge
+  K8S_NAMESPACE: tech-challenge
+
+jobs:
+  destroy:
+    name: Helm uninstall
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Require master branch
+        run: |
+          if [ "${GITHUB_REF}" != "refs/heads/master" ]; then
+            echo "Rode este workflow com a branch master selecionada."
+            exit 1
+          fi
+
+      - name: Confirm destroy
+        env:
+          CONFIRM: ${{ inputs.confirm }}
+        run: |
+          if [ "$CONFIRM" != "destroy" ]; then
+            echo "Abortado: o campo confirm precisa ser exatamente: destroy"
+            exit 1
+          fi
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN_APPLY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      # A Lambda depende do usuário MySQL criado pela app: ela sai antes.
+      - name: Require dependents destroyed
+        run: |
+          set -eu
+          names="$(aws ssm get-parameters-by-path --path "${SSM_PREFIX}/lambda" --recursive \
+            --query 'Parameters[].Name' --output text)"
+          if [ -n "$names" ]; then
+            echo "::error::Ainda existem parâmetros em ${SSM_PREFIX}/lambda: ${names}. Rode o Destroy do tech-challenge-lambda antes."
+            exit 1
+          fi
+
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v4
+
+      - name: Setup Helm
+        uses: azure/setup-helm@v4.3.0
+        with:
+          version: v3.21.4
+
+      # Sem cluster (infra-k8s já destruído) não há o que remover no Kubernetes.
+      - name: Uninstall release
+        run: |
+          set -eu
+          if ! cluster="$(aws ssm get-parameter --name "${SSM_PREFIX}/eks/cluster_name" --query Parameter.Value --output text 2>/dev/null)"; then
+            echo "::warning::${SSM_PREFIX}/eks/cluster_name não existe; pulando a limpeza do cluster."
+            exit 0
+          fi
+          aws eks update-kubeconfig --name "$cluster" --region "${AWS_REGION}"
+          helm uninstall tech-challenge --namespace "${K8S_NAMESPACE}" --wait --ignore-not-found
+          kubectl delete namespace "${K8S_NAMESPACE}" --ignore-not-found --wait --timeout=5m
+
+      # Libera o destroy do infra-db e do infra-k8s.
+      - name: Remove app contract
+        run: |
+          set -eu
+          names="$(aws ssm get-parameters-by-path --path "${SSM_PREFIX}/app" --recursive \
+            --query 'Parameters[].Name' --output text)"
+          if [ -n "$names" ]; then
+            # shellcheck disable=SC2086
+            aws ssm delete-parameters --names $names
+          fi

@@ -1,7 +1,8 @@
 # ADR-010 - API Gateway como ponto de entrada
 
-**Status:** Aceita
-**Data:** 26/10/2026
+**Status:** Aceita  
+**Data:** 26/10/2026  
+**Participantes:** Augusto, Claudio, Daniel, Fernando, Oeslei  
 
 ## Contexto
 
@@ -9,7 +10,7 @@ A aplicação roda no EKS e o banco fica em sub-redes privadas. Precisamos de um
 
 ## Decisão
 
-Usar o **Amazon API Gateway (HTTP API)**, definido em Terraform (`infra/apigateway.tf` e `infra/lambda.tf`).
+Usar o **Amazon API Gateway (HTTP API)**, definido em Terraform.
 
 - `POST /autenticacao` vai direto para a Lambda.
 - A rota `$default` vai para o EKS via **VPC Link → NLB interno → Nginx (NodePort 30080)**. O security group do node só aceita tráfego do NLB.

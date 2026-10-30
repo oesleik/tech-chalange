@@ -1,7 +1,8 @@
 # ADR-009 - New Relic no EKS
 
-**Status:** Aceita
-**Data:** 19/10/2026
+**Status:** Aceita  
+**Data:** 19/10/2026  
+**Participantes:** Augusto, Claudio, Daniel, Fernando, Oeslei  
 
 ## Contexto
 

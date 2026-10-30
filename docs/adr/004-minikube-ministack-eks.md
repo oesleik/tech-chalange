@@ -1,6 +1,6 @@
 # ADR-004 - Dois fluxos locais: Minikube e MiniStack (AWS local)
 
-**Status:** Aceita  
+**Status:** Substituída pelo [ADR-013](013-divisao-repositorios.md)  
 **Data:** 15/08/2026  
 **Participantes:** Oeslei  
 

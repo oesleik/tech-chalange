@@ -1,0 +1,204 @@
+name: Deploy
+
+# Manual only. Terceiro da cadeia: infra-k8s -> infra-db -> app -> lambda.
+# A infraestrutura (EKS, ECR, RDS) vem dos repositórios de infra; aqui só imagem, Helm e migrations.
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: app
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  AWS_REGION: us-east-1
+  SSM_PREFIX: /tech-challenge
+  K8S_NAMESPACE: tech-challenge
+
+jobs:
+  deploy:
+    name: Build, Helm, migrate
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Require master branch
+        run: |
+          if [ "${GITHUB_REF}" != "refs/heads/master" ]; then
+            echo "Rode este workflow com a branch master selecionada."
+            exit 1
+          fi
+
+      - name: Require secrets
+        env:
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_ROOT_PASSWORD: ${{ secrets.DB_ROOT_PASSWORD }}
+          LAMBDA_DB_PASSWORD: ${{ secrets.LAMBDA_DB_PASSWORD }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          OS_EMAIL_ACTION_TOKEN_SECRET: ${{ secrets.OS_EMAIL_ACTION_TOKEN_SECRET }}
+          NEW_RELIC_LICENSE_KEY: ${{ secrets.NEW_RELIC_LICENSE_KEY }}
+        run: |
+          set -eu
+          missing=0
+          for name in DB_PASSWORD DB_ROOT_PASSWORD LAMBDA_DB_PASSWORD JWT_SECRET OS_EMAIL_ACTION_TOKEN_SECRET NEW_RELIC_LICENSE_KEY; do
+            if [ -z "${!name}" ]; then
+              echo "::error::Secret ausente: ${name}. Defina em Settings > Secrets and variables > Actions (README.md)."
+              missing=1
+            fi
+          done
+          exit "$missing"
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN_APPLY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      # Fail-fast do contrato: cluster/ECR do infra-k8s e banco do infra-db.
+      - name: Read infrastructure contract
+        run: |
+          set -eu
+          missing=0
+          read_param() {
+            local value
+            if ! value="$(aws ssm get-parameter --name "${SSM_PREFIX}/$1" --query Parameter.Value --output text 2>/dev/null)"; then
+              echo "::error::${SSM_PREFIX}/$1 não existe. Rode o Deploy do $3 antes."
+              missing=1
+              return
+            fi
+            echo "$2=${value}" >> "$GITHUB_ENV"
+          }
+          read_param eks/cluster_name      CLUSTER_NAME tech-challenge-infra-k8s
+          read_param ecr/php_repository_url ECR_URI     tech-challenge-infra-k8s
+          read_param apigw/invoke_url      API_URL      tech-challenge-infra-k8s
+          read_param db/address            DB_HOST      tech-challenge-infra-db
+          read_param db/name               DB_DATABASE  tech-challenge-infra-db
+          exit "$missing"
+
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v4
+
+      - name: Setup Helm
+        uses: azure/setup-helm@v4.3.0
+        with:
+          version: v3.21.4
+
+      - name: Configure kubeconfig
+        run: aws eks update-kubeconfig --name "${CLUSTER_NAME}" --region "${AWS_REGION}"
+
+      - name: Build and push PHP image
+        run: |
+          aws ecr get-login-password --region "${AWS_REGION}" \
+            | docker login --username AWS --password-stdin "${ECR_URI%%/*}"
+          docker build -t "${ECR_URI}:${GITHUB_SHA}" -t "${ECR_URI}:latest" .
+          docker push "${ECR_URI}:${GITHUB_SHA}"
+          docker push "${ECR_URI}:latest"
+
+      # O agente PHP do New Relic lê a license deste Secret (values-aws.yaml: newrelic.existingSecret).
+      # O Secret do namespace newrelic (nri-bundle) é do infra-k8s.
+      - name: Create New Relic license secret
+        env:
+          NEW_RELIC_LICENSE_KEY: ${{ secrets.NEW_RELIC_LICENSE_KEY }}
+        run: |
+          set -eu
+          kubectl create namespace "${K8S_NAMESPACE}" --dry-run=client -o yaml | kubectl apply -f -
+          kubectl -n "${K8S_NAMESPACE}" create secret generic newrelic-license \
+            --from-literal=license-key="$NEW_RELIC_LICENSE_KEY" \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      # Lido só pelo job rds-user-setup e apagado no fim do workflow.
+      - name: Prepare RDS admin Secret
+        env:
+          DB_ROOT_PASSWORD: ${{ secrets.DB_ROOT_PASSWORD }}
+          LAMBDA_DB_PASSWORD: ${{ secrets.LAMBDA_DB_PASSWORD }}
+        run: |
+          kubectl create secret generic rds-admin-secrets \
+            --namespace "${K8S_NAMESPACE}" \
+            --from-literal=DB_ROOT_USERNAME=dbadmin \
+            --from-literal="DB_ROOT_PASSWORD=${DB_ROOT_PASSWORD}" \
+            --from-literal="LAMBDA_DB_PASSWORD=${LAMBDA_DB_PASSWORD}" \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Helm upgrade
+        env:
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          OS_EMAIL_ACTION_TOKEN_SECRET: ${{ secrets.OS_EMAIL_ACTION_TOKEN_SECRET }}
+          MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
+          MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+        run: |
+          python3 -c '
+          import json, os, pathlib
+          keys = (
+            "DB_PASSWORD",
+            "JWT_SECRET",
+            "OS_EMAIL_ACTION_TOKEN_SECRET",
+            "MAIL_USERNAME",
+            "MAIL_PASSWORD",
+          )
+          pathlib.Path("/tmp/helm-app-secrets.json").write_text(json.dumps({
+            "secrets": {k: os.environ[k] for k in keys}
+          }))
+          '
+          helm upgrade --install tech-challenge charts/tech-challenge \
+            --namespace "${K8S_NAMESPACE}" --create-namespace \
+            -f charts/tech-challenge/values-aws.yaml \
+            -f /tmp/helm-app-secrets.json \
+            --set "php.image=${ECR_URI}:${GITHUB_SHA}" \
+            --set-string "config.DB_HOST=${DB_HOST}" \
+            --set-string "config.DB_DATABASE=${DB_DATABASE}" \
+            --timeout 10m
+
+      - name: Wait for RDS setup job and PHP
+        run: |
+          kubectl wait --namespace "${K8S_NAMESPACE}" --for=condition=complete job/rds-user-setup --timeout=300s
+          kubectl wait --namespace "${K8S_NAMESPACE}" --for=condition=ready pod -l app=php --timeout=180s
+
+      - name: Run database migrations
+        run: kubectl exec --namespace "${K8S_NAMESPACE}" deploy/php -- php src/cmd/migrations/migrate.php
+
+      - name: Verify Nginx after migrations
+        run: |
+          kubectl rollout status deployment/nginx \
+            --namespace "${K8S_NAMESPACE}" \
+            --timeout=180s
+
+      # Contrato: marca que a app está de pé (com o usuário MySQL da Lambda criado).
+      # O deploy da Lambda exige este parâmetro; o destroy do infra-db/infra-k8s exige que ele não exista.
+      - name: Publish app contract
+        run: |
+          aws ssm put-parameter --name "${SSM_PREFIX}/app/image_tag" \
+            --type String --value "${GITHUB_SHA}" --overwrite >/dev/null
+
+      - name: New Relic deployment marker
+        if: success() && vars.NEW_RELIC_ENTITY_GUID != ''
+        uses: newrelic/deployment-marker-action@v2.6.2
+        with:
+          apiKey: ${{ secrets.NEW_RELIC_API_KEY }}
+          guid: ${{ vars.NEW_RELIC_ENTITY_GUID }}
+          region: ${{ vars.NEW_RELIC_REGION || 'US' }}
+          version: ${{ github.sha }}
+          commit: ${{ github.sha }}
+          user: ${{ github.actor }}
+
+      - name: Clean up temporary database credentials
+        if: always()
+        run: |
+          kubectl delete secret rds-admin-secrets --namespace "${K8S_NAMESPACE}" --ignore-not-found=true || true
+          rm -f /tmp/helm-app-secrets.json
+
+      - name: Summary
+        run: |
+          {
+            echo "### API Gateway: ${API_URL}"
+            echo
+            echo "- Imagem: \`${ECR_URI}:${GITHUB_SHA}\`"
+            echo "- Swagger: ${API_URL%/}/docs/index.html"
+            echo
+            echo "Próximo passo: **Deploy** do tech-challenge-lambda."
+          } >> "$GITHUB_STEP_SUMMARY"

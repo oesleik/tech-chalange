@@ -1,4 +1,3 @@
-{{- if .Values.externalDatabase.enabled }}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -74,9 +73,9 @@ spec:
                 secretKeyRef:
                   name: app-secrets
                   key: DB_PASSWORD
-            # Usuário somente leitura da Lambda de autenticação (infra/lambda.tf).
+            # Usuário somente leitura da Lambda de autenticação (tech-challenge-lambda).
             - name: LAMBDA_DB_USERNAME
-              value: {{ .Values.externalDatabase.lambdaUsername | quote }}
+              value: {{ .Values.database.lambdaUsername | quote }}
             - name: LAMBDA_DB_PASSWORD
               valueFrom:
                 secretKeyRef:
@@ -92,4 +91,3 @@ spec:
                 secretKeyRef:
                   name: rds-admin-secrets
                   key: DB_ROOT_PASSWORD
-{{- end }}
