@@ -1,8 +1,8 @@
 # ADR-005 - Migração para Clean Architecture
 
-**Status:** Aceita
-**Data:** 30/08/2026
-**Participantes:** Augusto, Claudio, Daniel, Fernando, Oeslei
+**Status:** Aceita  
+**Data:** 30/08/2026  
+**Participantes:** Augusto, Claudio, Daniel, Fernando, Oeslei  
 
 ## Contexto
 

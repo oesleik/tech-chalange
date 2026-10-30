@@ -1,8 +1,9 @@
-# Valores padrões. Sobrescritos por values-*.yaml
+# Valores padrões. Sobrescritos por values-aws.yaml (EKS) e pelo workflow de deploy.
 
 php:
+  # Sobrescrita no deploy (--set php.image) com a imagem do ECR.
   image: tech-challenge-php:latest
-  imagePullPolicy: Never
+  imagePullPolicy: IfNotPresent
   replicaCount: 2
   resources:
     requests:
@@ -39,47 +40,9 @@ nginx:
     maxReplicas: 5
     cpuAverageUtilization: 70
 
-mysql:
-  image: mysql:9
-  replicaCount: 1
-  persistence:
-    size: 5Gi
-    storageClassName: ""
-    storageClass:
-      create: false
-      default: false
-      name: gp3
-      provisioner: ebs.csi.aws.com
-      parameters:
-        type: gp3
-        encrypted: "true"
-  resources:
-    requests:
-      memory: "512Mi"
-      cpu: "250m"
-    limits:
-      memory: "1Gi"
-      cpu: "500m"
-  innodbDedicatedServer: false
-  innodbBufferPoolSize: "256M"
-
-phpmyadmin:
-  enabled: false
-  image: phpmyadmin:latest
-  service:
-    type: NodePort
-    port: 80
-    nodePort: 30081
-  resources:
-    requests:
-      memory: "128Mi"
-      cpu: "100m"
-    limits:
-      memory: "256Mi"
-      cpu: "200m"
-
 config:
-  DB_HOST: "mysql"
+  # Sobrescrito no deploy (--set-string config.DB_HOST) com o SSM /tech-challenge/db/address.
+  DB_HOST: "RDS_ENDPOINT_SET_BY_DEPLOY_WORKFLOW"
   DB_PORT: "3306"
   DB_DATABASE: "app_db"
   DB_USERNAME: "app_user"
@@ -98,7 +61,6 @@ config:
 # Placeholders de desenvolvimento. Não use estes valores em produção.
 secrets:
   DB_PASSWORD: "secret"
-  DB_ROOT_PASSWORD: "rootsecret"
   JWT_SECRET: "troque-por-valor-seguro-em-producao"
   OS_EMAIL_ACTION_TOKEN_SECRET: "troque-por-valor-seguro-em-producao"
   MAIL_USERNAME: ""
@@ -112,7 +74,8 @@ newrelic:
   secretKey: license-key
   logForwarding: true
 
-# Banco externo desabilitado por padrão.
-# O MiniStack continua usando o MySQL dentro do Kubernetes.
-externalDatabase:
-  enabled: false
+# Usuários do RDS criados pelo job rds-user-setup. A senha do master e da Lambda vêm do
+# Secret rds-admin-secrets, criado pelo workflow de deploy.
+database:
+  # Mesmo valor de lambda_db_username no tech-challenge-lambda.
+  lambdaUsername: "autenticacao"

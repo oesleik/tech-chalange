@@ -1,6 +1,6 @@
 # New Relic
 
-O New Relic observa a API no **EKS**. No laptop, no Minikube e no MiniStack ele fica desligado. A stack OpenTelemetry local (`make otel-up`) não muda.
+O New Relic observa a API no **EKS**. No laptop ele fica desligado. A stack OpenTelemetry local (`make otel-up`) não muda.
 
 Decisão registrada em [ADR-009](../adr/009-newrelic.md).
 
@@ -59,29 +59,26 @@ Algumas exceções de domínio colocam CPF ou placa na mensagem (`ClienteNaoEnco
 
 `charts/tech-challenge/values.yaml` deixa `newrelic.enabled: false`. `values-aws.yaml` liga e usa o app name de produção.
 
-O chart só **referencia** o Secret. Quem cria o Secret é o workflow, no namespace `tech-challenge`. O mesmo Secret, com a mesma chave, é criado no namespace `newrelic` para o `nri-bundle` (`global.customSecretName`). A key não passa por `--set`, para não ficar no histórico do Helm.
+O chart só **referencia** o Secret. Quem cria o Secret no namespace `tech-challenge` é o Deploy deste repositório. O mesmo Secret, com a mesma chave, é criado no namespace `newrelic` pelo Deploy do [infra-k8s](https://github.com/oesleik/tech-challenge-infra-k8s), que instala o `nri-bundle` (`global.customSecretName`). A key não passa por `--set`, para não ficar no histórico do Helm.
 
 No EKS o request/limit de memória do PHP sobe 64Mi (192Mi / 320Mi). O daemon do agente mora no mesmo container. O HPA de memória usa o request como base.
 
 `nri-metadata-injection` fica desligado neste primeiro corte. O nome `kubeEvents` do roteiro antigo é `nri-kube-events` no chart 8.0.34.
 
-Minikube e MiniStack não instalam o bundle.
-
 ## CI
 
-No workflow `aws-deploy`, antes do Helm da aplicação:
+Com a divisão em repositórios ([ADR-013](../adr/013-divisao-repositorios.md)):
 
-1. Falha se faltar `NEW_RELIC_LICENSE_KEY`, `NEW_RELIC_API_KEY` ou `NEW_RELIC_ACCOUNT_ID`.
-2. Cria os Secrets nos dois namespaces.
-3. Instala `newrelic/nri-bundle` na versão de `charts/newrelic/VERSION`.
+- **Deploy do infra-k8s:** falha se faltar `NEW_RELIC_LICENSE_KEY`, `NEW_RELIC_API_KEY` ou `NEW_RELIC_ACCOUNT_ID`, aplica o Terraform do New Relic, cria o Secret no namespace `newrelic` e instala `newrelic/nri-bundle` na versão de `charts/newrelic/VERSION` (daquele repositório).
+- **Deploy deste repositório:** falha se faltar `NEW_RELIC_LICENSE_KEY` e cria o Secret no namespace `tech-challenge` antes do Helm.
 
-Depois do deploy, o marker `newrelic/deployment-marker-action@v2.6.2` só roda se a variable `NEW_RELIC_ENTITY_GUID` estiver preenchida. A action atual marca pelo GUID; não recebe `accountId`. O secret da conta também alimenta o Terraform da integração AWS.
+Depois do deploy da aplicação, o marker `newrelic/deployment-marker-action@v2.6.2` só roda se a variable `NEW_RELIC_ENTITY_GUID` estiver preenchida. A action atual marca pelo GUID; não recebe `accountId`. O secret da conta alimenta o Terraform da integração AWS, no infra-k8s.
 
 Secrets e variables ficam no GitHub. Não entram no repositório.
 
 ## Integração AWS
 
-`infra/newrelic.tf`, aplicado pelo **AWS deploy**. Só é criado quando o secret `NEW_RELIC_ACCOUNT_ID` existe.
+`terraform/newrelic.tf` do infra-k8s, aplicado pelo Deploy daquele repositório. Só é criado quando o secret `NEW_RELIC_ACCOUNT_ID` existe.
 
 | Peça | Função |
 |---|---|
@@ -89,10 +86,10 @@ Secrets e variables ficam no GitHub. Não entram no repositório.
 | Vínculo `tech-challenge-aws` (`newrelic_cloud_aws_link_account`, modo `PULL`) | Conta AWS ligada ao New Relic usando a role acima |
 | Integrações `rds`, `ec2`, `lambda`, `api_gateway` | Polling de 300 s em `us-east-1` |
 | Firehose `tech-challenge-newrelic-logs` | Entrega logs do CloudWatch no endpoint de logs do New Relic |
-| Subscription filters (padrão vazio) | `/aws/apigateway/tech-challenge-api` e `/aws/lambda/tech-challenge-autenticacao` |
+| Subscription filters (padrão vazio) | `/aws/apigateway/tech-challenge-api` (infra-k8s) e `/aws/lambda/tech-challenge-autenticacao` |
 | Bucket `tech-challenge-<conta>-newrelic-firehose` | Só entregas que falharam; expira em 7 dias |
 
-O provider `newrelic/newrelic` usa `NEW_RELIC_ACCOUNT_ID` e `NEW_RELIC_API_KEY` (User API key). A região vem da variable `NEW_RELIC_REGION` (padrão `US`). Sem account id, o provider recebe valores fictícios e nenhum recurso New Relic é criado (MiniStack, validação de PR).
+O provider `newrelic/newrelic` usa `NEW_RELIC_ACCOUNT_ID` e `NEW_RELIC_API_KEY` (User API key). A região vem da variable `NEW_RELIC_REGION` (padrão `US`). Sem account id, o provider recebe valores fictícios e nenhum recurso New Relic é criado (validação de PR).
 
 ## Validar
 
@@ -120,7 +117,7 @@ No EKS, depois do workflow: a entidade `tech-challenge-prod` recebe transação,
 
 ## Dashboard e alertas
 
-`infra/newrelic_dashboard.tf` e `infra/newrelic_alerts.tf`, aplicados pelo **AWS deploy**. O output `newrelic_dashboard_url` traz o link do dashboard.
+`terraform/newrelic_dashboard.tf` e `terraform/newrelic_alerts.tf` do infra-k8s, aplicados pelo Deploy daquele repositório. Eles filtram pelos nomes `tech-challenge-mysql` (infra-db) e `tech-challenge-autenticacao` (lambda): renomear esses recursos quebra o dashboard sem quebrar o deploy. O output `newrelic_dashboard_url` traz o link do dashboard.
 
 Dashboard `tech-challenge`:
 

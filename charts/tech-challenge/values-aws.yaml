@@ -42,15 +42,3 @@ nginx:
     type: NodePort
     port: 80
     nodePort: 30080
-
-phpmyadmin:
-  enabled: false
-
-externalDatabase:
-  enabled: true
-  masterUsername: "dbadmin"
-  # Mesmo valor de lambda_db_username no Terraform.
-  lambdaUsername: "autenticacao"
-
-config:
-  DB_HOST: "RDS_ENDPOINT_SET_BY_DEPLOY_WORKFLOW"

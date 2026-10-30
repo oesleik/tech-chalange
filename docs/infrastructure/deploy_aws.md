@@ -6,16 +6,18 @@ Este documento descreve o procedimento recorrente para publicar e validar o Tech
 
 ![Arquitetura AWS](../arch/AWS-Architecture.png)
 
-O workflow `AWS deploy` provisiona ou atualiza os recursos gerenciados pelo Terraform e publica a aplicação:
+A solução está dividida em quatro repositórios, cada um com seus workflows de **Deploy** e **Destroy** ([ADR-013](../adr/013-divisao-repositorios.md)):
 
-- **Amazon EKS**: cluster Kubernetes e node group.
-- **Amazon ECR**: armazenamento da imagem Docker da aplicação PHP.
-- **Amazon RDS for MySQL**: banco `app_db` em sub-redes privadas, sem acesso público.
-- **Helm**: Deployments PHP-FPM e Nginx, Services, ConfigMaps, Secrets e HPA.
-- **API Gateway HTTP API + VPC Link + NLB interno**: entrada pública da aplicação. O NodePort `30080` dos nodes não é o endpoint público.
-- **S3 + DynamoDB**: state remoto e lock do Terraform; são recursos de bootstrap e devem permanecer após o `AWS destroy`.
+| Repositório | O que cria | State |
+|---|---|---|
+| [tech-challenge-infra-k8s](https://github.com/oesleik/tech-challenge-infra-k8s) | VPC, EKS, ECR, NLB interno, API Gateway + VPC Link, metrics-server, New Relic | `tech-challenge/infra-k8s.tfstate` |
+| [tech-challenge-infra-db](https://github.com/oesleik/tech-challenge-infra-db) | RDS MySQL `tech-challenge-mysql` em sub-redes privadas | `tech-challenge/infra-db.tfstate` |
+| tech-chalange (este) | Imagem no ECR, release Helm (PHP-FPM, Nginx, HPA, job `rds-user-setup`), migrations | — (Helm) |
+| [tech-challenge-lambda](https://github.com/oesleik/tech-challenge-lambda) | Lambda `autenticacao` e rota `POST /autenticacao` | `tech-challenge/lambda.tfstate` |
 
-A arquitetura real da AWS usa RDS. Os ambientes locais (Minikube/MiniStack) podem continuar utilizando a configuração de banco própria deles.
+Os repositórios trocam valores pelo **SSM Parameter Store** em `/tech-challenge/*`: quem cria publica (`network/*`, `eks/*`, `db/*`...), quem depende lê. O bucket S3 e a tabela DynamoDB do state são bootstrap e permanecem após os destroys.
+
+O NodePort `30080` dos nodes não é o endpoint público: a entrada é o API Gateway.
 
 ## 2. Pré-requisitos antes do primeiro deploy
 
@@ -23,60 +25,40 @@ Antes de executar qualquer workflow, confira o [Runbook AWS](./runbook_aws.md) e
 
 - Bucket S3 de state com versionamento, criptografia e bloqueio de acesso público.
 - Tabela DynamoDB `tech-challenge-tfstate-lock` com a chave `LockID`.
-- Provider OIDC do GitHub Actions e roles IAM `tech-challenge-gha-plan` / `tech-challenge-gha-apply` com trust policies corretas.
-- Variables e secrets obrigatórios cadastrados nas configurações de Actions do repositório.
+- Provider OIDC do GitHub Actions e role `tech-challenge-gha-apply`, com trust policy liberando os quatro repositórios.
+- Variables e secrets cadastrados em cada repositório. A lista de cada um está no README dele; o resumo está no [Runbook AWS](./runbook_aws.md#variables-e-secrets-por-repositório).
 
-### GitHub Actions variables
+`DB_ROOT_PASSWORD` deve ter pelo menos 32 caracteres para passar a precondição do Terraform (infra-db). Ele, `JWT_SECRET` e `LAMBDA_DB_PASSWORD` precisam ter **o mesmo valor** nos repositórios que os usam.
 
-| Variable | Finalidade |
-|---|---|
-| `TF_STATE_BUCKET` | Bucket S3 do state Terraform |
-| `TF_STATE_LOCK_TABLE` | Tabela DynamoDB de lock |
-| `AWS_ROLE_ARN_PLAN` | Role usada pelo workflow IaC/plan, quando aplicável |
-| `AWS_ROLE_ARN_APPLY` | Role usada pelos workflows `AWS deploy` e `AWS destroy` |
-| `EKS_ADMIN_PRINCIPAL_ARNS` | Opcional. Lista JSON de ARNs de usuários/roles IAM com acesso admin ao cluster EKS, ex.: `["arn:aws:iam::123456789012:user/fulano"]`. Grupos IAM não são suportados pelo EKS |
-
-### GitHub Actions secrets
-
-| Secret | Finalidade |
-|---|---|
-| `DB_PASSWORD` | Senha do usuário de aplicação `app_user` |
-| `DB_ROOT_PASSWORD` | Senha administrativa do RDS (usuário configurado como `dbadmin`) e do Job temporário de configuração |
-| `JWT_SECRET` | Assinatura dos JWTs administrativos |
-| `LAMBDA_DB_PASSWORD` | Senha do usuário somente leitura `autenticacao`, usado pela Lambda para consultar `clientes` (Terraform e Job de configuração) |
-| `OS_EMAIL_ACTION_TOKEN_SECRET` | Assinatura dos tokens dos links de e-mail da ordem de serviço |
-| `MAIL_USERNAME` | Usuário SMTP |
-| `MAIL_PASSWORD` | Senha SMTP |
-
-`DB_ROOT_PASSWORD` deve ter pelo menos 32 caracteres para passar a precondição do Terraform. Use uma senha forte e armazene-a apenas nos GitHub Actions Secrets; não a coloque em arquivos versionados, comandos registrados no histórico ou documentação.
-
-**Não recrie o bucket, a tabela nem as roles a cada deploy.** São recursos de bootstrap necessários para que os workflows consigam acessar o state e assumir a role de deploy.
+**Não recrie o bucket, a tabela nem a role a cada deploy.** São recursos de bootstrap necessários para que os workflows consigam acessar o state e assumir a role de deploy.
 
 ## 3. Fazer o deploy manual
 
-### 3.1 Preparar o código
+### 3.1 Ordem
 
-1. Use a branch `master`.
-2. Confirme que os workflows e arquivos Terraform/chart estão commitados e enviados ao GitHub.
-3. Não execute `AWS deploy` e `AWS destroy` ao mesmo tempo. Os workflows usam o mesmo grupo de concorrência e o mesmo state remoto.
+```
+Deploy:  infra-k8s → infra-db → app → lambda
+Destroy: lambda → app → infra-db → infra-k8s
+```
 
-> Durante testes em uma branch de feature, tanto a condição de branch do workflow quanto a trust policy da role OIDC precisam autorizar explicitamente essa branch. O procedimento operacional padrão deve ser realizado a partir de `master`. Não mantenha uma exceção temporária de branch mais permissiva do que o necessário.
+Cada workflow confere o contrato SSM antes de começar. Fora de ordem, ele aborta com uma mensagem dizendo qual repositório rodar antes (por exemplo, `/tech-challenge/db/address não existe. Rode o Deploy do tech-challenge-infra-db antes.`).
 
-### 3.2 Iniciar o workflow
+Use sempre a branch `master`. A condição de branch dos workflows e a trust policy da role exigem isso.
 
-No GitHub:
+### 3.2 Executar
 
-1. Abra o repositório `oesleik/tech-chalange`.
-2. Acesse **Actions → AWS deploy → Run workflow**.
-3. Selecione a branch `master` (procedimento padrão).
-4. Selecione o tipo de instância dos nodes:
-   - `t3.medium`: padrão e geralmente mais econômico para validações funcionais.
-   - `t3.large`: opção maior para testes que precisam de mais recursos, inclusive observação do HPA; terá custo maior.
-5. Clique em **Run workflow** e abra a execução iniciada.
+Em cada repositório, na ordem: **Actions → Deploy → Run workflow** → branch `master`.
 
-O workflow executa, em sequência, autenticação AWS via OIDC, inicialização e plan/apply do Terraform, obtenção do endpoint RDS, build/push da imagem PHP para ECR, configuração do kubeconfig, instalação do metrics-server, preparação temporária das credenciais administrativas do RDS, instalação/atualização do chart Helm, configuração do usuário da aplicação, migrations e exibição da URL do API Gateway.
+| Repositório | Input | Duração aproximada | Saída |
+|---|---|---|---|
+| infra-k8s | tipo de instância dos nodes (`t3.small` padrão) | 15-20 min | URL do API Gateway |
+| infra-db | classe do RDS (`db.t3.micro` padrão) | 5-10 min | endpoint do RDS |
+| tech-chalange | — | 5-10 min | URL do API Gateway e do Swagger |
+| lambda | — | 2-3 min | URL de `POST /autenticacao` |
 
-A URL pública dinâmica da aplicação aparece na etapa **Show API Gateway URL** e no **Job Summary**. Não fixe no código a URL, o ID do API Gateway, o IP público de uma instância ou o endpoint do RDS: esses valores podem mudar depois de um destroy/redeploy.
+O deploy da aplicação faz build/push da imagem, cria o Secret temporário `rds-admin-secrets`, roda o `helm upgrade`, espera o job `rds-user-setup` (que cria os usuários `app_user` e `autenticacao` no RDS), roda as migrations e publica `/tech-challenge/app/image_tag`. A Lambda só sobe depois disso, porque depende do usuário `autenticacao`.
+
+A URL pública aparece no **Job Summary**. Não fixe no código a URL, o ID do API Gateway ou o endpoint do RDS: esses valores mudam depois de um destroy/redeploy.
 
 ## 4. Validar o deploy
 
@@ -175,7 +157,7 @@ kubectl exec --namespace tech-challenge deploy/php -- \
 
 ### Checklist pós-deploy
 
-- [ ] Workflow `AWS deploy` terminou com sucesso.
+- [ ] Workflows de Deploy dos quatro repositórios terminaram com sucesso.
 - [ ] URL do API Gateway respondeu HTTP `200`.
 - [ ] Node do EKS está `Ready`.
 - [ ] PHP e Nginx estão prontos.
@@ -197,7 +179,7 @@ kubectl logs deployment/php -n tech-challenge --all-containers=true --tail=100
 kubectl logs job/rds-user-setup -n tech-challenge --all-containers=true --tail=100
 ```
 
-Se o Job ainda não existir, o último comando pode responder `NotFound`; isso é uma pista de que o hook de configuração do banco não foi criado/executado. Verifique também a saída da etapa `Helm upgrade` no GitHub Actions. O workflow deve permitir que o Job `rds-user-setup` seja criado antes de aguardar a prontidão final do Nginx, e deve verificar o Nginx depois das migrations.
+Se o Job ainda não existir, o último comando pode responder `NotFound`; isso é uma pista de que o hook de configuração do banco não foi criado/executado. Verifique também a saída da etapa `Helm upgrade` no workflow de Deploy do tech-chalange.
 
 Erros comuns:
 
@@ -206,19 +188,21 @@ Erros comuns:
 - **PHP pronto, Nginx não pronto:** veja os eventos e logs do Nginx e confirme que o Job de setup e as migrations concluíram.
 - **AWS CLI informa token expirado:** autentique novamente com `aws login --region us-east-1` e refaça a consulta.
 - **Workflow diz que a branch não é permitida:** selecione `master` para o procedimento padrão; confira também a trust policy OIDC da role `tech-challenge-gha-apply`.
+- **Workflow aborta dizendo que um parâmetro `/tech-challenge/...` não existe:** o repositório anterior da cadeia não foi aplicado (ou foi destruído). Rode o Deploy indicado na mensagem.
+- **Destroy aborta citando parâmetros de outro escopo:** algum dependente ainda está de pé. Rode o Destroy dele antes.
 
 ## 6. Parar a infraestrutura e evitar custos
 
-O `AWS destroy` remove a infraestrutura gerenciada pelo Terraform, incluindo EKS, node group, rede associada, API Gateway/VPC Link/NLB, RDS e outros recursos incluídos no state. A exclusão do RDS é destrutiva: a configuração atual usa `skip_final_snapshot = true`, portanto não cria snapshot final automaticamente e os dados serão perdidos.
+O destroy é feito repositório a repositório, na ordem **inversa** do deploy. Em cada um: **Actions → Destroy → Run workflow** → branch `master` → digite exatamente `destroy` no campo de confirmação.
 
-Para destruir pelo GitHub:
+1. **tech-challenge-lambda**: remove a função, a rota e a regra no SG do RDS.
+2. **tech-chalange**: `helm uninstall` e remoção do namespace `tech-challenge`.
+3. **tech-challenge-infra-db**: remove o RDS. A configuração usa `skip_final_snapshot = true`: **os dados são perdidos**.
+4. **tech-challenge-infra-k8s**: remove EKS, node group, VPC, API Gateway, NLB, ECR (com as imagens) e os recursos do New Relic.
 
-1. Abra **Actions → AWS destroy → Run workflow**.
-2. Selecione obrigatoriamente a branch `master`.
-3. No campo de confirmação, digite exatamente `destroy`.
-4. Inicie o workflow e aguarde a conclusão. Se falhar, leia o log e não presuma que todos os recursos foram removidos.
+Cada destroy se recusa a rodar enquanto existirem parâmetros SSM dos dependentes (por exemplo, o infra-db exige `/tech-challenge/app` e `/tech-challenge/lambda` vazios). Se um workflow falhar, leia o log e não presuma que os recursos foram removidos.
 
-O workflow não apaga o bucket S3 do state, a tabela DynamoDB de lock nem o bootstrap OIDC/roles. Esses recursos são necessários para futuras execuções e devem ser mantidos, salvo uma desativação deliberada e separada do projeto.
+Nenhum workflow apaga o bucket S3 do state, a tabela DynamoDB de lock nem o bootstrap OIDC/role.
 
 Depois que o destroy concluir, confira o RDS:
 

@@ -199,8 +199,8 @@ Deve ser gerado e entregue um relatório com os resultados do scan de vulnerabil
 - **MySQL:** [ADR-001](../adr/001-banco-dados.md)
 - **Symfony Validator:** [ADR-002](../adr/002-symfony-validator.md)
 - **Slim:** [ADR-003](../adr/003-framework-slim.md)
-- **Minikube / MiniStack / EKS:** [ADR-004](../adr/004-minikube-ministack-eks.md)
 - **Clean Architecture:** [ADR-005](../adr/005-clean-architecture.md)
+- **Divisão em quatro repositórios:** [ADR-013](../adr/013-divisao-repositorios.md)
 
 ---
 
@@ -286,5 +286,3 @@ O pipeline bloqueia o merge caso o Quality Gate falhe, garantindo que apenas có
 
 ### OWASP ZAP
 Varredura de segurança dinâmica (DAST) executada em modo passivo via container Docker, seguindo as diretrizes do OWASP Top 10. Integrada ao pipeline de CI/CD, analisa a superfície de ataque da API em execução. Complementa os controles estáticos do SonarCloud com uma perspectiva de segurança em tempo de execução.
-
----

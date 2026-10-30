@@ -1,8 +1,15 @@
 # Runbook: bootstrap AWS real + GitHub Actions (Terraform)
 
-Passos **manuais via CLI** que o Terraform **não** cria (e o **AWS destroy** também não apaga): state remoto + OIDC do GitHub Actions.
+Passos **manuais via CLI** que o Terraform **não** cria (e nenhum Destroy apaga): state remoto + OIDC do GitHub Actions. Valem para os quatro repositórios ([ADR-013](../adr/013-divisao-repositorios.md)):
 
-CI em PR: [`.github/workflows/iac.yml`](../../.github/workflows/iac.yml) (só `init -backend=false`, `validate` e lint do Helm, **sem** assumir role na AWS). Subir o ambiente: **Actions -> AWS deploy** (role **apply**, branch `master`). Parar o custo: **Actions -> AWS destroy** (mesma role apply; digite `destroy`).
+| Repositório | State |
+|---|---|
+| `oesleik/tech-challenge-infra-k8s` | `tech-challenge/infra-k8s.tfstate` |
+| `oesleik/tech-challenge-infra-db` | `tech-challenge/infra-db.tfstate` |
+| `oesleik/tech-chalange` | — (só Helm) |
+| `oesleik/tech-challenge-lambda` | `tech-challenge/lambda.tfstate` |
+
+O CI de PR de cada repositório só faz validação estática (`terraform validate`, `helm lint`, testes), **sem** assumir role na AWS. Subir o ambiente: **Actions -> Deploy** em cada repositório, na ordem infra-k8s → infra-db → app → lambda (role **apply**, branch `master`). Parar o custo: **Actions -> Destroy** na ordem inversa (digite `destroy`). Procedimento completo no [guia de deploy](./deploy_aws.md).
 
 ---
 
@@ -11,19 +18,22 @@ CI em PR: [`.github/workflows/iac.yml`](../../.github/workflows/iac.yml) (só `i
 | Recurso | Onde é configurado |
 |---|---|
 | Bucket S3 + tabela DynamoDB (state/lock) | CLI (setup) |
-| IdP `token.actions.githubusercontent.com` + roles `gha-plan` / `gha-apply` | CLI (setup) |
+| IdP `token.actions.githubusercontent.com` + role `gha-apply` (única, compartilhada pelos 4 repos) | CLI (setup) |
 | Grupo IAM `tech-challenge-devs` (acesso AWS dos devs) | CLI (setup) |
-| Access entries EKS dos devs | workflow **AWS deploy** (variable `EKS_ADMIN_PRINCIPAL_ARNS`) |
-| Variables do Actions (`TF_STATE_*`, `AWS_ROLE_ARN_*`, `EKS_ADMIN_PRINCIPAL_ARNS`) | `gh variable set` ou via interface no GitHub |
-| Secrets do Actions (`DB_*`, `JWT_*`, `MAIL_*`) | `gh secret set` ou via interface no GitHub |
-| Cluster EKS + node group + ECR | workflow **AWS deploy** (trigger manual) |
-| API Gateway (HTTP API) + VPC Link + NLB interno | workflow **AWS deploy** (URL no summary do job / `terraform output api_gateway_url`) |
-| Integração AWS do New Relic (role de polling, vínculo, integrações e Firehose de logs) | workflow **AWS deploy** (`infra/newrelic.tf`), inclusive o vínculo da conta e as integrações no New Relic; ver [New Relic](../observability/newrelic.md#integração-aws) |
-| Dashboard, synthetic do `/health`, policy de alertas e notificação por e-mail no New Relic | workflow **AWS deploy** (`infra/newrelic_dashboard.tf`, `infra/newrelic_alerts.tf`; e-mails na variable `NEW_RELIC_ALERT_EMAILS`); ver [New Relic](../observability/newrelic.md#dashboard-alertas-e-synthetic) |
+| Access entries EKS dos devs | Deploy do **infra-k8s** (variable `EKS_ADMIN_PRINCIPAL_ARNS`) |
+| Variables do Actions (`TF_STATE_*`, `AWS_ROLE_ARN_APPLY`...) | `gh variable set` em cada repositório ([tabela](#variables-e-secrets-por-repositório)) |
+| Secrets do Actions (`DB_*`, `JWT_*`, `MAIL_*`, `NEW_RELIC_*`) | `gh secret set` em cada repositório ([tabela](#variables-e-secrets-por-repositório)) |
+| Cluster EKS + node group + ECR | Deploy do **infra-k8s** |
+| RDS MySQL | Deploy do **infra-db** |
+| Lambda `autenticacao` + rota `POST /autenticacao` | Deploy do **lambda** |
+| Contrato SSM `/tech-challenge/*` | publicado por cada Deploy, apagado pelo Destroy correspondente |
+| API Gateway (HTTP API) + VPC Link + NLB interno | Deploy do **infra-k8s** (URL no summary do job) |
+| Integração AWS do New Relic (role de polling, vínculo, integrações e Firehose de logs) | Deploy do **infra-k8s** (`terraform/newrelic.tf`), inclusive o vínculo da conta e as integrações no New Relic; ver [New Relic](../observability/newrelic.md#integração-aws) |
+| Dashboard, synthetic do `/health`, policy de alertas e notificação por e-mail no New Relic | Deploy do **infra-k8s** (`terraform/newrelic_dashboard.tf`, `terraform/newrelic_alerts.tf`; e-mails na variable `NEW_RELIC_ALERT_EMAILS`); ver [New Relic](../observability/newrelic.md#dashboard-alertas-e-synthetic) |
 
-> Role `tech-challenge-gha-apply` já criada antes do API Gateway, do RDS, da Lambda ou da integração AWS do New Relic? Rode de novo só o `cat > /tmp/gha-apply-inline.json` e o `aws iam put-role-policy` da seção abaixo (statements `ApiGatewayNlb`, `RdsMysql`, `RdsDescribe`, `RdsMysqlDefaultGroups`, `RdsServiceLinkedRole`, `LambdaAutenticacao`, `LambdaVpcEniCleanup`, `NewRelicFirehose`, `NewRelicFirehoseBackupBucket`, `NewRelicLogSubscriptions`, `NewRelicInlineRolePolicies`). O `put-role-policy` substitui a policy inline inteira, então exporte as variáveis do início da seção antes.
+> **Role `tech-challenge-gha-apply` já criada antes da divisão em quatro repositórios?** Rode de novo o `cat > /tmp/gha-apply-trust.json` + `aws iam update-assume-role-policy` (trust com os quatro repositórios) e o `cat > /tmp/gha-apply-inline.json` + `aws iam put-role-policy` (statements novos/alterados: `TerraformStateObjects` com `tech-challenge/*` e `SsmContract`). O `put-role-policy` substitui a policy inline inteira, então exporte as variáveis do início da seção antes. A role `tech-challenge-gha-plan` e a variable `AWS_ROLE_ARN_PLAN` não são mais usadas e podem ser removidas.
 
-O NodePort `30080` **não** é acessível pela internet: o SG dos nodes só aceita o SG do NLB interno, que só aceita o SG do VPC Link. O NLB cobra por hora enquanto existir (~US$ 0,0225/h); some no **AWS destroy**.
+O NodePort `30080` **não** é acessível pela internet: o SG dos nodes só aceita o SG do NLB interno, que só aceita o SG do VPC Link. O NLB cobra por hora enquanto existir (~US$ 0,0225/h); some no Destroy do **infra-k8s**.
 
 ---
 
@@ -63,14 +73,14 @@ O Terraform espera a coluna **`LockID`** (é o nome padrão). Não use outro nom
 
 ---
 
-## OIDC GitHub Actions (duas roles)
+## OIDC GitHub Actions (role única)
 
-Pré-requisito: AWS CLI autenticado **na sua máquina** com permissão de IAM. Ajuste `GH_OWNER` / `GH_REPO` se o remote não for `oesleik/tech-chalange`.
+Pré-requisito: AWS CLI autenticado **na sua máquina** com permissão de IAM. Ajuste `GH_OWNER` e os nomes dos repositórios se forem outros.
 
 ```bash
 export ACCOUNT_ID="$(aws sts get-caller-identity --query Account --output text)"
 export GH_OWNER=oesleik
-export GH_REPO=tech-chalange
+export GH_REPOS="tech-challenge-infra-k8s tech-challenge-infra-db tech-chalange tech-challenge-lambda"
 export STATE_BUCKET="tech-challenge-${ACCOUNT_ID}-tfstate"
 export OIDC_PROVIDER_ARN="arn:aws:iam::${ACCOUNT_ID}:oidc-provider/token.actions.githubusercontent.com"
 ```
@@ -86,77 +96,22 @@ aws iam create-open-id-connect-provider \
   --thumbprint-list 6938fd4d98bab03faadb97b34396831e3780aea1 1c58a3a8518e8759bf075cb0be186b4c3af420f2
 ```
 
-### Role plan (PR > `terraform plan`)
-
-Trust: só `pull_request` neste repo **e** só o workflow `iac.yml`. Permissão: `ReadOnlyAccess` + lock do state (plan precisa do lock; não precisa gravar o tfstate).
-
-Um PR malicioso que altere o workflow ainda só assume esta role — não consegue `apply`/`destroy`.
-
-```bash
-cat > /tmp/gha-plan-trust.json <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Principal": {
-        "Federated": "${OIDC_PROVIDER_ARN}"
-      },
-      "Action": "sts:AssumeRoleWithWebIdentity",
-      "Condition": {
-        "StringEquals": {
-          "token.actions.githubusercontent.com:aud": "sts.amazonaws.com"
-        },
-        "StringLike": {
-          "token.actions.githubusercontent.com:sub": "repo:${GH_OWNER}/${GH_REPO}:pull_request",
-          "token.actions.githubusercontent.com:job_workflow_ref": "${GH_OWNER}/${GH_REPO}/.github/workflows/iac.yml@*"
-        }
-      }
-    }
-  ]
-}
-EOF
-
-cat > /tmp/gha-plan-inline.json <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Sid": "TerraformLock",
-      "Effect": "Allow",
-      "Action": [
-        "dynamodb:DescribeTable",
-        "dynamodb:GetItem",
-        "dynamodb:PutItem",
-        "dynamodb:DeleteItem"
-      ],
-      "Resource": "arn:aws:dynamodb:us-east-1:${ACCOUNT_ID}:table/tech-challenge-tfstate-lock"
-    }
-  ]
-}
-EOF
-
-aws iam create-role \
-  --role-name tech-challenge-gha-plan \
-  --assume-role-policy-document file:///tmp/gha-plan-trust.json
-
-aws iam attach-role-policy \
-  --role-name tech-challenge-gha-plan \
-  --policy-arn arn:aws:iam::aws:policy/ReadOnlyAccess
-
-aws iam put-role-policy \
-  --role-name tech-challenge-gha-plan \
-  --policy-name terraform-state-lock \
-  --policy-document file:///tmp/gha-plan-inline.json
-```
-
 ### Role apply (deploy e destroy na `master`)
 
-Trust: só `refs/heads/master` **e** só `aws-deploy.yml` / `aws-destroy.yml`. Sem isso, qualquer workflow novo na `master` poderia assumir a role.
+Trust: só `refs/heads/master` **e** só `deploy.yml` / `destroy.yml` dos quatro repositórios. Sem isso, qualquer workflow novo na `master` poderia assumir a role. Os CIs de PR não assumem role nenhuma.
 
-A policy cobre o HCL atual (VPC, IAM de EKS/Lambda, EKS, ECR, API Gateway/NLB, RDS, Lambda) + state. O `Deny` no final impede o apply de apagar o próprio setup de OIDC.
+Uma role só para os quatro repositórios é uma simplificação deliberada (projeto de estudos): o raio de impacto de um repositório comprometido é a conta inteira do projeto. O próximo passo natural seria uma role por repositório, com a policy restrita aos recursos dele ([ADR-013](../adr/013-divisao-repositorios.md)).
+
+A policy cobre o HCL atual (VPC, IAM de EKS/Lambda, EKS, ECR, API Gateway/NLB, RDS, Lambda, New Relic), o state dos três repositórios Terraform e o contrato SSM. O `Deny` no final impede o apply de apagar o próprio setup de OIDC.
 
 ```bash
+WORKFLOW_REFS="$(for r in $GH_REPOS; do for w in deploy destroy; do
+  printf '"%s/%s/.github/workflows/%s.yml@refs/heads/master",' "$GH_OWNER" "$r" "$w"
+done; done | sed 's/,$//')"
+SUBS="$(for r in $GH_REPOS; do
+  printf '"repo:%s/%s:ref:refs/heads/master",' "$GH_OWNER" "$r"
+done | sed 's/,$//')"
+
 cat > /tmp/gha-apply-trust.json <<EOF
 {
   "Version": "2012-10-17",
@@ -170,13 +125,8 @@ cat > /tmp/gha-apply-trust.json <<EOF
       "Condition": {
         "StringEquals": {
           "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
-          "token.actions.githubusercontent.com:job_workflow_ref": [
-            "${GH_OWNER}/${GH_REPO}/.github/workflows/aws-deploy.yml@refs/heads/master",
-            "${GH_OWNER}/${GH_REPO}/.github/workflows/aws-destroy.yml@refs/heads/master"
-          ]
-        },
-        "StringLike": {
-          "token.actions.githubusercontent.com:sub": "repo:${GH_OWNER}/${GH_REPO}:ref:refs/heads/master"
+          "token.actions.githubusercontent.com:job_workflow_ref": [${WORKFLOW_REFS}],
+          "token.actions.githubusercontent.com:sub": [${SUBS}]
         }
       }
     }
@@ -203,7 +153,7 @@ cat > /tmp/gha-apply-inline.json <<EOF
       "Sid": "TerraformStateObjects",
       "Effect": "Allow",
       "Action": ["s3:GetObject", "s3:PutObject", "s3:DeleteObject"],
-      "Resource": "arn:aws:s3:::${STATE_BUCKET}/tech-challenge/terraform.tfstate"
+      "Resource": "arn:aws:s3:::${STATE_BUCKET}/tech-challenge/*"
     },
     {
       "Sid": "TerraformLock",
@@ -427,6 +377,25 @@ cat > /tmp/gha-apply-inline.json <<EOF
       ]
     },
     {
+      "Sid": "SsmContract",
+      "Effect": "Allow",
+      "Action": [
+        "ssm:PutParameter", "ssm:GetParameter", "ssm:GetParameters",
+        "ssm:GetParametersByPath", "ssm:DeleteParameter", "ssm:DeleteParameters",
+        "ssm:AddTagsToResource", "ssm:RemoveTagsFromResource", "ssm:ListTagsForResource"
+      ],
+      "Resource": [
+        "arn:aws:ssm:us-east-1:${ACCOUNT_ID}:parameter/tech-challenge",
+        "arn:aws:ssm:us-east-1:${ACCOUNT_ID}:parameter/tech-challenge/*"
+      ]
+    },
+    {
+      "Sid": "SsmDescribe",
+      "Effect": "Allow",
+      "Action": "ssm:DescribeParameters",
+      "Resource": "*"
+    },
+    {
       "Sid": "DenyTouchGithubOidcBootstrap",
       "Effect": "Deny",
       "Action": [
@@ -438,7 +407,6 @@ cat > /tmp/gha-apply-inline.json <<EOF
       ],
       "Resource": [
         "${OIDC_PROVIDER_ARN}",
-        "arn:aws:iam::${ACCOUNT_ID}:role/tech-challenge-gha-plan",
         "arn:aws:iam::${ACCOUNT_ID}:role/tech-challenge-gha-apply"
       ]
     }
@@ -450,6 +418,7 @@ aws iam create-role \
   --role-name tech-challenge-gha-apply \
   --max-session-duration 3600 \
   --assume-role-policy-document file:///tmp/gha-apply-trust.json
+# Role já existente: aws iam update-assume-role-policy --role-name tech-challenge-gha-apply --policy-document file:///tmp/gha-apply-trust.json
 
 aws iam put-role-policy \
   --role-name tech-challenge-gha-apply \
@@ -463,23 +432,19 @@ PR de **fork** não assume estas roles (`sub` é outro repositório).
 
 ## GitHub: variables
 
-Os ARNs não são secretos (a proteção é o **trust** da role).
+Os ARNs não são secretos (a proteção é o **trust** da role). Comuns a todos os repositórios:
 
 ```bash
-gh variable set TF_STATE_BUCKET --repo "${GH_OWNER}/${GH_REPO}" --body "${STATE_BUCKET}"
-gh variable set TF_STATE_LOCK_TABLE --repo "${GH_OWNER}/${GH_REPO}" --body "tech-challenge-tfstate-lock"
-gh variable set AWS_ROLE_ARN_PLAN --repo "${GH_OWNER}/${GH_REPO}" --body "arn:aws:iam::${ACCOUNT_ID}:role/tech-challenge-gha-plan"
-gh variable set AWS_ROLE_ARN_APPLY --repo "${GH_OWNER}/${GH_REPO}" --body "arn:aws:iam::${ACCOUNT_ID}:role/tech-challenge-gha-apply"
+for r in $GH_REPOS; do
+  gh variable set AWS_ROLE_ARN_APPLY --repo "${GH_OWNER}/${r}" --body "arn:aws:iam::${ACCOUNT_ID}:role/tech-challenge-gha-apply"
+done
+for r in tech-challenge-infra-k8s tech-challenge-infra-db tech-challenge-lambda; do
+  gh variable set TF_STATE_BUCKET --repo "${GH_OWNER}/${r}" --body "${STATE_BUCKET}"
+  gh variable set TF_STATE_LOCK_TABLE --repo "${GH_OWNER}/${r}" --body "tech-challenge-tfstate-lock"
+done
 ```
 
-| Variable | Uso |
-|---|---|
-| `TF_STATE_BUCKET` | backend S3 |
-| `TF_STATE_LOCK_TABLE` | lock DynamoDB |
-| `AWS_ROLE_ARN_PLAN` | sem uso hoje (role plan; ver seção da role) |
-| `AWS_ROLE_ARN_APPLY` | **AWS deploy** e **AWS destroy** |
-| `EKS_ADMIN_PRINCIPAL_ARNS` | **AWS deploy** (opcional; ver [Acesso dos devs](#acesso-dos-devs-iam--eks)) |
-| `NEW_RELIC_ALERT_EMAILS` | **AWS deploy** e **AWS destroy** (opcional; e-mails dos alertas do New Relic separados por vírgula; ver [New Relic](../observability/newrelic.md#dashboard-alertas-e-synthetic)) |
+A tabela completa (opcionais incluídos) está em [Variables e secrets por repositório](#variables-e-secrets-por-repositório).
 
 ---
 
@@ -492,7 +457,7 @@ São duas camadas independentes, e o dev precisa das duas:
 | IAM (grupo `tech-challenge-devs`) | API/console da AWS para os serviços do projeto | CLI, uma vez por conta |
 | Access entry do EKS | Recursos do Kubernetes (pods, deployments etc.) no console e no `kubectl` | Terraform, via variable `EKS_ADMIN_PRINCIPAL_ARNS` |
 
-Pré-requisitos: usuários IAM já criados (senha de console/MFA/access keys são manuais) e as variáveis do início da seção [OIDC](#oidc-github-actions-duas-roles) exportadas.
+Pré-requisitos: usuários IAM já criados (senha de console/MFA/access keys são manuais) e as variáveis do início da seção [OIDC](#oidc-github-actions-role-única) exportadas.
 
 ### Grupo IAM
 
@@ -502,7 +467,7 @@ Ficam **sem restrição** (conta inteira): EC2/VPC, Auto Scaling, API Gateway e 
 
 IAM é só leitura. A exceção é `iam:PassRole` nas roles do projeto, necessário para editar a configuração da Lambda ou do node group pelo console; não permite alterar as roles.
 
-Criar recursos que geram custo fica só com o Terraform (role `gha-apply`, no **AWS deploy**). Os `Deny` no final bloqueiam instâncias EC2, volumes/snapshots/AMIs, Elastic IPs, NAT Gateway, VPC endpoints, VPN, ASGs, clusters/node groups EKS, instâncias/restores/snapshots RDS, Lambdas, load balancers, APIs do API Gateway, log groups, dashboards/alarmes/métricas customizadas. Alterar e apagar os recursos existentes continua liberado, inclusive mudanças que aumentam custo (escalar o node group, trocar a classe do RDS). Um `Deny` vale mesmo que o usuário tenha outra policy permissiva (ex.: `AdministratorAccess`): quem precisar criar recursos manualmente não pode estar no grupo.
+Criar recursos que geram custo fica só com o Terraform (role `gha-apply`, nos workflows de Deploy). Os `Deny` no final bloqueiam instâncias EC2, volumes/snapshots/AMIs, Elastic IPs, NAT Gateway, VPC endpoints, VPN, ASGs, clusters/node groups EKS, instâncias/restores/snapshots RDS, Lambdas, load balancers, APIs do API Gateway, log groups, dashboards/alarmes/métricas customizadas. Alterar e apagar os recursos existentes continua liberado, inclusive mudanças que aumentam custo (escalar o node group, trocar a classe do RDS). Um `Deny` vale mesmo que o usuário tenha outra policy permissiva (ex.: `AdministratorAccess`): quem precisar criar recursos manualmente não pode estar no grupo.
 
 ```bash
 cat > /tmp/devs-inline.json <<EOF
@@ -596,6 +561,21 @@ cat > /tmp/devs-inline.json <<EOF
       "Resource": "arn:aws:dynamodb:us-east-1:${ACCOUNT_ID}:table/tech-challenge-tfstate-lock"
     },
     {
+      "Sid": "SsmContractRead",
+      "Effect": "Allow",
+      "Action": ["ssm:GetParameter", "ssm:GetParameters", "ssm:GetParametersByPath"],
+      "Resource": [
+        "arn:aws:ssm:us-east-1:${ACCOUNT_ID}:parameter/tech-challenge",
+        "arn:aws:ssm:us-east-1:${ACCOUNT_ID}:parameter/tech-challenge/*"
+      ]
+    },
+    {
+      "Sid": "SsmDescribe",
+      "Effect": "Allow",
+      "Action": "ssm:DescribeParameters",
+      "Resource": "*"
+    },
+    {
       "Sid": "IamRead",
       "Effect": "Allow",
       "Action": ["iam:Get*", "iam:List*"],
@@ -676,68 +656,76 @@ aws iam add-user-to-group --group-name tech-challenge-devs --user-name fulano
 Lista JSON com o ARN de **todos** os devs.
 
 ```bash
-gh variable set EKS_ADMIN_PRINCIPAL_ARNS --repo "${GH_OWNER}/${GH_REPO}" \
+gh variable set EKS_ADMIN_PRINCIPAL_ARNS --repo "${GH_OWNER}/tech-challenge-infra-k8s" \
   --body "[\"arn:aws:iam::${ACCOUNT_ID}:user/fulano\", \"arn:aws:iam::${ACCOUNT_ID}:user/beltrano\"]"
 ```
 
-Cada ARN ganha `AmazonEKSClusterAdminPolicy` no cluster inteiro (`infra/eks.tf`). Access entry criada antes manualmente no console dá `ResourceInUseException` no apply: apague-a no console (EKS > cluster > Access) antes do deploy.
+Cada ARN ganha `AmazonEKSClusterAdminPolicy` no cluster inteiro (`terraform/eks.tf` do infra-k8s). Access entry criada antes manualmente no console dá `ResourceInUseException` no apply: apague-a no console (EKS > cluster > Access) antes do deploy.
 
 `kubectl` local: `aws eks update-kubeconfig --name tech-challenge --region us-east-1` com as credenciais do próprio usuário (não de uma role assumida, senão o ARN não bate com o da access entry).
 
 ---
 
-## GitHub: secrets (aplicação)
+## GitHub: secrets
 
 ```bash
-# Valores novos para o cluster (não reutilize o .env local).
-# gh secret set sem --body pede o valor no terminal.
-gh secret set DB_PASSWORD --repo "${GH_OWNER}/${GH_REPO}"
-gh secret set DB_ROOT_PASSWORD --repo "${GH_OWNER}/${GH_REPO}"
-gh secret set JWT_SECRET --repo "${GH_OWNER}/${GH_REPO}"
-gh secret set LAMBDA_DB_PASSWORD --repo "${GH_OWNER}/${GH_REPO}"
-gh secret set OS_EMAIL_ACTION_TOKEN_SECRET --repo "${GH_OWNER}/${GH_REPO}"
-gh secret set MAIL_USERNAME --repo "${GH_OWNER}/${GH_REPO}"
-gh secret set MAIL_PASSWORD --repo "${GH_OWNER}/${GH_REPO}"
+# Valores novos para a AWS (não reutilize o .env local).
+# gh secret set sem --body pede o valor no terminal; para os compartilhados,
+# gere o valor uma vez e passe com --body para não digitar diferente.
+APP=tech-chalange; DB=tech-challenge-infra-db; LAMBDA=tech-challenge-lambda; K8S=tech-challenge-infra-k8s
+
+DB_ROOT_PASSWORD="$(openssl rand -base64 36 | tr -d '/+=')"
+for r in $DB $APP; do gh secret set DB_ROOT_PASSWORD --repo "${GH_OWNER}/${r}" --body "$DB_ROOT_PASSWORD"; done
+
+JWT_SECRET="$(openssl rand -base64 48)"
+LAMBDA_DB_PASSWORD="$(openssl rand -base64 24 | tr -d '/+=')"
+for r in $APP $LAMBDA; do
+  gh secret set JWT_SECRET --repo "${GH_OWNER}/${r}" --body "$JWT_SECRET"
+  gh secret set LAMBDA_DB_PASSWORD --repo "${GH_OWNER}/${r}" --body "$LAMBDA_DB_PASSWORD"
+done
+unset DB_ROOT_PASSWORD JWT_SECRET LAMBDA_DB_PASSWORD
+
+for s in DB_PASSWORD OS_EMAIL_ACTION_TOKEN_SECRET MAIL_USERNAME MAIL_PASSWORD; do
+  gh secret set "$s" --repo "${GH_OWNER}/${APP}"
+done
+for s in NEW_RELIC_ACCOUNT_ID NEW_RELIC_API_KEY NEW_RELIC_LICENSE_KEY; do
+  gh secret set "$s" --repo "${GH_OWNER}/${K8S}"
+done
+gh secret set NEW_RELIC_LICENSE_KEY --repo "${GH_OWNER}/${APP}"
 ```
-
-| Secret | Uso |
-|---|---|
-| `DB_PASSWORD` | Usuário `app_user` (PHP, `init-file` MySQL) |
-| `DB_ROOT_PASSWORD` | Root do MySQL |
-| `JWT_SECRET` | JWT administrativo |
-| `LAMBDA_DB_PASSWORD` | Usuário MySQL somente leitura `autenticacao` (Lambda) |
-| `OS_EMAIL_ACTION_TOKEN_SECRET` | JWT dos links de e-mail da OS |
-| `MAIL_USERNAME` | SMTP |
-| `MAIL_PASSWORD` | SMTP |
-
-Minikube/MiniStack continuam com os placeholders de `values.yaml`.
 
 ---
 
-## MiniStack vs AWS no Terraform
+## Variables e secrets por repositório
 
-| | MiniStack (`make aws-local-up`) | AWS / CI |
-|---|---|---|
-| tfvars | `env/ministack.tfvars` | `env/aws.tfvars` |
-| Backend | `backend.tf` local gerado no `make aws-local-up` | S3 gerado no workflow |
-| ECR | não criado (`use_ministack = true`) | criado |
-| EBS CSI | não utilizado | removido da arquitetura AWS com RDS |
-| Instance type | default `t3.medium` | `aws.tfvars` + override no **AWS deploy** |
+| Nome | Tipo | infra-k8s | infra-db | app | lambda |
+|---|---|:-:|:-:|:-:|:-:|
+| `AWS_ROLE_ARN_APPLY` | variable | ✓ | ✓ | ✓ | ✓ |
+| `TF_STATE_BUCKET`, `TF_STATE_LOCK_TABLE` | variable | ✓ | ✓ | | ✓ |
+| `EKS_ADMIN_PRINCIPAL_ARNS` | variable (opcional) | ✓ | | | |
+| `NEW_RELIC_REGION` | variable (opcional) | ✓ | | ✓ | |
+| `NEW_RELIC_ALERT_EMAILS` | variable (opcional) | ✓ | | | |
+| `NEW_RELIC_ENTITY_GUID` | variable (opcional) | | | ✓ | |
+| `NEW_RELIC_ACCOUNT_ID` | secret | ✓ | | | |
+| `NEW_RELIC_API_KEY` | secret | ✓ | | opcional (marker) | |
+| `NEW_RELIC_LICENSE_KEY` | secret | ✓ | | ✓ | |
+| `DB_ROOT_PASSWORD` | secret, **compartilhado** | | ✓ | ✓ | |
+| `JWT_SECRET` | secret, **compartilhado** | | | ✓ | ✓ |
+| `LAMBDA_DB_PASSWORD` | secret, **compartilhado** | | | ✓ | ✓ |
+| `DB_PASSWORD` | secret | | | ✓ | |
+| `OS_EMAIL_ACTION_TOKEN_SECRET` | secret | | | ✓ | |
+| `MAIL_USERNAME`, `MAIL_PASSWORD` | secret (opcional) | | | ✓ | |
 
-Não rode `apply -var-file=env/aws.tfvars` apontando para o MiniStack, nem o inverso com o state S3.
+Os **compartilhados** precisam ter o mesmo valor nos repositórios marcados. Divergência só aparece em runtime: job `rds-user-setup` falha (`DB_ROOT_PASSWORD`), token emitido pela Lambda rejeitado pelo PHP com 401 (`JWT_SECRET`) ou Lambda sem acesso ao banco, 503 (`LAMBDA_DB_PASSWORD`).
 
 ---
 
 ## Derrubar tudo (evitar custos)
 
-O item caro é o **control plane EKS** enquanto o cluster existir. Workflow **AWS destroy** (confirm = `destroy`) é o caminho do CI.
+O item caro é o **control plane EKS** enquanto o cluster existir. Rode **Actions -> Destroy** (confirm = `destroy`) em cada repositório, na ordem **lambda → app → infra-db → infra-k8s**. Cada um recusa rodar enquanto um dependente ainda estiver de pé (parâmetros SSM em `/tech-challenge/<escopo>`). Detalhes no [guia de deploy](./deploy_aws.md#6-parar-a-infraestrutura-e-evitar-custos).
 
-Equivalente local, com backend S3 já configurado. Em instalações antigas, apague o namespace antes do destroy: versões anteriores executavam MySQL em PVC do EBS, e volumes remanescentes podem continuar gerando custos se ficarem órfãos. O workflow AWS destroy mantém uma etapa de limpeza para esse caso legado.
+Conferir sobras: EKS, RDS, NLB, ENIs da Lambda (levam alguns minutos para sumir) e parâmetros SSM:
 
 ```bash
-kubectl delete namespace tech-challenge --wait --timeout=5m
-kubectl wait --for=delete pv --all --timeout=5m
-terraform -chdir=infra destroy -var-file=env/aws.tfvars
+aws ssm get-parameters-by-path --path /tech-challenge --recursive --query 'Parameters[].Name'
 ```
-
-Conferir sobras: EC2 > Volumes, estado **available**, tag `kubernetes.io/created-for/pvc/name = mysql-pvc`.

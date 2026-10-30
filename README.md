@@ -3,13 +3,27 @@
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=oesleik_tech-chalange&metric=alert_status&token=2c46cc11128f8457c02888b5bc7957e75c88d680)](https://sonarcloud.io/summary/new_code?id=oesleik_tech-chalange)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=oesleik_tech-chalange&metric=coverage&token=2c46cc11128f8457c02888b5bc7957e75c88d680)](https://sonarcloud.io/summary/new_code?id=oesleik_tech-chalange)
 
-Stack completa containerizada pronta para desenvolvimento com:
+API da oficina mecânica (clientes, veículos, peças, serviços, estoque e ordens de serviço). Este repositório tem o código PHP, o ambiente local (Docker Compose) e o chart Helm que publica a API no EKS.
 
-- PHP 8.4 FPM
-- Slim Framework 4.x
-- MySQL 9
-- Nginx
-- phpMyAdmin
+A solução está dividida em quatro repositórios:
+
+| Repositório | Papel |
+|---|---|
+| [tech-challenge-infra-k8s](https://github.com/oesleik/tech-challenge-infra-k8s) | VPC, EKS, ECR, API Gateway, New Relic |
+| [tech-challenge-infra-db](https://github.com/oesleik/tech-challenge-infra-db) | Amazon RDS MySQL |
+| **tech-chalange** (este) | Aplicação PHP (Helm no EKS) |
+| [tech-challenge-lambda](https://github.com/oesleik/tech-challenge-lambda) | Lambda de autenticação (`POST /autenticacao`) |
+
+A divisão e o contrato entre eles estão no [ADR-013](./docs/adr/013-divisao-repositorios.md).
+
+## Tecnologias
+
+- PHP 8.4 FPM, Slim Framework 4.x, Nginx
+- MySQL 9 (local) / Amazon RDS MySQL (AWS)
+- Docker Compose (desenvolvimento local) e Helm 3 (EKS)
+- PHPUnit, php-cs-fixer, PHPStan, SonarCloud
+- OpenTelemetry (local) e agente PHP do New Relic (EKS)
+- GitHub Actions com OIDC
 
 ## Fases anteriores
 - Documentos de entregas das fases anteriores em [docs/entregas/](./docs/entregas/)
@@ -22,8 +36,6 @@ Stack completa containerizada pronta para desenvolvimento com:
 Ter o **Docker** e o **Docker Compose** instalados na máquina.
 
 Para execução de comandos, também é necessário o **make**. No Windows, instale o projeto dentro do **WSL**. É possível rodar os comandos manualmente para não depender do make.
-
-Para Kubernetes local: **Minikube**, **kubectl** e **Helm 3**. Para rodar AWS local (emulado com MiniStack): **Terraform**.
 
 ## 🚀 Como rodar
 
@@ -73,13 +85,16 @@ make help
 
 ## 🌐 Acessos
 
-| Serviço | URL |
-|---|---|
-| Aplicação | http://localhost |
-| Health check | http://localhost/health |
-| Swagger | http://localhost/docs/index.html |
-| phpMyAdmin | http://localhost:8080 |
-| MySQL (externo) | localhost:3306 |
+| Serviço | Local | AWS |
+|---|---|---|
+| Aplicação | http://localhost | `<api_gateway_url>` |
+| Health check | http://localhost/health | `<api_gateway_url>/health` |
+| Swagger | http://localhost/docs/index.html | `<api_gateway_url>/docs/index.html` |
+| Autenticação (Lambda) | — | `POST <api_gateway_url>/autenticacao` ([OpenAPI](https://github.com/oesleik/tech-challenge-lambda/blob/master/docs/openapi.yaml)) |
+| phpMyAdmin | http://localhost:8080 | — |
+| MySQL (externo) | localhost:3306 | — |
+
+O `<api_gateway_url>` aparece no summary dos workflows de deploy (infra-k8s e este repositório).
 
 **Credenciais do phpMyAdmin:**
 - Usuário: `app_user`
@@ -98,11 +113,8 @@ tech-chalange/
 │   ├── nginx/default.conf      # Configuração do Nginx
 │   ├── php/php.ini             # Configurações customizadas do PHP
 │   └── mysql/init/             # Scripts SQL executados na criação do banco
-├── docker-compose.ministack.yml # emulador AWS local
-├── charts/tech-challenge/      # Helm (Minikube, MiniStack, AWS)
-├── infra/                      # Terraform (VPC, IAM, EKS)
-├── scripts/                    # adapter kubeconfig MiniStack
-├── .github/workflows/          # Fluxos de CI/CD
+├── charts/tech-challenge/      # Helm da aplicação (EKS)
+├── .github/workflows/          # CI, deploy e destroy
 ├── public/index.php            # Entry point da aplicação (Slim 4)
 └── src/                        # Classes da aplicação (namespace App\)
 ```
@@ -154,10 +166,6 @@ Domínios e Contextos Delimitados) estão em [`docs/ddd/`](./docs/ddd/README.md)
 - **ADRs:** [`docs/adr/`](./docs/adr/README.md)
 - **DAS:** [`docs/arch/DAS.md`](./docs/arch/DAS.md)
 
-### Arquitetura na AWS
-
-![Arquitetura AWS](./docs/arch/AWS-Architecture.png)
-
 ### Visão Geral da Solução
 
 A aplicação segue **Clean Architecture** com separação entre **Domínio, Aplicação, Infraestrutura e Apresentação**. Cada módulo (Clientes, Veículos, Peças, Serviços, Estoque, OrdemServico) é independente, facilitando testes e manutenção.
@@ -186,27 +194,51 @@ src/{Modulo}/
 ```
 
 
-### Infraestrutura: Kubernetes com Auto-scaling (HPA)
+### Arquitetura no EKS
 
-#### Escalabilidade Automática
+![Arquitetura AWS](./docs/arch/AWS-Architecture.png)
 
-A aplicação usa **Horizontal Pod Autoscaler (HPA)** para escalar automaticamente conforme a carga:
+## Deploy na AWS
 
-**Ambientes:**
+Pré-requisitos: infra-k8s e infra-db já aplicados. O setup manual da conta (state, role OIDC `tech-challenge-gha-apply`) está no [runbook AWS](./docs/infrastructure/runbook_aws.md).
 
-| Ambiente | Cluster | Replicas (min-max) | Onde testar |
-|----------|---------|-------------------|-------------|
-| **Local (dev)** | Minikube | 2-10 | `make k8s-up` |
-| **AWS Local** | MiniStack (k3s) | 1-4 | `make aws-local-up` |
-| **AWS Prod** | EKS | 1-4 | GitHub Actions (manual) |
+```
+Deploy:  infra-k8s → infra-db → app → lambda
+Destroy: lambda → app → infra-db → infra-k8s
+```
 
+**Actions → Deploy → Run workflow** (branch `master`). O [`deploy.yml`](.github/workflows/deploy.yml):
 
-## Kubernetes e AWS local
+1. Lê o contrato SSM: `eks/cluster_name`, `ecr/php_repository_url`, `apigw/invoke_url` (infra-k8s) e `db/address`, `db/name` (infra-db). Se faltar algum, aborta dizendo qual repositório subir antes.
+2. Faz build e push da imagem no ECR com a tag do commit.
+3. Cria os Secrets `newrelic-license` e `rds-admin-secrets` (temporário) e roda `helm upgrade`.
+4. Espera o job `rds-user-setup`, roda as migrations e confere o rollout do nginx.
+5. Publica `/tech-challenge/app/image_tag`, que libera o deploy da Lambda e bloqueia o destroy do banco.
 
-Há dois fluxos locais, documentados em [`docs/infrastructure/guia_infraestrutura_k8s.md`](./docs/infrastructure/guia_infraestrutura_k8s.md) e [ADR-004](./docs/adr/004-minikube-ministack-eks.md):
+O **Destroy** ([`destroy.yml`](.github/workflows/destroy.yml)) exige que a Lambda já tenha saído, remove o release Helm e o namespace e apaga `/tech-challenge/app/*`.
 
-- **Minikube** (dia a dia): `make k8s-up`
-- **MiniStack** (simulação AWS local, com Terraform + EKS/k3s): `make aws-local-up`
+### Variables e secrets
+
+| Tipo | Nome | Uso |
+|---|---|---|
+| Variable | `AWS_ROLE_ARN_APPLY` | Role OIDC de deploy/destroy |
+| Variable | `NEW_RELIC_ENTITY_GUID` | (opcional) Deployment marker no APM |
+| Variable | `NEW_RELIC_REGION` | (opcional) `US` (padrão) ou `EU` |
+| Secret | `DB_PASSWORD` | Senha do `app_user` |
+| Secret | `DB_ROOT_PASSWORD` | Senha master do RDS, **igual** à do infra-db |
+| Secret | `LAMBDA_DB_PASSWORD` | Senha do usuário `autenticacao`, **igual** à do repo lambda |
+| Secret | `JWT_SECRET` | Assinatura do JWT, **igual** à do repo lambda |
+| Secret | `OS_EMAIL_ACTION_TOKEN_SECRET` | Token dos links de aprovação por e-mail |
+| Secret | `MAIL_USERNAME`, `MAIL_PASSWORD` | (opcional) SMTP |
+| Secret | `NEW_RELIC_LICENSE_KEY` | Agente PHP do New Relic |
+| Secret | `NEW_RELIC_API_KEY` | (opcional) Deployment marker |
+| Secret | `SONAR_TOKEN`, `SONAR_PROJECT_KEY`, `SONAR_ORGANIZATION` | (opcional) SonarCloud no CI |
+
+Os secrets marcados como **igual** ficam duplicados entre repositórios. Se divergirem, o erro só aparece em runtime (job `rds-user-setup` falha, token rejeitado com 401 ou Lambda sem acesso ao banco).
+
+### CI
+
+O [`ci.yml`](.github/workflows/ci.yml) roda em PR e em push na `master`: lint (php-cs-fixer), SAST (PHPStan), testes com cobertura (+ SonarCloud) e validação do chart (`helm lint` e `helm template` com os values da AWS). Nenhum job usa credenciais AWS.
 
 ## 📊 Documentação sobre observabilidade
 
@@ -226,9 +258,9 @@ Principais interfaces locais:
 - **Prometheus:** http://localhost:9090
 - **Jaeger:** http://localhost:16686
 
-## Infraestrutura e deploy AWS
+## Operação AWS
 
-Para operar a infraestrutura AWS real (EKS, RDS, API Gateway), consulte:
+Para operar o ambiente AWS completo (os quatro repositórios), consulte:
 
 - **[Guia operacional de deploy, validação e destroy na AWS](./docs/infrastructure/deploy_aws.md)** — procedimento recorrente pelo GitHub Actions, comandos de validação, troubleshooting e remoção para evitar custos.
 - **[Runbook AWS](./docs/infrastructure/runbook_aws.md)** — configuração inicial do state remoto do Terraform, OIDC/IAM e variables/secrets do GitHub Actions.
