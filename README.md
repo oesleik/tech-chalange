@@ -16,6 +16,12 @@ A solução está dividida em quatro repositórios:
 
 A divisão e o contrato entre eles estão no [ADR-013](./docs/adr/013-divisao-repositorios.md).
 
+## Arquitetura e decisões
+
+- [Diagramas, sequências de autenticação e OS, ERD e justificativa do MySQL](./docs/arch/architecture.md)
+- [Índice dos diagramas](./docs/arch/README.md)
+- [RFCs](./docs/rfc/README.md) e [ADRs](./docs/adr/README.md)
+
 ## Tecnologias
 
 - PHP 8.4 FPM, Slim Framework 4.x, Nginx
