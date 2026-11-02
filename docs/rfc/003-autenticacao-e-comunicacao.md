@@ -30,4 +30,4 @@ A API PHP precisa proteger rotas administrativas, enquanto clientes precisam aut
 - Sem authorizer no gateway, requests com token inválido chegam ao cluster antes da rejeição.
 - A autenticação usa JWT stateless; revogação individual imediata não está implementada.
 - O endpoint diferencia documento inexistente com `404`, o que revela existência de cadastro; o ADR-008 registra o risco de enumeração.
-- O fluxo e os participantes estão ilustrados em [Sequência de autenticação](../arch/architecture.md#sequência-de-autenticação).
+- O fluxo e os participantes estão ilustrados em [Fluxo de autenticação](../arch/autenticacao.md).

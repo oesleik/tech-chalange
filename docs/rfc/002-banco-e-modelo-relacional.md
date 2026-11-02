@@ -24,7 +24,7 @@ MySQL fornece transações, constraints e consultas SQL adequadas ao fluxo da of
 
 ## Modelo atual e pontos de atenção
 
-O ERD canônico e os relacionamentos estão em [Arquitetura e modelo de dados](../arch/architecture.md#modelo-relacional-e-justificativa-do-banco). O modelo atual tem FKs de OS para cliente e veículo, mas não implementa uma FK de propriedade veículo-cliente. Também não mantém snapshot de preços nos itens da OS nem timestamp/referência da OS nos movimentos de estoque.
+O modelo de dados e os relacionamentos estão documentados em [dbml.png](../arch/dbml.png). O modelo atual tem FKs de OS para cliente e veículo, mas não implementa uma FK de propriedade veículo-cliente. Também não mantém snapshot de preços nos itens da OS nem timestamp/referência da OS nos movimentos de estoque.
 
 Esses três pontos não devem ser presumidos pelo diagrama como funcionalidades presentes. Se forem requisitos, devem ser decididos, migrados e testados separadamente.
 

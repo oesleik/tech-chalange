@@ -18,7 +18,7 @@ A divisão e o contrato entre eles estão no [ADR-013](./docs/adr/013-divisao-re
 
 ## Arquitetura e decisões
 
-- [Diagramas, sequências de autenticação e OS, ERD e justificativa do MySQL](./docs/arch/architecture.md)
+- [Fluxo de autenticação](./docs/arch/autenticacao.md)
 - [Índice dos diagramas](./docs/arch/README.md)
 - [RFCs](./docs/rfc/README.md) e [ADRs](./docs/adr/README.md)
 
