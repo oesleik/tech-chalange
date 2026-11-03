@@ -16,6 +16,14 @@ A solução está dividida em quatro repositórios:
 
 A divisão e o contrato entre eles estão no [ADR-013](./docs/adr/013-divisao-repositorios.md).
 
+## Arquitetura e decisões
+
+- [Documentação e Diagramas de Arquitetura](./docs/arch/README.md)
+  - [Fluxo de Autenticação (Diagrama e Sequência)](./docs/arch/autenticacao.md)
+  - [Fluxo de Abertura de Ordem de Serviço (Diagrama e Sequência)](./docs/arch/ordem-servico.md)
+- [ADRs - Decisões Arquiteturais](./docs/adr/README.md)
+- [RFCs - Propostas e Decisões Técnicas](./docs/rfc/README.md)
+
 ## Tecnologias
 
 - PHP 8.4 FPM, Slim Framework 4.x, Nginx
@@ -29,7 +37,7 @@ A divisão e o contrato entre eles estão no [ADR-013](./docs/adr/013-divisao-re
 - Documentos de entregas das fases anteriores em [docs/entregas/](./docs/entregas/)
 - [Vídeo entrega fase 1](https://www.youtube.com/watch?v=ov2wa36pA7E)
 - [Vídeo entrega fase 2](https://www.youtube.com/watch?v=xzyHejsCoEs)
-- [Vídeo entrega fase 3]()
+- [Vídeo entrega fase 3](https://www.youtube.com/watch?v=yCM4b5iJ-cM)
 
 ## 📋 Pré-requisitos
 
