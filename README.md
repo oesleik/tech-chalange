@@ -37,7 +37,7 @@ A divisão e o contrato entre eles estão no [ADR-013](./docs/adr/013-divisao-re
 - Documentos de entregas das fases anteriores em [docs/entregas/](./docs/entregas/)
 - [Vídeo entrega fase 1](https://www.youtube.com/watch?v=ov2wa36pA7E)
 - [Vídeo entrega fase 2](https://www.youtube.com/watch?v=xzyHejsCoEs)
-- [Vídeo entrega fase 3]()
+- [Vídeo entrega fase 3](https://www.youtube.com/watch?v=yCM4b5iJ-cM)
 
 ## 📋 Pré-requisitos
 
