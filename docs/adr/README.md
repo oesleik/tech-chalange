@@ -15,12 +15,6 @@
 - [ADR 012 - HPA (Horizontal Pod Autoscaler) no EKS](012-hpa.md)
 - [ADR 013 - Divisão em quatro repositórios com contrato via SSM](013-divisao-repositorios.md)
 
-## RFCs relacionados
-
-- [RFC-001 - Plataforma de nuvem AWS](../rfc/001-plataforma-nuvem.md)
-- [RFC-002 - Banco relacional e modelo de dados](../rfc/002-banco-e-modelo-relacional.md)
-- [RFC-003 - Autenticação e comunicação das APIs](../rfc/003-autenticacao-e-comunicacao.md)
-
 ## Substituídas
 
 - [ADR 004 - Dois fluxos locais: Minikube e MiniStack (AWS local)](004-minikube-ministack-eks.md) — substituída pelo ADR 013

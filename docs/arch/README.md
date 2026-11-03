@@ -8,7 +8,6 @@ O [User Story](./User_Story.MD) descreve os objetivos e fluxos do negócio.
 
 - [Fluxo de Autenticação](./autenticacao.md)
 - [ADRs - decisões arquiteturais](../adr/README.md)
-- [RFCs - propostas e alternativas técnicas](../rfc/README.md)
 - [Modelo de dados (DBML)](./dbml.png)
 - [Criação de Ordem de Serviço (LLD)](./LLD_criacao_ordem_servico.png)
 - [Alteração de Situação da Ordem de Serviço (LLD)](./LLD-alterar-situacao-ordem-servico.png)

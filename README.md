@@ -20,7 +20,7 @@ A divisão e o contrato entre eles estão no [ADR-013](./docs/adr/013-divisao-re
 
 - [Fluxo de autenticação](./docs/arch/autenticacao.md)
 - [Índice dos diagramas](./docs/arch/README.md)
-- [RFCs](./docs/rfc/README.md) e [ADRs](./docs/adr/README.md)
+- [ADRs](./docs/adr/README.md)
 
 ## Tecnologias
 
