@@ -18,9 +18,11 @@ A divisão e o contrato entre eles estão no [ADR-013](./docs/adr/013-divisao-re
 
 ## Arquitetura e decisões
 
-- [Fluxo de autenticação](./docs/arch/autenticacao.md)
-- [Índice dos diagramas](./docs/arch/README.md)
-- [ADRs](./docs/adr/README.md)
+- [Documentação e Diagramas de Arquitetura](./docs/arch/README.md)
+  - [Fluxo de Autenticação (Diagrama e Sequência)](./docs/arch/autenticacao.md)
+  - [Fluxo de Abertura de Ordem de Serviço (Diagrama e Sequência)](./docs/arch/ordem-servico.md)
+- [ADRs - Decisões Arquiteturais](./docs/adr/README.md)
+- [RFCs - Propostas e Decisões Técnicas](./docs/rfc/README.md)
 
 ## Tecnologias
 
